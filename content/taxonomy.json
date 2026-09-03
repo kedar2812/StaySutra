@@ -1,0 +1,138 @@
+{
+  "categories": [
+    {
+      "slug": "villas",
+      "name": "Villa",
+      "plural": "Villas",
+      "description": "Private houses with the whole place to yourselves.",
+      "iconKey": "villa",
+      "sortOrder": 1
+    },
+    {
+      "slug": "farmhouses",
+      "name": "Farmhouse",
+      "plural": "Farmhouses",
+      "description": "Land, quiet and room to park a dozen bikes.",
+      "iconKey": "farmhouse",
+      "sortOrder": 2
+    },
+    {
+      "slug": "resorts",
+      "name": "Resort",
+      "plural": "Resorts",
+      "description": "Full service, for the ride that ends in a pool.",
+      "iconKey": "resort",
+      "sortOrder": 3
+    },
+    {
+      "slug": "highway-stays",
+      "name": "Highway Stay",
+      "plural": "Highway Stays",
+      "description": "Off the road, into a bed. Built for long hauls.",
+      "iconKey": "highway",
+      "sortOrder": 4
+    },
+    {
+      "slug": "homestays",
+      "name": "Homestay",
+      "plural": "Homestays",
+      "description": "Someone's home, someone's cooking, local road advice.",
+      "iconKey": "homestay",
+      "sortOrder": 5
+    },
+    {
+      "slug": "mountain-stays",
+      "name": "Mountain Stay",
+      "plural": "Mountain Stays",
+      "description": "Above the ghat, where the air changes.",
+      "iconKey": "mountain",
+      "sortOrder": 6
+    }
+  ],
+
+  "amenities": [
+    { "slug": "wifi", "name": "Wi-Fi", "iconKey": "wifi", "group": "Essentials", "sortOrder": 1 },
+    { "slug": "air-conditioning", "name": "Air conditioning", "iconKey": "ac", "group": "Essentials", "sortOrder": 2 },
+    { "slug": "hot-water", "name": "Hot water", "iconKey": "bath", "group": "Essentials", "sortOrder": 3 },
+    { "slug": "power-backup", "name": "Power backup", "iconKey": "shield", "group": "Essentials", "sortOrder": 4 },
+    { "slug": "kitchen", "name": "Kitchen access", "iconKey": "kitchen", "group": "Food", "sortOrder": 5 },
+    { "slug": "meals", "name": "Meals available", "iconKey": "meals", "group": "Food", "sortOrder": 6 },
+    { "slug": "barbecue", "name": "Barbecue", "iconKey": "bonfire", "group": "Food", "sortOrder": 7 },
+    { "slug": "pool", "name": "Swimming pool", "iconKey": "pool", "group": "Outdoors", "sortOrder": 8 },
+    { "slug": "bonfire", "name": "Bonfire pit", "iconKey": "bonfire", "group": "Outdoors", "sortOrder": 9 },
+    { "slug": "valley-view", "name": "Valley view", "iconKey": "view", "group": "Outdoors", "sortOrder": 10 },
+    { "slug": "sea-view", "name": "Sea view", "iconKey": "view", "group": "Outdoors", "sortOrder": 11 },
+    { "slug": "garden", "name": "Garden / lawn", "iconKey": "trek", "group": "Outdoors", "sortOrder": 12 },
+    { "slug": "pet-friendly", "name": "Pet friendly", "iconKey": "pets", "group": "Policies", "sortOrder": 13 },
+    { "slug": "caretaker", "name": "On-site caretaker", "iconKey": "headset", "group": "Policies", "sortOrder": 14 }
+  ],
+
+  "facilities": [
+    {
+      "slug": "covered-parking",
+      "name": "Covered bike parking",
+      "iconKey": "parking",
+      "description": "Roofed, off the road, inside the gate.",
+      "sortOrder": 1
+    },
+    {
+      "slug": "late-check-in",
+      "name": "Late check-in",
+      "iconKey": "clock",
+      "description": "Someone is awake when the ride runs long.",
+      "sortOrder": 2
+    },
+    {
+      "slug": "wash-down",
+      "name": "Wash-down area",
+      "iconKey": "wash",
+      "description": "A tap, a drain and somewhere to put the bike.",
+      "sortOrder": 3
+    },
+    {
+      "slug": "basic-tools",
+      "name": "Basic tools on site",
+      "iconKey": "wrench",
+      "description": "Chain lube, a pump, the spanners you forgot.",
+      "sortOrder": 4
+    },
+    {
+      "slug": "drying-space",
+      "name": "Gear drying space",
+      "iconKey": "shield",
+      "description": "For jackets that met the monsoon.",
+      "sortOrder": 5
+    },
+    {
+      "slug": "early-breakfast",
+      "name": "Early breakfast",
+      "iconKey": "meals",
+      "description": "Fed before first light, not after it.",
+      "sortOrder": 6
+    },
+    {
+      "slug": "route-advice",
+      "name": "Local route advice",
+      "iconKey": "route",
+      "description": "Hosts who ride, and know which ghat is shut.",
+      "sortOrder": 7
+    },
+    {
+      "slug": "fuel-nearby",
+      "name": "Fuel within 5 km",
+      "iconKey": "fuel",
+      "description": "Tank full before the day starts.",
+      "sortOrder": 8
+    }
+  ],
+
+  "experiences": [
+    { "slug": "bonfire-night", "name": "Bonfire night", "iconKey": "bonfire", "sortOrder": 1 },
+    { "slug": "sunrise-ride", "name": "Sunrise ride-out", "iconKey": "motorcycle", "sortOrder": 2 },
+    { "slug": "trek", "name": "Guided trek", "iconKey": "trek", "sortOrder": 3 },
+    { "slug": "local-food", "name": "Local food trail", "iconKey": "meals", "sortOrder": 4 },
+    { "slug": "kayaking", "name": "Kayaking", "iconKey": "pool", "sortOrder": 5 },
+    { "slug": "fort-visit", "name": "Fort visit", "iconKey": "compass", "sortOrder": 6 },
+    { "slug": "stargazing", "name": "Stargazing", "iconKey": "star", "sortOrder": 7 }
+  ]
+}

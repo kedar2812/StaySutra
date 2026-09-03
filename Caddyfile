@@ -1,0 +1,80 @@
+# StaySutra — reverse proxy, automatic TLS and security headers.
+# DPR §3.1, §3.3, §8.4, §11
+
+{
+	email {$ACME_EMAIL}
+}
+
+# Shared header block. Referenced by both sites so production and staging can
+# never drift apart on security posture.
+(security) {
+	header {
+		# HSTS. Two years, subdomains included, preload-eligible.
+		Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), interest-cohort=()"
+		Cross-Origin-Opener-Policy "same-origin"
+
+		# No fonts, scripts or styles are loaded from a third party — everything
+		# is self-hosted (DPR §4.3). The only external connection is GA4, and
+		# 'unsafe-inline' on script-src is required by Next's inline bootstrap.
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://www.google-analytics.com; font-src 'self'; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com; frame-src https://challenges.cloudflare.com; form-action 'self'; frame-ancestors 'self'; base-uri 'self'; object-src 'none'"
+
+		-Server
+		-X-Powered-By
+	}
+}
+
+(app) {
+	encode zstd gzip
+
+	# Next fingerprints these, so they are safe to cache hard and forever.
+	@immutable path /_next/static/* /fonts/*
+	header @immutable Cache-Control "public, max-age=31536000, immutable"
+
+	reverse_proxy app:3000 {
+		health_uri /api/health
+		health_interval 30s
+	}
+}
+
+# ── Production ──────────────────────────────────────────────────────────────
+
+# A single 301 from www to the apex. One redirect, never a chain.
+www.{$DOMAIN} {
+	redir https://{$DOMAIN}{uri} permanent
+}
+
+{$DOMAIN} {
+	import security
+	import app
+
+	# Uploads are served by the app through an authorised route, never from disk.
+	respond /uploads/* 404
+}
+
+# ── Staging ─────────────────────────────────────────────────────────────────
+#
+# Non-negotiable, per DPR §3.3: an indexed staging copy is a duplicate-content
+# problem that takes weeks to unwind. Two independent guards — HTTP basic auth,
+# and X-Robots-Tag on every response.
+
+{$STAGING_DOMAIN} {
+	import security
+
+	header {
+		X-Robots-Tag "noindex, nofollow, noarchive, nosnippet"
+		Cache-Control "no-store"
+	}
+
+	basic_auth {
+		# Generate with: docker compose run --rm caddy caddy hash-password
+		{$STAGING_USER} {$STAGING_PASSWORD_HASH}
+	}
+
+	encode zstd gzip
+	reverse_proxy app:3000
+}

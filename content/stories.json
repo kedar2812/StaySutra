@@ -1,0 +1,57 @@
+[
+  {
+    "slug": "the-old-road-over-khandala",
+    "title": "The old road over Khandala",
+    "excerpt": "The expressway took the traffic and left the ghat to whoever wanted it. Which, on a weekday morning, is nobody.",
+    "categorySlug": "routes",
+    "destinationSlugs": ["lonavala"],
+    "authorName": "StaySutra",
+    "readMinutes": 6,
+    "publishedAt": "2026-08-14",
+    "placeholder": true
+  },
+  {
+    "slug": "what-rider-friendly-actually-means",
+    "title": "What \"rider-friendly\" actually means",
+    "excerpt": "Every listing site says it. Almost none of them mean a tap, a roof and a gate that opens at four in the morning.",
+    "categorySlug": "stays",
+    "destinationSlugs": [],
+    "authorName": "StaySutra",
+    "readMinutes": 4,
+    "publishedAt": "2026-08-02",
+    "placeholder": true
+  },
+  {
+    "slug": "coast-road-to-kashid",
+    "title": "Coast road to Kashid",
+    "excerpt": "Thirty-two kilometres that take an hour if you do them right, and twenty minutes if you have missed the point entirely.",
+    "categorySlug": "routes",
+    "destinationSlugs": ["alibaug"],
+    "authorName": "StaySutra",
+    "readMinutes": 5,
+    "publishedAt": "2026-07-21",
+    "placeholder": true
+  },
+  {
+    "slug": "riding-the-sahyadris-in-july",
+    "title": "Riding the Sahyadris in July",
+    "excerpt": "Everything is green, nothing is dry, and visibility is a rumour. On what to carry and when to turn back.",
+    "categorySlug": "riding",
+    "destinationSlugs": ["karjat", "lonavala"],
+    "authorName": "StaySutra",
+    "readMinutes": 8,
+    "publishedAt": "2026-07-04",
+    "placeholder": true
+  },
+  {
+    "slug": "two-days-to-goa-the-slow-way",
+    "title": "Two days to Goa, the slow way",
+    "excerpt": "NH-48 gets you there by dinner. The Konkan coast road gets you there having been somewhere.",
+    "categorySlug": "routes",
+    "destinationSlugs": ["goa"],
+    "authorName": "StaySutra",
+    "readMinutes": 11,
+    "publishedAt": "2026-06-18",
+    "placeholder": true
+  }
+]

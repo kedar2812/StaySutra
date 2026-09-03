@@ -1,0 +1,318 @@
+{
+  "brand": {
+    "name": "StaySutra",
+    "wordmarkA": "STAY",
+    "wordmarkB": "SUTRA",
+    "lockup": "Where stays meet stories",
+    "tagline": "Ride. Stay. Repeat.",
+    "positioning": "India's rider-friendly stay network.",
+    "bio": "Connecting riders with the best stays. Secure parking, scenic locations, group-friendly stays.",
+    "_source": "Verified from instagram.com/staysutra.in on 2026-09-03. Both the badge lockup (RIDE. STAY. REPEAT.) and the post watermark (Where Stays Meet Stories) are in active use."
+  },
+  "settings": {
+    "whatsappNumber": "918805895066",
+    "email": "hello@staysutra.in",
+    "phone": "+91 88058 95066",
+    "officeLocality": "Pune, Maharashtra",
+    "instagram": "https://www.instagram.com/staysutra.in/",
+    "instagramHandle": "@staysutra.in",
+    "responseTime": "We reply on WhatsApp within a few hours, and always the same day.",
+    "announcement": {
+      "enabled": false,
+      "text": "",
+      "href": ""
+    }
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "Ride · Stay · Explore",
+      "titleLines": [
+        "Built for riders.",
+        "Made for stories."
+      ],
+      "goldLine": 1,
+      "lede": "Handpicked stays across mountains, beaches, forests and highways — chosen for the things that matter after four hundred kilometres: a roof over the bike, a gate that opens early, and a host who rides.",
+      "primaryCta": {
+        "label": "Explore stays",
+        "href": "/stays"
+      },
+      "secondaryCta": {
+        "label": "For riders",
+        "href": "/for-riders"
+      },
+      "trust": [
+        {
+          "iconKey": "motorcycle",
+          "title": "Rider friendly",
+          "note": "Stays, not hotels"
+        },
+        {
+          "iconKey": "clock",
+          "title": "Easy check-in",
+          "note": "Late arrivals expected"
+        },
+        {
+          "iconKey": "parking",
+          "title": "Secure parking",
+          "note": "Covered, inside the gate"
+        },
+        {
+          "iconKey": "headset",
+          "title": "Local support",
+          "note": "One number, all week"
+        }
+      ]
+    },
+    "road": {
+      "overline": "For riders, by riders",
+      "title": "It's not just a stay. It's part of the ride.",
+      "lede": "Because every road deserves a great place to end. From the ghat roads to the hidden beaches, we choose places that make sense at the end of a long day on a bike — and hosts who understand why you arrived at midnight.",
+      "pillars": [
+        {
+          "number": "01",
+          "title": "Routes worth the detour",
+          "body": "Every stay lists the roads around it, with distances and an honest note on what the surface is actually like."
+        },
+        {
+          "number": "02",
+          "title": "Hosts who ride",
+          "body": "The people running these places know which ghat is shut, where the nearest mechanic is, and what time to leave."
+        },
+        {
+          "number": "03",
+          "title": "Built for the bike",
+          "body": "Covered parking, a wash-down tap, somewhere to hang wet gear. Small things that decide whether a place works."
+        },
+        {
+          "number": "04",
+          "title": "Stories from the road",
+          "body": "What actually happened on the ride — written by the people who did it, not by a marketing team."
+        }
+      ]
+    },
+    "featured": {
+      "overline": "Handpicked for riders",
+      "title": "Featured stays",
+      "action": {
+        "label": "View all stays",
+        "href": "/stays"
+      }
+    },
+    "categories": {
+      "overline": "Mountains, beaches, forests or highways",
+      "title": "We've got your stop"
+    },
+    "destinations": {
+      "overline": "Where we ride",
+      "title": "Destinations",
+      "lede": "Six to start with. More as the roads and the hosts line up."
+    },
+    "riders": {
+      "overline": "For the riders",
+      "title": "More than a place to sleep",
+      "lede": "The rest of the ecosystem is being built. Here is what is coming, and what already works.",
+      "items": [
+        {
+          "iconKey": "book",
+          "title": "Rider Passport",
+          "body": "One record of every stay, every route and every ride.",
+          "status": "coming"
+        },
+        {
+          "iconKey": "route",
+          "title": "Epic routes",
+          "body": "The roads worth planning a weekend around, written up properly.",
+          "status": "coming"
+        },
+        {
+          "iconKey": "motorcycle",
+          "title": "Motorcycle trips",
+          "body": "Organised rides with the stays already booked.",
+          "status": "coming"
+        },
+        {
+          "iconKey": "quote",
+          "title": "Rider stories",
+          "body": "What happened on the road, from the people it happened to.",
+          "status": "live"
+        },
+        {
+          "iconKey": "community",
+          "title": "Community",
+          "body": "Ride together, find company for the next one.",
+          "status": "coming"
+        }
+      ]
+    },
+    "owners": {
+      "overline": "For property owners",
+      "title": "Own a villa, farmhouse or resort?",
+      "lede": "Turn your property into a professionally managed stay, in front of an audience that books repeat trips.",
+      "benefits": [
+        "Photography",
+        "Marketing",
+        "Revenue management",
+        "Rider and traveller network",
+        "End-to-end management"
+      ],
+      "cta": {
+        "label": "Partner with StaySutra",
+        "href": "/list-your-property"
+      },
+      "note": "Launching across six destinations in Maharashtra and Goa."
+    },
+    "stories": {
+      "overline": "#staysutrariders",
+      "title": "Stories from the road",
+      "action": {
+        "label": "Read all stories",
+        "href": "/stories"
+      }
+    },
+    "finalCta": {
+      "titleLines": [
+        "Ride far.",
+        "Stay deep.",
+        "Repeat."
+      ],
+      "primaryCta": {
+        "label": "Explore stays",
+        "href": "/stays"
+      },
+      "lede": "Where every journey finds its perfect stay."
+    }
+  },
+  "riderFriendly": {
+    "overline": "The whole argument",
+    "title": "What rider-friendly means here",
+    "lede": "Secure parking, scenic locations, group-friendly stays. It is not a badge we hand out — a stay earns it by having the things that decide whether a long day on a bike ends well.",
+    "body": "Most listing sites will tell you a place is good for bikers. Almost none of them will tell you whether there is a roof over the parking, whether the gate is manned at midnight, or whether there is a tap you can rinse the salt off with before it eats the chrome. Those are the questions we ask before a property goes on this site, and the answers are printed on every listing."
+  },
+  "forRiders": {
+    "overline": "The ecosystem",
+    "title": "For riders",
+    "lede": "StaySutra started with stays. The rest is being built in the open — here is where each piece stands."
+  },
+  "about": {
+    "overline": "About",
+    "title": "Where stays meet stories",
+    "lede": "StaySutra is India's rider-friendly stay network — built on one idea: that where you sleep is part of the ride, not an afterthought at the end of it."
+  },
+  "listProperty": {
+    "overline": "For property owners",
+    "title": "Own a villa, farmhouse or resort?",
+    "lede": "Turn your property into a professionally managed stay. Four steps, about ten minutes. We review every submission ourselves and come back to you within two working days.",
+    "steps": [
+      {
+        "title": "Tell us about the property",
+        "body": "Who you are, where it is, and what kind of place it is."
+      },
+      {
+        "title": "What it offers",
+        "body": "Capacity, amenities and — the part that matters here — what you have for the bikes."
+      },
+      {
+        "title": "Photos and documents",
+        "body": "Pictures of the place, plus proof you are entitled to list it."
+      },
+      {
+        "title": "Review and submit",
+        "body": "Check it over, agree to the terms, and send it to us."
+      }
+    ],
+    "handled": [
+      "Photography and listing production",
+      "Marketing across the channels your guests already use",
+      "Revenue management and pricing guidance",
+      "Access to the rider and traveller network",
+      "End-to-end guest communication, from first message to check-out"
+    ]
+  },
+  "footer": {
+    "columns": [
+      {
+        "title": "Company",
+        "links": [
+          {
+            "label": "About us",
+            "href": "/about"
+          },
+          {
+            "label": "Stories",
+            "href": "/stories"
+          },
+          {
+            "label": "Contact",
+            "href": "/contact"
+          }
+        ]
+      },
+      {
+        "title": "Stay",
+        "links": [
+          {
+            "label": "Explore stays",
+            "href": "/stays"
+          },
+          {
+            "label": "Rider-friendly stays",
+            "href": "/rider-friendly-stays"
+          },
+          {
+            "label": "For riders",
+            "href": "/for-riders"
+          }
+        ]
+      },
+      {
+        "title": "For owners",
+        "links": [
+          {
+            "label": "List your property",
+            "href": "/list-your-property"
+          }
+        ]
+      }
+    ],
+    "legal": [
+      {
+        "label": "Privacy",
+        "href": "/privacy"
+      },
+      {
+        "label": "Terms",
+        "href": "/terms"
+      }
+    ]
+  },
+  "nav": [
+    {
+      "label": "Stays",
+      "href": "/stays"
+    },
+    {
+      "label": "Rider-friendly",
+      "href": "/rider-friendly-stays"
+    },
+    {
+      "label": "Destinations",
+      "href": "/destinations"
+    },
+    {
+      "label": "For riders",
+      "href": "/for-riders"
+    },
+    {
+      "label": "Stories",
+      "href": "/stories"
+    },
+    {
+      "label": "About",
+      "href": "/about"
+    },
+    {
+      "label": "Contact",
+      "href": "/contact"
+    }
+  ]
+}

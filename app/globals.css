@@ -1,0 +1,478 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   StaySutra — design tokens
+   The single source of truth for colour, spacing, radius and material.
+   No component may use a raw hex value. DPR §4.2, §4.4, §4.8
+   ========================================================================== */
+
+@theme {
+  /* Base — cool navy, not black */
+  --color-ink-900: #070e1a;
+  --color-ink-800: #0a1628;
+  --color-ink-700: #0e1e33;
+  --color-ink-600: #13263d;
+  --color-ink-500: #1b3251;
+
+  /* Gold — the single accent */
+  --color-gold-400: #f2c75c;
+  --color-gold-500: #e9b93c;
+  --color-gold-600: #c99a2e;
+  --color-gold-ink: #1a1204;
+
+  /* Text */
+  --color-text-hi: #ffffff;
+  --color-text-mid: #c3cedc;
+  --color-text-low: #8395ab;
+  /*
+   * Disabled affordances only. It does not meet AA on any surface here — WCAG
+   * 1.4.3 exempts inactive controls, and nothing that carries meaning may use
+   * it. Meaningful low-emphasis text uses --color-text-low (6.3:1 on ink-900).
+   */
+  --color-text-dim: #5d6e84;
+
+  /* Semantic — dashboard (Phase 2) */
+  --color-ok: #3fbf87;
+  --color-warn: #e0a63a;
+  --color-err: #e2685f;
+  --color-info: #5b9bd5;
+
+  /* Type */
+  --font-display: var(--font-montserrat), "Montserrat", system-ui, sans-serif;
+  --font-sans: var(--font-inter), "Inter", system-ui, sans-serif;
+  --font-mark: var(--font-cinzel), "Cinzel", Georgia, serif;
+
+  /* Radii — chips / cards / large surfaces / pills. Max two per component. */
+  --radius-chip: 4px;
+  --radius-card: 12px;
+  --radius-surface: 20px;
+  --radius-pill: 999px;
+
+  /* Spacing scale (4px base) */
+  --spacing-section: 6rem;
+  --spacing-section-lg: 10rem;
+
+  /* Breakpoints */
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* Motion — Apple-style springs expressed as CSS easings for non-gesture work */
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-quint: cubic-bezier(0.64, 0, 0.78, 0);
+  --ease-standard: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+:root {
+  /* Lines & materials — kept outside @theme so they can carry alpha freely */
+  --hairline: rgba(255, 255, 255, 0.09);
+  --hairline-str: rgba(255, 255, 255, 0.16);
+
+  --glass-bg: rgba(12, 26, 45, 0.55);
+  --glass-edge: rgba(255, 255, 255, 0.16);
+  --glass-blur: 24px;
+  --glass-sat: 165%;
+
+  --shadow-card: 0 12px 32px -16px rgba(0, 0, 0, 0.6);
+  --shadow-float: 0 24px 60px -20px rgba(0, 0, 0, 0.55);
+
+  /* Layout */
+  --content-max: 1320px;
+  --gutter: 24px;
+
+  --header-h: 68px;
+
+  /* Film grain — tiled fractal noise, generated not downloaded. DPR §4.6 */
+  --grain-url: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='128' height='128' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  color-scheme: dark;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gutter: 40px;
+    --header-h: 76px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 64px;
+  }
+}
+
+/* ==========================================================================
+   Base
+
+   IMPORTANT: these live in @layer base and the classes below live in
+   @layer components. Unlayered CSS beats every layer in the cascade, so an
+   unlayered `button { font: inherit }` would silently override every
+   Tailwind utility applied to a button. Keep new rules inside a layer.
+   ========================================================================== */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scrollbar-color: var(--color-ink-500) var(--color-ink-900);
+  }
+
+  /* Lenis controls scrolling; native smooth-scroll must not fight it. */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-ink-900);
+    color: var(--color-text-mid);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.65;
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: var(--color-gold-500);
+    color: var(--color-gold-ink);
+  }
+
+  /* Focus — 2px gold at 2px offset, keyboard only. DPR §6.5 */
+  :focus-visible {
+    outline: 2px solid var(--color-gold-500);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  img,
+  svg,
+  video {
+    display: block;
+    max-width: 100%;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+}
+
+@layer components {
+  /* ==========================================================================
+     Typography scale — tracking is size-specific by design. DPR §4.3
+     ========================================================================== */
+
+  .t-display-xl {
+    font-family: var(--font-display);
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: clamp(2.75rem, 9vw, 6.5rem);
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+    color: var(--color-text-hi);
+  }
+
+  .t-display-l {
+    font-family: var(--font-display);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--color-text-hi);
+  }
+
+  .t-display-m {
+    font-family: var(--font-display);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: clamp(1.5rem, 3.2vw, 2.25rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--color-text-hi);
+  }
+
+  .t-heading {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.25rem, 2.4vw, 1.75rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--color-text-hi);
+  }
+
+  /*
+   * Overlines are low-emphasis by default. Gold is opt-in via .t-overline-gold
+   * and is spent at most once per page — the §4.2 budget is three gold elements
+   * per viewport, and an overline in every section eats it before the CTA does.
+   */
+  .t-overline {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    letter-spacing: 0.18em;
+    color: var(--color-text-low);
+  }
+
+  .t-overline-gold {
+    color: var(--color-gold-500);
+  }
+
+  .t-lede {
+    font-size: clamp(1.0625rem, 1.4vw, 1.25rem);
+    line-height: 1.6;
+    color: var(--color-text-mid);
+  }
+
+  .t-caption {
+    font-weight: 500;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    letter-spacing: 0.01em;
+    color: var(--color-text-low);
+  }
+
+  .t-num {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  /* ==========================================================================
+     Layout helpers
+     ========================================================================== */
+
+  .shell {
+    width: 100%;
+    max-width: calc(var(--content-max) + var(--gutter) * 2);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .shell-wide {
+    width: 100%;
+    max-width: calc(1560px + var(--gutter) * 2);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .section {
+    padding-block: 6rem;
+  }
+  @media (min-width: 1024px) {
+    .section {
+      padding-block: 10rem;
+    }
+  }
+
+  .rule {
+    height: 1px;
+    background: var(--hairline);
+    border: 0;
+  }
+
+  /* ==========================================================================
+     Materials — glass. Never stack glass on glass. DPR §4.4
+     ========================================================================== */
+
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    border-top: 1px solid var(--glass-edge);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+    box-shadow: var(--shadow-float);
+  }
+
+  /* Bigger surface reads as thicker material. */
+  .glass-sheet {
+    --glass-blur: 32px;
+    box-shadow: 0 -32px 80px -24px rgba(0, 0, 0, 0.7);
+  }
+
+  .glass-chip {
+    --glass-blur: 12px;
+    box-shadow: none;
+    border-bottom-color: transparent;
+  }
+
+  /* Text over a moving backdrop needs more contrast, not less. */
+  .on-glass {
+    color: var(--color-text-hi);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+
+  /* Scroll-edge fade where floating chrome overlaps content — not a 1px divider. */
+  .scroll-edge::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 100%;
+    height: 24px;
+    pointer-events: none;
+    background: linear-gradient(to bottom, rgba(7, 14, 26, 0.5), transparent);
+  }
+
+  /* ==========================================================================
+     Film grain — 3.5% overlay across dark sections. DPR §4.6
+     ========================================================================== */
+
+  .grain::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.035;
+    mix-blend-mode: overlay;
+    background-image: var(--grain-url);
+    background-size: 128px 128px;
+  }
+
+  .grain-fixed::before {
+    position: fixed;
+    content: "";
+    inset: 0;
+    pointer-events: none;
+    z-index: 60;
+    opacity: 0.035;
+    mix-blend-mode: overlay;
+    background-image: var(--grain-url);
+    background-size: 128px 128px;
+  }
+
+  /* Gradient scrim over photography — a real scrim, never a text shadow. */
+  .scrim-b {
+    background: linear-gradient(
+      to top,
+      rgb(7 14 26 / 0.95) 0%,
+      rgb(7 14 26 / 0.78) 22%,
+      rgb(7 14 26 / 0.35) 52%,
+      rgb(7 14 26 / 0) 78%
+    );
+  }
+
+  .scrim-l {
+    background: linear-gradient(
+      to right,
+      rgb(7 14 26 / 0.9) 0%,
+      rgb(7 14 26 / 0.55) 38%,
+      rgb(7 14 26 / 0) 72%
+    );
+  }
+
+  /* ==========================================================================
+     Press feedback — pointer-down, never on release. DPR §4.5
+     ========================================================================== */
+
+  .press {
+    transition: transform 100ms var(--ease-out-quint);
+    touch-action: manipulation;
+  }
+  .press:active {
+    transform: scale(0.97);
+  }
+
+  .press-sm:active {
+    transform: scale(0.985);
+  }
+
+  /*
+   * Snap rails. Hide the scrollbar without losing keyboard scrolling, and match
+   * scroll-padding to the rail's own inline padding — without it the first snap
+   * point aligns to the container edge and silently eats the gutter.
+   */
+  .rail {
+    overflow-x: auto;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--rail-pad, 0px);
+  }
+  .rail::-webkit-scrollbar {
+    display: none;
+  }
+
+}
+
+/* ==========================================================================
+   Reduced motion / transparency / contrast. DPR §4.5, §6.5
+
+   Deliberately unlayered. These override the token values declared on the
+   unlayered `:root` above, and a layered rule would lose that fight.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 200ms !important;
+    scroll-behavior: auto !important;
+  }
+  .press:active,
+  .press-sm:active {
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass-bg: rgba(10, 22, 40, 0.97);
+    --glass-blur: 0px;
+  }
+  .glass {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --hairline: rgba(255, 255, 255, 0.28);
+    --hairline-str: rgba(255, 255, 255, 0.42);
+    --glass-bg: rgba(7, 14, 26, 0.98);
+    --color-text-mid: #dfe7f0;
+    --color-text-low: #b3c1d1;
+    --color-text-dim: #94a3b5;
+  }
+}
+
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+  .no-print {
+    display: none !important;
+  }
+}

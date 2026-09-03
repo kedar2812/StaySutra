@@ -1,0 +1,878 @@
+// StaySutra — database schema
+//
+// Built in full during Phase 1 even though most admin screens arrive in Phase 2.
+// Phase 2 must be additive: no migration may drop or rename a Phase 1 column.
+//
+// The tables under "Reserved for the Future Phase" are migrated now with correct
+// relations and indexes and left with no admin UI. That is the whole reason the
+// client will not need a rewrite when a booking engine is commissioned:
+// property → room → rate → date-availability already exists.
+//
+// DPR §5
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/* ─── Enums ────────────────────────────────────────────────────────────── */
+
+enum PropertyStatus {
+  DRAFT
+  PUBLISHED
+  UNPUBLISHED
+  ARCHIVED
+}
+
+enum AvailabilityStatus {
+  AVAILABLE
+  ON_REQUEST
+  SOLD_OUT
+}
+
+enum EnquirySource {
+  PROPERTY
+  DESTINATION
+  CONTACT
+  GENERAL
+  WHATSAPP_CLICK
+}
+
+enum EnquiryStatus {
+  NEW
+  CONTACTED
+  CONVERTED
+  CLOSED_LOST
+}
+
+enum SubmissionStatus {
+  PENDING
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum SubmissionAssetKind {
+  PHOTO
+  DOCUMENT
+}
+
+enum StoryStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum Role {
+  OWNER
+  MANAGER
+  EDITOR
+}
+
+/* ─── Property ─────────────────────────────────────────────────────────── */
+
+model Property {
+  id       String @id @default(cuid())
+  // SEO-safe and editable, but immutable after publish without a redirect —
+  // the dashboard writes a SlugRedirect row on every change.
+  slug     String @unique
+  name     String
+  tagline  String?
+  /// Rich text.
+  description String @db.Text
+
+  status       PropertyStatus @default(DRAFT)
+  featured     Boolean        @default(false)
+  featureOrder Int?
+
+  categoryId    String
+  destinationId String
+
+  // Location
+  addressLine  String?
+  locality     String?
+  city         String
+  state        String
+  latitude     Float?
+  longitude    Float?
+  mapEmbedNote String?
+
+  // Capacity
+  maxGuests    Int
+  bedrooms     Int
+  bathrooms    Int
+  beds         Int?
+  checkInTime  String?
+  checkOutTime String?
+  minNights    Int?    @default(1)
+
+  // Pricing — display only. There are no transactions in this contract.
+  startingPrice Int?
+  priceNote     String?
+  availability  AvailabilityStatus @default(ON_REQUEST)
+
+  // Rider positioning
+  isRiderFriendly Boolean @default(false)
+  riderNote       String?
+
+  // Ratings — render only when present. NEVER seed a fake value. DPR §4.6
+  ratingValue Decimal? @db.Decimal(2, 1)
+  ratingCount Int?
+
+  // SEO overrides, editable from the dashboard in Phase 2
+  metaTitle       String?
+  metaDescription String?
+  ogImageId       String?
+
+  viewCount Int       @default(0)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  category    Category    @relation(fields: [categoryId], references: [id])
+  destination Destination @relation(fields: [destinationId], references: [id])
+  ogImage     Media?      @relation("PropertyOgImage", fields: [ogImageId], references: [id])
+
+  images       PropertyImage[]
+  amenities    PropertyAmenity[]
+  facilities   PropertyFacility[]
+  experiences  PropertyExperience[]
+  nearbyRoutes NearbyRoute[]
+  nearbyPlaces NearbyPlace[]
+  enquiries    Enquiry[]
+
+  // Reserved — Future Phase
+  roomTypes        RoomType[]
+  availabilityDays AvailabilityDay[]
+  bookings         Booking[]
+  reviews          Review[]
+  submissions      OwnerSubmission[]
+
+  @@index([status, featured])
+  @@index([destinationId, status])
+  @@index([categoryId, status])
+  @@index([isRiderFriendly, status])
+  @@index([deletedAt])
+}
+
+model PropertyImage {
+  id         String  @id @default(cuid())
+  propertyId String
+  mediaId    String
+  alt        String
+  caption    String?
+  sortOrder  Int     @default(0)
+  isCover    Boolean @default(false)
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  media    Media    @relation(fields: [mediaId], references: [id])
+
+  @@unique([propertyId, mediaId])
+  @@index([propertyId, sortOrder])
+}
+
+/// Text only in this contract; links to the route directory in the Future Phase.
+model NearbyRoute {
+  id         String @id @default(cuid())
+  propertyId String
+  title      String
+  distanceKm Float?
+  note       String?
+  sortOrder  Int    @default(0)
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId, sortOrder])
+}
+
+model NearbyPlace {
+  id         String  @id @default(cuid())
+  propertyId String
+  title      String
+  distanceKm Float?
+  type       String?
+  sortOrder  Int     @default(0)
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId, sortOrder])
+}
+
+/// A slug change on a live property must never break a URL. DPR §17
+model SlugRedirect {
+  id        String   @id @default(cuid())
+  entity    String
+  fromSlug  String
+  toSlug    String
+  createdAt DateTime @default(now())
+
+  @@unique([entity, fromSlug])
+}
+
+/* ─── Taxonomies ───────────────────────────────────────────────────────── */
+
+model Category {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  name        String
+  /// Plural form used in headings and category tiles.
+  plural      String
+  description String?
+  iconKey     String
+  sortOrder   Int     @default(0)
+  isActive    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  properties Property[]
+}
+
+model Destination {
+  id          String @id @default(cuid())
+  slug        String @unique
+  name        String
+  state       String
+  shortIntro  String
+  description String @db.Text
+
+  heroMediaId String?
+  tileMediaId String?
+  latitude    Float?
+  longitude   Float?
+
+  bestSeason String?
+  rideNote   String?
+  /// Road character — the thing a rider actually wants to know.
+  roadNote   String?
+
+  metaTitle       String?
+  metaDescription String?
+
+  isFeatured Boolean   @default(false)
+  sortOrder  Int       @default(0)
+  deletedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  heroMedia Media? @relation("DestinationHero", fields: [heroMediaId], references: [id])
+  tileMedia Media? @relation("DestinationTile", fields: [tileMediaId], references: [id])
+
+  properties Property[]
+  enquiries  Enquiry[]
+
+  @@index([isFeatured, sortOrder])
+  @@index([deletedAt])
+}
+
+/// Managed lists. The client adds to these from the dashboard; they are never
+/// free text on the property form — that is what keeps filters working and
+/// icons consistent two years from now. DPR §5.2
+model Amenity {
+  id        String  @id @default(cuid())
+  slug      String  @unique
+  name      String
+  iconKey   String
+  group     String
+  sortOrder Int     @default(0)
+  isActive  Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  properties PropertyAmenity[]
+}
+
+model Facility {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  name        String
+  iconKey     String
+  description String?
+  sortOrder   Int     @default(0)
+  isActive    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  properties PropertyFacility[]
+}
+
+model Experience {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  name        String
+  iconKey     String
+  description String?
+  sortOrder   Int     @default(0)
+  isActive    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  properties PropertyExperience[]
+}
+
+model PropertyAmenity {
+  propertyId String
+  amenityId  String
+  sortOrder  Int    @default(0)
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  amenity  Amenity  @relation(fields: [amenityId], references: [id], onDelete: Cascade)
+
+  @@id([propertyId, amenityId])
+  @@index([amenityId])
+}
+
+model PropertyFacility {
+  propertyId String
+  facilityId String
+  sortOrder  Int    @default(0)
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  facility Facility @relation(fields: [facilityId], references: [id], onDelete: Cascade)
+
+  @@id([propertyId, facilityId])
+  @@index([facilityId])
+}
+
+model PropertyExperience {
+  propertyId   String
+  experienceId String
+  sortOrder    Int    @default(0)
+
+  property   Property   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  experience Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+
+  @@id([propertyId, experienceId])
+  @@index([experienceId])
+}
+
+/* ─── Enquiry — the CRM core ───────────────────────────────────────────── */
+
+model Enquiry {
+  id String @id @default(cuid())
+  /// "SS-0926-0143" — short enough to read out, unique enough to quote.
+  refCode String @unique
+
+  source        EnquirySource
+  propertyId    String?
+  destinationId String?
+
+  name     String
+  phone    String
+  email    String?
+  checkIn  DateTime?
+  checkOut DateTime?
+  guests   Int?
+  message  String?  @db.Text
+
+  /// Strict four-state machine: NEW → CONTACTED → CONVERTED | CLOSED_LOST,
+  /// with reopen allowed from either terminal state back to CONTACTED. Every
+  /// transition is written to ActivityLog with the actor. DPR §5.3
+  status       EnquiryStatus @default(NEW)
+  assignedToId String?
+
+  pageUrl     String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  userAgent   String?
+  ipAddress   String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  property    Property?    @relation(fields: [propertyId], references: [id])
+  destination Destination?  @relation(fields: [destinationId], references: [id])
+  assignedTo  User?        @relation("EnquiryAssignee", fields: [assignedToId], references: [id])
+  notes       EnquiryNote[]
+
+  @@index([status, createdAt])
+  @@index([propertyId])
+  @@index([phone])
+  @@index([deletedAt])
+}
+
+model EnquiryNote {
+  id        String   @id @default(cuid())
+  enquiryId String
+  authorId  String
+  body      String   @db.Text
+  createdAt DateTime @default(now())
+
+  enquiry Enquiry @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  author  User    @relation(fields: [authorId], references: [id])
+
+  @@index([enquiryId, createdAt])
+}
+
+/* ─── Owner submission ─────────────────────────────────────────────────── */
+
+model OwnerSubmission {
+  id      String @id @default(cuid())
+  refCode String @unique
+
+  // Step 1 — owner + property basics
+  ownerName    String
+  ownerPhone   String
+  ownerEmail   String
+  propertyName String
+  propertyType String
+  city         String
+  state        String
+  locality     String?
+
+  // Step 2 — features
+  maxGuests       Int?
+  bedrooms        Int?
+  bathrooms       Int?
+  amenityKeys     String[]
+  facilityKeys    String[]
+  hasBikeParking  Boolean  @default(false)
+  parkingCapacity Int?
+  expectedPrice   Int?
+
+  // Step 4 — review + consent
+  notes     String?  @db.Text
+  consentAt DateTime
+
+  status       SubmissionStatus @default(PENDING)
+  reviewNote   String?          @db.Text
+  reviewedById String?
+  reviewedAt   DateTime?
+  /// Set when approved — an APPROVED submission creates a DRAFT Property.
+  convertedPropertyId String?
+
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reviewedBy        User?             @relation("SubmissionReviewer", fields: [reviewedById], references: [id])
+  convertedProperty Property?         @relation(fields: [convertedPropertyId], references: [id])
+  assets            SubmissionAsset[]
+
+  @@index([status, createdAt])
+}
+
+/// Documents are stored outside the public web root and served only through an
+/// authenticated streaming route with a short-lived signed token. DPR §11
+model SubmissionAsset {
+  id           String              @id @default(cuid())
+  submissionId String
+  mediaId      String?
+  kind         SubmissionAssetKind
+  storageKey   String
+  originalName String
+  mimeType     String
+  sizeBytes    Int
+  sortOrder    Int                 @default(0)
+  createdAt    DateTime            @default(now())
+
+  submission OwnerSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  media      Media?          @relation(fields: [mediaId], references: [id])
+
+  @@index([submissionId, kind])
+}
+
+/* ─── Story / Journal ──────────────────────────────────────────────────── */
+
+model Story {
+  id           String  @id @default(cuid())
+  slug         String  @unique
+  title        String
+  excerpt      String
+  coverMediaId String?
+
+  /// Sanitised HTML from Tiptap, plus plain text for search and excerpts.
+  bodyHtml String @db.Text
+  bodyText String @db.Text
+
+  categoryId      String?
+  destinationIds  String[]
+  authorName      String
+  readMinutes     Int      @default(1)
+
+  status      StoryStatus @default(DRAFT)
+  publishedAt DateTime?
+
+  metaTitle       String?
+  metaDescription String?
+
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  category    StoryCategory? @relation(fields: [categoryId], references: [id])
+  coverMedia  Media?         @relation("StoryCover", fields: [coverMediaId], references: [id])
+
+  @@index([status, publishedAt])
+  @@index([categoryId])
+  @@index([deletedAt])
+}
+
+model StoryCategory {
+  id        String @id @default(cuid())
+  slug      String @unique
+  name      String
+  sortOrder Int    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stories Story[]
+}
+
+/* ─── Site content ─────────────────────────────────────────────────────── */
+
+/// `fields` is a typed JSON blob per section, validated by a Zod schema keyed on
+/// `key`. That schema is what stops a 400-character headline breaking the
+/// layout — every text field has a documented max length enforced in the
+/// dashboard. DPR §5.6
+model SiteSection {
+  id          String @id @default(cuid())
+  key         String @unique
+  label       String
+  fields      Json
+  updatedById String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  updatedBy User? @relation(fields: [updatedById], references: [id])
+}
+
+/// WhatsApp number, contact email, phone, office address, social URLs, footer
+/// text, the global announcement bar, and the default OG image.
+model SiteSetting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/* ─── Media ────────────────────────────────────────────────────────────── */
+
+model Media {
+  id           String @id @default(cuid())
+  storageKey   String @unique
+  originalName String
+  mimeType     String
+  width        Int
+  height       Int
+  sizeBytes    Int
+
+  /// Required unless isDecorative. Enforced at upload — the field cannot be
+  /// skipped, and empty alt needs an explicit decorative checkbox. DPR §4.7
+  alt          String
+  isDecorative Boolean @default(false)
+  caption      String?
+  credit       String?
+  folder       String?
+
+  uploadedById String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  uploadedBy User? @relation(fields: [uploadedById], references: [id])
+
+  propertyImages     PropertyImage[]
+  propertyOgImages   Property[]        @relation("PropertyOgImage")
+  destinationHeroes  Destination[]     @relation("DestinationHero")
+  destinationTiles   Destination[]     @relation("DestinationTile")
+  storyCovers        Story[]           @relation("StoryCover")
+  submissionAssets   SubmissionAsset[]
+
+  @@index([folder])
+}
+
+/* ─── Accounts and audit ───────────────────────────────────────────────── */
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  /// Argon2id. DPR §11
+  passwordHash String
+  role         Role     @default(EDITOR)
+  isActive     Boolean  @default(true)
+  lastLoginAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions            Session[]
+  activity            ActivityLog[]
+  enquiryNotes        EnquiryNote[]
+  assignedEnquiries   Enquiry[]         @relation("EnquiryAssignee")
+  reviewedSubmissions OwnerSubmission[] @relation("SubmissionReviewer")
+  uploadedMedia       Media[]
+  editedSections      SiteSection[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  expiresAt DateTime
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String
+  summary   String
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([entity, entityId])
+  @@index([createdAt])
+}
+
+/// Token bucket for the public form endpoints, backed by Postgres so the
+/// counters survive a restart and a second app container. DPR §3.1
+model RateLimit {
+  id      String   @id @default(cuid())
+  key     String   @unique
+  count   Int      @default(0)
+  resetAt DateTime
+
+  @@index([resetAt])
+}
+
+/* ─── Reserved for the Future Phase ────────────────────────────────────── */
+//
+// Migrated now with correct relations and indexes, and deliberately left with
+// no admin UI. The dashboard must not surface these in Phase 2 — an empty
+// screen the client cannot use is worse than no screen. DPR §5.9
+
+model RoomType {
+  id          String  @id @default(cuid())
+  propertyId  String
+  name        String
+  description String? @db.Text
+  maxGuests   Int
+  beds        Int?
+  sizeSqft    Int?
+  sortOrder   Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  property         Property          @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  ratePlans        RatePlan[]
+  availabilityDays AvailabilityDay[]
+  bookings         Booking[]
+
+  @@index([propertyId, sortOrder])
+}
+
+model RatePlan {
+  id           String  @id @default(cuid())
+  roomTypeId   String
+  name         String
+  basePrice    Int
+  currency     String  @default("INR")
+  minNights    Int     @default(1)
+  refundable   Boolean @default(false)
+  cancellation String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  roomType RoomType  @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+  bookings Booking[]
+
+  @@index([roomTypeId])
+}
+
+model AvailabilityDay {
+  id          String   @id @default(cuid())
+  propertyId  String
+  roomTypeId  String?
+  date        DateTime @db.Date
+  isAvailable Boolean  @default(true)
+  price       Int?
+  minNights   Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  property Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  roomType RoomType? @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+
+  @@unique([propertyId, roomTypeId, date])
+  @@index([propertyId, date])
+}
+
+model Booking {
+  id         String @id @default(cuid())
+  refCode    String @unique
+  propertyId String
+  roomTypeId String?
+  ratePlanId String?
+
+  checkIn   DateTime @db.Date
+  checkOut  DateTime @db.Date
+  guests    Int
+  nights    Int
+  subtotal  Int
+  taxes     Int      @default(0)
+  total     Int
+  currency  String   @default("INR")
+  status    String   @default("PENDING")
+  couponId  String?
+  notes     String?  @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  property Property       @relation(fields: [propertyId], references: [id])
+  roomType RoomType?      @relation(fields: [roomTypeId], references: [id])
+  ratePlan RatePlan?      @relation(fields: [ratePlanId], references: [id])
+  coupon   Coupon?        @relation(fields: [couponId], references: [id])
+  guestList BookingGuest[]
+  payments Payment[]
+
+  @@index([propertyId, checkIn])
+  @@index([status, createdAt])
+}
+
+model BookingGuest {
+  id        String  @id @default(cuid())
+  bookingId String
+  name      String
+  phone     String?
+  email     String?
+  isPrimary Boolean @default(false)
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+}
+
+model Payment {
+  id        String   @id @default(cuid())
+  bookingId String
+  provider  String
+  providerRef String?
+  amount    Int
+  currency  String   @default("INR")
+  status    String   @default("PENDING")
+  method    String?
+  meta      Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+  @@index([providerRef])
+}
+
+model Coupon {
+  id           String    @id @default(cuid())
+  code         String    @unique
+  description  String?
+  percentOff   Int?
+  amountOff    Int?
+  maxRedemptions Int?
+  redemptions  Int       @default(0)
+  validFrom    DateTime?
+  validUntil   DateTime?
+  isActive     Boolean   @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bookings Booking[]
+}
+
+model Review {
+  id          String  @id @default(cuid())
+  propertyId  String
+  authorName  String
+  rating      Int
+  title       String?
+  body        String  @db.Text
+  isPublished Boolean @default(false)
+  ridingWith  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId, isPublished])
+}
+
+model Route {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  name        String
+  fromPlace   String
+  toPlace     String
+  distanceKm  Float?
+  durationMin Int?
+  surface     String?
+  difficulty  String?
+  bestSeason  String?
+  description String? @db.Text
+  gpxKey      String?
+  isPublished Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  trips Trip[]
+}
+
+model Trip {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  routeId     String?
+  startsAt    DateTime?
+  endsAt      DateTime?
+  capacity    Int?
+  pricePerHead Int?
+  description String?   @db.Text
+  isPublished Boolean   @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  route Route? @relation(fields: [routeId], references: [id])
+}
+
+model RiderProfile {
+  id          String  @id @default(cuid())
+  email       String  @unique
+  name        String
+  phone       String?
+  homeCity    String?
+  motorcycle  String?
+  passportRef String? @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
