@@ -1,8 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { Frame } from "@/components/primitives/Frame";
 import { motion, useMotionValueEvent, useReducedMotion, useScroll } from "motion/react";
-import { Plate } from "@/components/primitives/Plate";
 import { Rule } from "@/components/primitives/Rule";
 import { siteContent } from "@/lib/content";
 import { cn } from "@/lib/utils";
@@ -43,7 +43,7 @@ export function MadeForTheRoad() {
     >
       <div className="sticky top-0 flex min-h-[38rem] items-center overflow-hidden py-16 h-svh">
         <div className="absolute inset-0 -z-10">
-          <Plate seed="made-for-the-road" scene="highway" mood="night" muted />
+          <Frame seed="made-for-the-road" scene="highway" mood="night" muted fill sizes="100vw" />
           <div className="absolute inset-0 scrim-l" />
           <div className="absolute inset-0 bg-ink-900/45" />
         </div>
@@ -117,7 +117,7 @@ function StackedFallback() {
   return (
     <section aria-labelledby="road-title" className="section relative overflow-hidden">
       <div className="absolute inset-0 -z-10">
-        <Plate seed="made-for-the-road" scene="highway" mood="night" muted />
+        <Frame seed="made-for-the-road" scene="highway" mood="night" muted fill sizes="100vw" />
         <div className="absolute inset-0 bg-ink-900/78" />
       </div>
       <div className="shell max-w-2xl">

@@ -6,7 +6,7 @@ the empty state ships and the gap is logged here rather than invented.
 
 Nothing in this file blocks the build. Several items block **launch**.
 
-Last updated: 3 September 2026 · Kedar Gurav
+Last updated: 4 September 2026 · Kedar Gurav
 
 ---
 
@@ -15,7 +15,22 @@ Last updated: 3 September 2026 · Kedar Gurav
 ### 1. Property photography — all 9 listings
 
 **Status:** no client photography received.
-**Currently rendering:** a generated brand plate (`lib/plate.ts`) — a deterministic
+
+> **DEMO PHOTOGRAPHY IS LIVE AND MUST NOT SHIP.** 28 stock photographs under the
+> Unsplash License (free for commercial use, no attribution required) now stand in
+> for every image slot, so the site can be shown to the client as it is meant to
+> look. They are in `public/img/` and mapped in `lib/demo-images.ts`.
+>
+> **None of them is a photograph of a client property.** The Alibaug villa is not
+> their villa; the Lonavala ridge is not their ridge. Nothing here may reach
+> production.
+>
+> **To remove:** delete `lib/demo-images.ts` and `public/img/`. `Frame` falls back
+> to the generated plate automatically — no other file changes. Do this the day
+> the client's own shoot lands, or the day before launch, whichever comes first.
+
+**Currently rendering:** demo photography (above), falling back to a generated
+brand plate (`lib/plate.ts`) for any slot with no mapping — a deterministic
 duotone navy/gold landscape drawn as inline SVG. It is honest (nothing pretends
 to be a photograph of a real property), consistent across mixed sources, costs no
 network request, and is replaced automatically the moment a real `Media` row

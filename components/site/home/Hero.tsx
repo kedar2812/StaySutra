@@ -1,11 +1,11 @@
 "use client";
 
 import { useRef } from "react";
+import { Frame } from "@/components/primitives/Frame";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { MaskLines } from "@/components/motion/MaskLines";
 import { ButtonLink } from "@/components/primitives/Button";
 import { Icon, iconFor } from "@/components/primitives/Icon";
-import { Plate } from "@/components/primitives/Plate";
 import { siteContent } from "@/lib/content";
 
 const hero = siteContent.home.hero;
@@ -43,10 +43,18 @@ export function Hero() {
           animate={{ scale: 1 }}
           transition={reduced ? { duration: 0 } : { duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
         >
-          <Plate seed="staysutra-hero" scene="ghat" mood="dusk" />
+          <Frame seed="staysutra-hero" scene="ghat" mood="dusk" fill priority sizes="100vw" />
         </motion.div>
+        {/*
+          Four layers, in order: a flat tint that seats the photograph in the
+          palette, then bottom, left and top scrims. Real photography is much
+          lighter than the plate these were first tuned against — without the
+          tint and the top scrim the nav sits on bare highlights.
+        */}
+        <div className="absolute inset-0 bg-ink-900/30" />
         <div className="absolute inset-0 scrim-b" />
-        <div className="absolute inset-0 scrim-l opacity-80 lg:opacity-100" />
+        <div className="absolute inset-0 scrim-l opacity-90 lg:opacity-100" />
+        <div className="absolute inset-0 scrim-t" />
       </motion.div>
 
       <div className="shell relative w-full">

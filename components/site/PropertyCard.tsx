@@ -42,7 +42,7 @@ export function PropertyCard({
         className="rounded-card"
         imgClassName="transition-transform duration-[400ms] ease-out-quint group-hover:scale-[1.04]"
       >
-        <div className="pointer-events-none absolute inset-0 scrim-b opacity-70" />
+        <div className="pointer-events-none absolute inset-0 scrim-b opacity-45" />
 
         {showBadge && (
           <span className="absolute left-4 top-4 rounded-chip bg-gold-500 px-2.5 py-1 text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-gold-ink">
@@ -52,19 +52,6 @@ export function PropertyCard({
 
         <SaveControl slug={p.slug} name={p.name} className="absolute right-3 top-3" />
 
-        {p.startingPrice !== null && (
-          <p className="absolute bottom-4 left-4 flex items-baseline gap-1.5">
-            <span
-              className="t-num text-[1.0625rem] text-text-hi"
-              style={{ fontWeight: 800 }}
-            >
-              {inr(p.startingPrice)}
-            </span>
-            <span className="text-[0.6875rem] uppercase tracking-[0.12em] text-text-low">
-              / night
-            </span>
-          </p>
-        )}
       </Frame>
 
       <div className="pt-5">
@@ -95,11 +82,30 @@ export function PropertyCard({
           <span className="block h-px w-0 bg-gold-500 transition-[width] duration-[420ms] ease-out-quint group-hover:w-full" />
         </span>
 
-        <p className="mt-3 flex items-center gap-1.5 text-sm text-text-low">
-          <Icon name="pin" size={14} className="shrink-0 opacity-70" />
-          {p.locality ? `${p.locality}, ` : ""}
-          {p.destination.name}
-        </p>
+        <div className="mt-3 flex items-baseline justify-between gap-4">
+          <p className="flex min-w-0 items-center gap-1.5 text-sm text-text-low">
+            <Icon name="pin" size={14} className="shrink-0 opacity-70" />
+            <span className="truncate">
+              {p.locality ? `${p.locality}, ` : ""}
+              {p.destination.name}
+            </span>
+          </p>
+
+          {/*
+            Set against the locality rather than over the photograph. Tabular
+            figures so a column of cards aligns on the rupee. DPR §4.6
+          */}
+          {p.startingPrice !== null && (
+            <p className="flex shrink-0 items-baseline gap-1.5">
+              <span className="text-[0.6875rem] uppercase tracking-[0.12em] text-text-low">
+                from
+              </span>
+              <span className="t-num text-[0.9375rem] text-text-hi" style={{ fontWeight: 700 }}>
+                {inr(p.startingPrice)}
+              </span>
+            </p>
+          )}
+        </div>
 
         {scale === "lead" && (
           <p className="mt-3 max-w-[46ch] text-[0.9375rem] leading-relaxed text-text-mid">

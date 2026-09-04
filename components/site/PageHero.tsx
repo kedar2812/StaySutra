@@ -1,6 +1,6 @@
 import Link from "next/link";
+import { Frame } from "@/components/primitives/Frame";
 import type { ReactNode } from "react";
-import { Plate } from "@/components/primitives/Plate";
 import { Icon } from "@/components/primitives/Icon";
 import { Rule } from "@/components/primitives/Rule";
 import { cn } from "@/lib/utils";
@@ -80,7 +80,7 @@ export function PageHero({
       )}
     >
       <div className="absolute inset-0 -z-10">
-        <Plate seed={seed} scene={scene} mood={mood} muted />
+        <Frame seed={seed} scene={scene} mood={mood} muted fill sizes="100vw" />
         <div className="absolute inset-0 scrim-b" />
         <div className="absolute inset-0 bg-ink-900/45" />
       </div>

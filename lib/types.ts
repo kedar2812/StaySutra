@@ -105,3 +105,11 @@ export interface PropertyView extends Omit<PropertySeed, "categorySlug" | "desti
   ratingValue: number | null;
   ratingCount: number | null;
 }
+
+/** A resolved image: a real Media row, or a demo photograph standing in for one. */
+export interface MediaRef {
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+}

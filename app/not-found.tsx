@@ -1,7 +1,7 @@
 import Link from "next/link";
+import { Frame } from "@/components/primitives/Frame";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
-import { Plate } from "@/components/primitives/Plate";
 import { ButtonLink } from "@/components/primitives/Button";
 import { Icon } from "@/components/primitives/Icon";
 import { Rule } from "@/components/primitives/Rule";
@@ -20,7 +20,7 @@ export default function NotFound() {
       <main id="main">
         <section className="grain relative isolate flex min-h-[80svh] items-center overflow-hidden pt-[calc(var(--header-h)+3rem)] pb-20">
           <div className="absolute inset-0 -z-10">
-            <Plate seed="not-found" scene="highway" mood="night" muted />
+            <Frame seed="not-found" scene="highway" mood="night" muted fill sizes="100vw" />
             <div className="absolute inset-0 scrim-l" />
             <div className="absolute inset-0 bg-ink-900/55" />
           </div>

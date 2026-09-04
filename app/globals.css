@@ -369,6 +369,44 @@
     background-size: 128px 128px;
   }
 
+  /* ==========================================================================
+     Duotone — navy shadow, warm highlight, so mixed-source photography reads
+     as one brand rather than as stock. DPR §4.6
+
+     A real duotone, not a colour wash: the image is flattened to greyscale,
+     `lighten` lifts the blacks to navy, and `darken` pulls the whites down to
+     gold. `isolation` keeps both blends inside the frame — without it they
+     composite against whatever sits behind the section.
+     ========================================================================== */
+
+  .duotone {
+    isolation: isolate;
+  }
+  .duotone img {
+    filter: grayscale(1) contrast(1.04) brightness(1.06);
+  }
+  .duotone::before,
+  .duotone::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .duotone::before {
+    background: #101f33;
+    mix-blend-mode: lighten;
+  }
+  /*
+   * The white point is a warm neutral, not the gold accent. `darken` clamps
+   * every channel to this colour, so a saturated gold drags midtone greens to
+   * olive and the picture reads as a filter. Sand keeps the warmth and lets
+   * gold stay the accent rather than becoming the photograph.
+   */
+  .duotone::after {
+    background: #dccdb2;
+    mix-blend-mode: darken;
+  }
+
   /* Gradient scrim over photography — a real scrim, never a text shadow. */
   .scrim-b {
     background: linear-gradient(
@@ -380,12 +418,30 @@
     );
   }
 
+  /*
+   * Top scrim. The header is transparent until you scroll, so over real
+   * photography — which is far lighter than the generated plate the scrims
+   * were originally tuned against — the nav loses its contrast entirely.
+   * This protects the header band without darkening the whole frame.
+   */
+  .scrim-t {
+    background: linear-gradient(
+      to bottom,
+      rgb(7 14 26 / 0.82) 0%,
+      rgb(7 14 26 / 0.45) 14%,
+      rgb(7 14 26 / 0.12) 30%,
+      rgb(7 14 26 / 0) 46%
+    );
+  }
+
   .scrim-l {
     background: linear-gradient(
       to right,
-      rgb(7 14 26 / 0.9) 0%,
-      rgb(7 14 26 / 0.55) 38%,
-      rgb(7 14 26 / 0) 72%
+      rgb(7 14 26 / 0.92) 0%,
+      rgb(7 14 26 / 0.72) 30%,
+      rgb(7 14 26 / 0.34) 58%,
+      rgb(7 14 26 / 0.08) 82%,
+      rgb(7 14 26 / 0) 100%
     );
   }
 

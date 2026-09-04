@@ -36,7 +36,7 @@ export function Categories() {
         className="rounded-card"
         imgClassName="transition-transform duration-[500ms] ease-out-quint group-hover:scale-[1.05]"
       >
-        <div className="absolute inset-0 scrim-b" />
+        <div className="absolute inset-0 scrim-b opacity-75" />
 
         <div className="absolute inset-x-0 bottom-0 p-4 lg:p-5">
           <Icon

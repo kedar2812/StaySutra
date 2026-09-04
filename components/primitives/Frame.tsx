@@ -1,14 +1,11 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Plate } from "./Plate";
+import { demoImage } from "@/lib/demo-images";
 import type { PlateMood, PlateScene } from "@/lib/plate";
+import type { MediaRef } from "@/lib/types";
 
-export interface MediaRef {
-  src: string;
-  alt: string;
-  width?: number;
-  height?: number;
-}
+export type { MediaRef };
 
 interface FrameProps {
   /** Real media wins whenever it exists. */
@@ -64,6 +61,13 @@ export function Frame({
   // A frame taller than it is wide keeps its ground rather than its sky.
   const anchor = fill || ratio === "3/4" ? "bottom" : "center";
 
+  /*
+   * Real media always wins. Failing that, the demo photography stands in — see
+   * lib/demo-images.ts, which is deleted at launch — and only then does the
+   * generated plate render.
+   */
+  const shown = media ?? demoImage(seed);
+
   return (
     <div
       className={cn(
@@ -72,15 +76,22 @@ export function Frame({
         className,
       )}
     >
-      {media ? (
-        <Image
-          src={media.src}
-          alt={media.alt}
-          fill
-          sizes={sizes}
-          priority={priority}
-          className={cn("object-cover", anchor === "bottom" && "object-bottom", imgClassName)}
-        />
+      {shown ? (
+        /*
+         * `muted` duotones real photography too, not just the plate. Without
+         * this, mixed-source images arrive at full saturation and read as
+         * stock rather than as one brand. DPR §4.6
+         */
+        <div className={cn("absolute inset-0", muted && "duotone")}>
+          <Image
+            src={shown.src}
+            alt={shown.alt}
+            fill
+            sizes={sizes}
+            priority={priority}
+            className={cn("object-cover", anchor === "bottom" && "object-bottom", imgClassName)}
+          />
+        </div>
       ) : (
         <div className={cn("absolute inset-0", imgClassName)}>
           <Plate seed={seed} scene={scene} mood={mood} muted={muted} anchor={anchor} />
