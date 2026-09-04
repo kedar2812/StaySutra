@@ -311,6 +311,93 @@
     box-shadow: var(--shadow-float);
   }
 
+  /* ==========================================================================
+     Liquid glass — the navigation bar only.
+
+     Plain `.glass` is a flat translucent panel. This reads as a lens with
+     thickness: light lands on the top edge, the rim brightens where it would
+     catch, the underside sits in its own shadow, and a specular sheen tracks
+     the pointer across the surface.
+
+     Three layers do the work — a lifted backdrop, a gradient rim drawn as a
+     masked ring, and the moving highlight. Content stays above all of it.
+     Apple HIG: materials convey hierarchy; a bigger surface reads thicker.
+     ========================================================================== */
+
+  .glass-liquid {
+    position: relative;
+    /* A vertical sheet of light over the tint, so the top is where it catches. */
+    background:
+      linear-gradient(
+        to bottom,
+        rgb(255 255 255 / 0.10) 0%,
+        rgb(255 255 255 / 0.035) 32%,
+        rgb(255 255 255 / 0) 60%
+      ),
+      var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat)) brightness(1.05);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat)) brightness(1.05);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.20),
+      inset 0 -1px 0 rgb(0 0 0 / 0.32),
+      inset 0 0 28px -10px rgb(255 255 255 / 0.16),
+      var(--shadow-float);
+  }
+
+  /*
+   * The rim. A gradient ring rather than a flat border — brightest at the top
+   * left where the light is, dimmest along the underside — masked so only the
+   * 1px edge paints. `border-radius: inherit` keeps it on the corner as the
+   * bar's radius springs between its two sizes.
+   */
+  .glass-liquid::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    padding: 1px;
+    pointer-events: none;
+    background: linear-gradient(
+      135deg,
+      rgb(255 255 255 / 0.50) 0%,
+      rgb(255 255 255 / 0.15) 24%,
+      rgb(255 255 255 / 0.05) 50%,
+      rgb(255 255 255 / 0.13) 76%,
+      rgb(255 255 255 / 0.28) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+  }
+
+  /*
+   * Specular highlight. Follows the pointer through --gx/--gy, which are
+   * written straight to the element on an animation frame — no React state,
+   * so this never costs a render. Fades in on enter rather than snapping.
+   */
+  .glass-liquid::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: var(--sheen, 0);
+    background: radial-gradient(
+      20rem 8rem at var(--gx, 50%) var(--gy, 0%),
+      rgb(255 255 255 / 0.14),
+      rgb(255 255 255 / 0.045) 45%,
+      transparent 72%
+    );
+    transition: opacity 340ms var(--ease-out-quint);
+  }
+
   /* Bigger surface reads as thicker material. */
   .glass-sheet {
     --glass-blur: 32px;
@@ -506,9 +593,17 @@
     --glass-bg: rgba(10, 22, 40, 0.97);
     --glass-blur: 0px;
   }
-  .glass {
+  .glass,
+  .glass-liquid {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+  }
+  /* With transparency reduced there is no lens to catch light. */
+  .glass-liquid {
+    background: var(--glass-bg);
+  }
+  .glass-liquid::after {
+    display: none;
   }
 }
 

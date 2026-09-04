@@ -87,6 +87,54 @@ export function Header() {
     return () => observer.disconnect();
   }, []);
 
+  /*
+   * The specular highlight follows the pointer across the bar.
+   *
+   * Position is written straight to the element as a custom property on an
+   * animation frame — it is deliberately not React state, so sweeping the
+   * cursor over the header costs no render and touches only compositor work.
+   * Under reduced motion it is skipped outright: a highlight chasing the
+   * pointer is incidental movement, which is exactly what that setting asks
+   * us to drop.
+   */
+  useEffect(() => {
+    const el = bar.current;
+    if (!el || reduced) return;
+
+    let frame = 0;
+    let px = 0;
+    let py = 0;
+
+    const paint = () => {
+      frame = 0;
+      const r = el.getBoundingClientRect();
+      el.style.setProperty("--gx", `${((px - r.left) / r.width) * 100}%`);
+      el.style.setProperty("--gy", `${((py - r.top) / r.height) * 100}%`);
+    };
+
+    const move = (e: PointerEvent) => {
+      px = e.clientX;
+      py = e.clientY;
+      if (!frame) frame = requestAnimationFrame(paint);
+    };
+    const enter = () => el.style.setProperty("--sheen", "1");
+    const leave = () => {
+      el.style.setProperty("--sheen", "0");
+      if (frame) cancelAnimationFrame(frame);
+      frame = 0;
+    };
+
+    el.addEventListener("pointermove", move, { passive: true });
+    el.addEventListener("pointerenter", enter);
+    el.addEventListener("pointerleave", leave);
+    return () => {
+      el.removeEventListener("pointermove", move);
+      el.removeEventListener("pointerenter", enter);
+      el.removeEventListener("pointerleave", leave);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [reduced]);
+
   useEffect(() => setOpen(false), [pathname]);
 
   return (
@@ -109,22 +157,22 @@ export function Header() {
           transition={reduced ? { duration: 0.2 } : spring.ui}
           className={cn(
             "relative mx-auto flex items-center gap-5 px-4 sm:px-5",
-            condensed ? "glass" : "border-t border-transparent",
+            condensed ? "glass-liquid" : "border-t border-transparent",
           )}
         >
           <Link
             href="/"
             aria-label={`${brand.name} — home`}
-            className="press-sm flex h-[3.75rem] shrink-0 items-center sm:h-[4.5rem]"
+            className="press-sm relative z-10 flex h-[3.75rem] shrink-0 items-center sm:h-[4.5rem]"
           >
             <Wordmark size="sm" showLockup={!condensed} />
           </Link>
 
-          <div className="hidden min-w-0 flex-1 justify-center lg:flex">
+          <div className="relative z-10 hidden min-w-0 flex-1 justify-center lg:flex">
             <Route pathname={pathname} reduced={!!reduced} />
           </div>
 
-          <div className="ml-auto flex shrink-0 items-center gap-2 lg:ml-0">
+          <div className="relative z-10 ml-auto flex shrink-0 items-center gap-2 lg:ml-0">
             <ButtonLink
               href="/list-your-property"
               variant="outline"
@@ -156,7 +204,7 @@ export function Header() {
           {box.w > 0 && (
             <svg
               aria-hidden
-              className="pointer-events-none absolute inset-0 overflow-visible"
+              className="pointer-events-none absolute inset-0 z-10 overflow-visible"
               width={box.w}
               height={box.h}
               viewBox={`0 0 ${box.w} ${box.h}`}
