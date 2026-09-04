@@ -5,6 +5,7 @@ import { extname, join } from "node:path";
 import { ownerSubmissionSchema, refCode } from "@/lib/validation";
 import { appendEnquiry } from "@/lib/server/enquiry-log";
 import { clientIp, rateLimit } from "@/lib/server/rate-limit";
+import { env } from "@/lib/utils";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -87,7 +88,7 @@ export async function POST(request: Request) {
   }
 
   const code = refCode("SP");
-  const uploadDir = process.env.UPLOAD_DIR ?? join(process.cwd(), ".data", "uploads");
+  const uploadDir = env(process.env.UPLOAD_DIR, join(process.cwd(), ".data", "uploads"));
 
   const stored: { kind: string; key: string; originalName: string; bytes: number }[] = [];
 

@@ -34,3 +34,21 @@ export function clamp(text: string, max: number): string {
 export function plural(n: number, one: string, many = `${one}s`): string {
   return `${n} ${n === 1 ? one : many}`;
 }
+
+/**
+ * Treats a blank environment variable as an absent one.
+ *
+ * `??` only catches undefined, so a variable that exists but holds "" — exactly
+ * what you get from seeding a deployment dashboard with the keys in
+ * .env.example — slips past the fallback and reaches code that expected a real
+ * value. An empty NEXT_PUBLIC_SITE_URL reaching `new URL()` is what failed the
+ * first two Vercel builds.
+ *
+ * Pass the value, never the name. Next.js inlines `process.env.NEXT_PUBLIC_*`
+ * by literal text substitution, so a dynamic lookup would never be replaced in
+ * the client bundle.
+ */
+export function env(value: string | undefined, fallback: string): string {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : fallback;
+}

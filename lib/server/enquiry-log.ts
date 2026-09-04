@@ -1,5 +1,6 @@
 import { appendFile, mkdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
+import { env } from "@/lib/utils";
 
 /**
  * A write-ahead log for enquiries.
@@ -12,7 +13,10 @@ import { dirname, join } from "node:path";
  * DPR §6.1 step 6, §12
  */
 
-const LOG_PATH = process.env.ENQUIRY_LOG_PATH ?? join(process.cwd(), ".data", "enquiries.jsonl");
+const LOG_PATH = env(
+  process.env.ENQUIRY_LOG_PATH,
+  join(process.cwd(), ".data", "enquiries.jsonl"),
+);
 
 export async function appendEnquiry(record: Record<string, unknown>): Promise<void> {
   await mkdir(dirname(LOG_PATH), { recursive: true });

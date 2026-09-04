@@ -1,10 +1,15 @@
 import { siteContent } from "./content";
+import { env } from "./utils";
 
-export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "https://staysutra.in";
+export const SITE_URL = env(
+  process.env.NEXT_PUBLIC_SITE_URL,
+  "https://staysutra.in",
+).replace(/\/$/, "");
 
-export const WHATSAPP_NUMBER =
-  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? siteContent.settings.whatsappNumber;
+export const WHATSAPP_NUMBER = env(
+  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER,
+  siteContent.settings.whatsappNumber,
+);
 
 export const brand = siteContent.brand;
 export const settings = siteContent.settings;
