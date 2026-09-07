@@ -17,6 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/stays", priority: 0.9, freq: "daily" },
     { path: "/rider-friendly-stays", priority: 0.9, freq: "weekly" },
     { path: "/destinations", priority: 0.8, freq: "weekly" },
+    { path: "/rider-passport", priority: 0.7, freq: "monthly" },
     { path: "/stories", priority: 0.7, freq: "weekly" },
     { path: "/list-your-property", priority: 0.8, freq: "monthly" },
     { path: "/for-riders", priority: 0.6, freq: "monthly" },

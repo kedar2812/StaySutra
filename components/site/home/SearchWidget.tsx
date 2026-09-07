@@ -5,7 +5,7 @@ import { useId, useState } from "react";
 import { Button } from "@/components/primitives/Button";
 import { Icon } from "@/components/primitives/Icon";
 import { Sheet } from "@/components/primitives/Sheet";
-import { destinations, properties } from "@/lib/content";
+import { categories, countInCategory, destinations, properties } from "@/lib/content";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 
@@ -14,8 +14,10 @@ import { cn } from "@/lib/utils";
  * summary bar that opens the fields as a drag-dismissible sheet rather than a
  * cramped inline form.
  *
- * Dates and guests filter listings. They do not check live availability, because
- * there is no booking engine in this contract — the microcopy says so. DPR §7.2 ②
+ * Destination, dates, guests and stay type all filter listings. None of them
+ * check live availability, because there is no booking engine in this contract
+ * — the microcopy under the rail says so in as many words, and the CTA is
+ * "Search stays", never "Book". DPR §7.2 ②
  */
 export function SearchWidget() {
   const router = useRouter();
@@ -23,6 +25,7 @@ export function SearchWidget() {
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(2);
+  const [stayType, setStayType] = useState("");
   const [sheet, setSheet] = useState(false);
 
   const submit = () => {
@@ -31,7 +34,8 @@ export function SearchWidget() {
     if (checkIn) params.set("checkIn", checkIn);
     if (checkOut) params.set("checkOut", checkOut);
     if (guests) params.set("guests", String(guests));
-    track("search_submit", { destination: where || "any", guests });
+    if (stayType) params.set("category", stayType);
+    track("search_submit", { destination: where || "any", guests, category: stayType || "any" });
     setSheet(false);
     router.push(`/stays${params.size ? `?${params}` : ""}`);
   };
@@ -42,14 +46,17 @@ export function SearchWidget() {
       <DateField label="Check-in" value={checkIn} onChange={setCheckIn} />
       <DateField label="Check-out" value={checkOut} min={checkIn} onChange={setCheckOut} />
       <GuestField value={guests} onChange={setGuests} />
+      <StayTypeField value={stayType} onChange={setStayType} />
     </>
   );
+
+  const stayTypeName = categories.find((c) => c.slug === stayType)?.plural;
 
   return (
     <div className="shell relative z-30 -mt-8 lg:-mt-14">
       {/* Desktop: one glass rail, fields divided by hairlines. */}
       <div className="glass hidden rounded-surface p-2 lg:block">
-        <div className="grid grid-cols-[1.5fr_1fr_1fr_0.9fr_auto] items-stretch gap-px">
+        <div className="grid grid-cols-[1.35fr_0.95fr_0.95fr_0.85fr_1.05fr_auto] items-stretch gap-px">
           {fields}
           <Button onClick={submit} size="lg" icon="search" iconAfter={false} className="ml-2">
             Search stays
@@ -67,6 +74,7 @@ export function SearchWidget() {
         <span className="min-w-0 flex-1">
           <span className="on-glass block truncate text-[0.9375rem]">
             {where ? destinations.find((d) => d.slug === where)?.name : "Where to?"}
+            {stayTypeName ? ` · ${stayTypeName}` : ""}
           </span>
           <span className="t-caption mt-0.5 block truncate">
             {checkIn ? `${checkIn} — ${checkOut || "…"}` : "Any dates"} ·{" "}
@@ -78,7 +86,8 @@ export function SearchWidget() {
 
       <p className="t-caption mt-3 flex items-center gap-1.5 px-1">
         <Icon name="whatsapp" size={13} className="shrink-0" />
-        We confirm availability on WhatsApp — dates here narrow the listings.
+        Dates narrow the listings. We confirm availability with the host on WhatsApp —
+        there is no instant booking here, on purpose.
       </p>
 
       <Sheet
@@ -194,6 +203,49 @@ function GuestField({ value, onChange }: { value: number; onChange: (v: number) 
           onClick={() => onChange(Math.min(30, value + 1))}
         />
       </div>
+    </div>
+  );
+}
+
+/**
+ * Stay type. Category counts are shown so nobody picks a filter that returns
+ * an empty grid, and a category with nothing in it yet says so rather than
+ * silently offering a dead end.
+ */
+function StayTypeField({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const id = useId();
+  return (
+    <div className={cn(fieldShell, "lg:border-l lg:border-[color:var(--hairline)]")}>
+      <label htmlFor={id} className={labelClass}>
+        Stay type
+      </label>
+      <select
+        id={id}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="on-glass w-full appearance-none bg-transparent pr-6 text-[0.9375rem] outline-none"
+      >
+        <option value="">Any type</option>
+        {categories.map((c) => {
+          const n = countInCategory(c.slug);
+          return (
+            <option key={c.slug} value={c.slug} className="bg-ink-800">
+              {c.plural} {n > 0 ? `(${n})` : "— onboarding"}
+            </option>
+          );
+        })}
+      </select>
+      <Icon
+        name="chevronDown"
+        size={16}
+        className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-text-low"
+      />
     </div>
   );
 }

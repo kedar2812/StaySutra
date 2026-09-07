@@ -47,6 +47,7 @@ export default function ForRidersPage() {
         <ol className="grid gap-y-4">
           {items.map((item, i) => {
             const live = item.status === "live";
+            const href = "href" in item ? (item.href as string) : undefined;
             return (
               <Reveal
                 as="li"
@@ -81,15 +82,18 @@ export default function ForRidersPage() {
                       </span>
                     )}
                   </div>
-                  <p className="mt-4 max-w-[44ch] text-[0.9375rem] leading-relaxed text-text-mid">
+                  <p className="mt-4 max-w-[40ch] font-display text-[1.0625rem] uppercase leading-tight tracking-[-0.01em] text-text-hi">
+                    {item.tagline}
+                  </p>
+                  <p className="mt-3 max-w-[46ch] text-[0.9375rem] leading-relaxed text-text-mid">
                     {item.body}
                   </p>
                 </div>
 
                 <div className="col-start-2 mt-6 pb-10 lg:col-start-3 lg:mt-0">
-                  {live ? (
-                    <ButtonLink href="/stories" variant="outline" icon="arrowRight">
-                      Read the stories
+                  {live && href ? (
+                    <ButtonLink href={href} variant="outline" icon="arrowRight">
+                      {href === "/rider-passport" ? "Join the passport" : "Read the stories"}
                     </ButtonLink>
                   ) : (
                     <InterestCapture feature={item.title} />

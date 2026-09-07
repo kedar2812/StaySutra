@@ -43,7 +43,20 @@ export function Hero() {
           animate={{ scale: 1 }}
           transition={reduced ? { duration: 0 } : { duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
         >
-          <Frame seed="staysutra-hero" scene="ghat" mood="dusk" fill priority sizes="100vw" />
+          {/*
+            Centre-anchored on purpose. A landscape photograph cropped into a
+            phone-height hero and pinned to its bottom edge shows a hillside;
+            the horizon is the shot.
+          */}
+          <Frame
+            seed="staysutra-hero"
+            scene="ghat"
+            mood="dusk"
+            fill
+            priority
+            anchor="center"
+            sizes="100vw"
+          />
         </motion.div>
         {/*
           Four layers, in order: a flat tint that seats the photograph in the
@@ -60,7 +73,7 @@ export function Hero() {
       <div className="shell relative w-full">
         <motion.p
           data-motion=""
-          className="t-overline t-overline-gold"
+          className="t-overline"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.05 }}
@@ -88,7 +101,7 @@ export function Hero() {
 
         <motion.p
           data-motion=""
-          className="t-lede mt-7 max-w-[46ch]"
+          className="t-lede mt-7 max-w-[52ch]"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
@@ -98,7 +111,7 @@ export function Hero() {
 
         <motion.div
           data-motion=""
-          className="mt-9 flex flex-wrap items-center gap-3"
+          className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center [&>a]:w-full sm:[&>a]:w-auto"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.6 }}

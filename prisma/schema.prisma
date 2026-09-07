@@ -118,6 +118,16 @@ model Property {
   isRiderFriendly Boolean @default(false)
   riderNote       String?
 
+  // Curation. The line an editor writes about why this property is on the
+  // network at all — rendered on the card and on the property page, and the
+  // only field here a listing marketplace has no equivalent for.
+  curatorNote String? @db.Text
+
+  // Stay policy. houseRules is per-property; a null cancellationPolicy falls
+  // back to the site-wide policy rather than rendering an empty heading.
+  houseRules         String[]
+  cancellationPolicy String? @db.Text
+
   // Ratings — render only when present. NEVER seed a fake value. DPR §4.6
   ratingValue Decimal? @db.Decimal(2, 1)
   ratingCount Int?

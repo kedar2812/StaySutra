@@ -24,10 +24,11 @@ export function FinalCta() {
 
           <p className="t-lede mt-8 max-w-[36ch]">{copy.lede}</p>
 
-          <div className="mt-12 flex flex-wrap items-center gap-3">
+          <div className="mt-12 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center [&>a]:w-full sm:[&>a]:w-auto">
             <ButtonLink href={copy.primaryCta.href} size="lg" icon="arrowRight">
               {copy.primaryCta.label}
             </ButtonLink>
+            {/* Planning a ride is a conversation, so it opens one. */}
             <ButtonLink
               href={whatsappLink(waMessage.general())}
               target="_blank"
@@ -37,7 +38,7 @@ export function FinalCta() {
               icon="whatsapp"
               iconAfter={false}
             >
-              Plan a ride with us
+              {copy.secondaryCta.label}
             </ButtonLink>
           </div>
         </Reveal>

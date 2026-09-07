@@ -8,9 +8,14 @@ import { siteContent } from "@/lib/content";
 const copy = siteContent.home.riders;
 
 /**
- * ⑦ An editorial preview of the ecosystem, informational only. Anything that
- * does not exist yet carries a muted COMING SOON chip — no dead links, no
- * promised features. DPR §7.2 ⑦
+ * ⑧ An editorial preview of the ecosystem.
+ *
+ * Each piece leads with the line the client wants it known by — "Routes worth
+ * planning a weekend around", "Ride with us. Stay with us.", "Find your next
+ * ride." — so an unbuilt feature still reads as a stated intention rather than
+ * as an empty slot. Anything that does not exist yet carries a muted COMING
+ * SOON chip and no link at all: a dead link is what makes a section feel
+ * unfinished, not the honest label. DPR §7.2 ⑦
  */
 export function ForTheRiders() {
   return (
@@ -32,6 +37,7 @@ export function ForTheRiders() {
           <ul>
             {copy.items.map((item) => {
               const live = item.status === "live";
+              const href = "href" in item ? (item.href as string) : undefined;
               const row = (
                 <>
                   <Icon
@@ -53,7 +59,10 @@ export function ForTheRiders() {
                         </span>
                       )}
                     </div>
-                    <p className="mt-1.5 text-[0.9375rem] leading-relaxed text-text-low">
+                    <p className="mt-2 text-[0.9375rem] leading-snug text-text-mid">
+                      {item.tagline}
+                    </p>
+                    <p className="mt-1.5 text-[0.875rem] leading-relaxed text-text-low">
                       {item.body}
                     </p>
                   </div>
@@ -72,8 +81,8 @@ export function ForTheRiders() {
 
               return (
                 <li key={item.title}>
-                  {live ? (
-                    <Link href="/stories" className={`press-sm ${cls}`}>
+                  {live && href ? (
+                    <Link href={href} className={`press-sm ${cls}`}>
                       {row}
                     </Link>
                   ) : (

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Gallery } from "@/components/site/Gallery";
 import { StickyEnquire } from "@/components/site/StickyEnquire";
+import { CheckAvailability } from "@/components/site/CheckAvailability";
 import { AmenityGroups } from "@/components/site/AmenityGroups";
 import { EnquiryForm } from "@/components/site/EnquiryForm";
 import { PropertyCard } from "@/components/site/PropertyCard";
@@ -17,7 +18,7 @@ import { Plate } from "@/components/primitives/Plate";
 import { Reveal } from "@/components/motion/Reveal";
 import { getProperty, properties, similarTo } from "@/lib/content";
 import { breadcrumbSchema, lodgingSchema, pageMeta } from "@/lib/seo";
-import { waMessage } from "@/lib/site";
+import { settings, waMessage } from "@/lib/site";
 import { inr, plural } from "@/lib/utils";
 import type { PlateMood, PlateScene } from "@/lib/plate";
 import type { PropertyView } from "@/lib/types";
@@ -46,9 +47,14 @@ export async function generateMetadata({
 
 /**
  * The most important template on the site. Order is fixed by DPR §7.6:
- * gallery, header, two-column body with a sticky enquire card, quick facts,
- * about, amenities, rider facilities, experiences, pricing, location, routes,
- * similar stays, review structure (built, hidden), inline enquiry form.
+ * gallery, header, two-column body with a sticky availability card, quick
+ * facts, about, why we recommend it, amenities, rider facilities, experiences,
+ * location, routes, house rules and policies, pricing, similar stays, review
+ * structure (built, hidden), inline enquiry form.
+ *
+ * "Why StaySutra recommends it" is the one block on this page a marketplace
+ * cannot copy, so it sits directly under the description at full editorial
+ * weight rather than being folded into the tagline.
  *
  * It renders correctly with only the minimum fields filled — name, city, one
  * image and capacity — because every optional block hides rather than rendering
@@ -129,6 +135,28 @@ export default async function PropertyPage({
         <div className="min-w-0">
           <QuickFacts property={p} />
 
+          {/*
+            The booking flow, in reading order, for the screens that have no
+            sticky column. The mobile CTA bar anchors here rather than opening
+            WhatsApp cold — a message that already carries dates gets answered
+            once instead of three times.
+          */}
+          <section
+            id="availability"
+            className="mt-12 scroll-mt-28 rounded-surface border border-[color:var(--hairline-str)] bg-ink-800/70 p-6 lg:hidden"
+          >
+            <h2
+              className="font-display text-lg uppercase leading-tight tracking-[-0.01em] text-text-hi"
+              style={{ fontWeight: 800 }}
+            >
+              Check availability
+            </h2>
+            <p className="t-caption mt-2">
+              Confirmed by a person, not by a checkout page.
+            </p>
+            <CheckAvailability property={p} variant="inline" className="mt-5" />
+          </section>
+
           <Block title="About this stay">
             <div className="max-w-[68ch] space-y-4 text-[1.0625rem] leading-relaxed text-text-mid">
               {p.description.split("\n\n").map((para) => (
@@ -136,6 +164,21 @@ export default async function PropertyPage({
               ))}
             </div>
           </Block>
+
+          {p.curatorNote && (
+            <Block title="Why StaySutra recommends it">
+              <figure className="border-l-2 border-gold-500 pl-6 lg:pl-8">
+                <blockquote>
+                  <p className="max-w-[54ch] text-[1.125rem] leading-relaxed text-text-hi lg:text-[1.25rem]">
+                    {p.curatorNote}
+                  </p>
+                </blockquote>
+                <figcaption className="t-caption mt-5 uppercase tracking-[0.16em]">
+                  The StaySutra team
+                </figcaption>
+              </figure>
+            </Block>
+          )}
 
           {p.amenities.length > 0 && (
             <Block title="Amenities">
@@ -277,6 +320,62 @@ export default async function PropertyPage({
             </Block>
           )}
 
+          {/* House rules, times and the cancellation position. */}
+          <Block title="House rules &amp; policies">
+            <div className="grid gap-x-10 gap-y-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+              <div>
+                <ul className="grid grid-cols-2 border-y border-[color:var(--hairline)]">
+                  <li className="py-4 pr-4">
+                    <p className="t-caption uppercase tracking-[0.14em]">Check-in</p>
+                    <p className="t-num mt-1.5 text-lg text-text-hi">
+                      {p.checkInTime ?? "Flexible"}
+                    </p>
+                  </li>
+                  <li className="border-l border-[color:var(--hairline)] py-4 pl-4">
+                    <p className="t-caption uppercase tracking-[0.14em]">Check-out</p>
+                    <p className="t-num mt-1.5 text-lg text-text-hi">
+                      {p.checkOutTime ?? "Flexible"}
+                    </p>
+                  </li>
+                </ul>
+                {p.facilities.some((f) => f.slug === "late-check-in") && (
+                  <p className="mt-4 flex items-start gap-2.5 text-[0.9375rem] leading-relaxed text-text-mid">
+                    <Icon name="clock" size={17} className="mt-0.5 shrink-0 text-text-low" />
+                    Late arrivals are expected here. Tell us roughly when you will get in and the
+                    host will wait up.
+                  </p>
+                )}
+                {p.minNights > 1 && (
+                  <p className="t-caption mt-4">Minimum stay: {plural(p.minNights, "night")}.</p>
+                )}
+              </div>
+
+              {p.houseRules.length > 0 && (
+                <ul>
+                  {p.houseRules.map((rule) => (
+                    <li
+                      key={rule}
+                      className="flex items-start gap-3 border-t border-[color:var(--hairline)] py-3.5 last:border-b"
+                    >
+                      <Icon name="check" size={16} className="mt-1 shrink-0 text-text-low" />
+                      <span className="text-[0.9375rem] leading-relaxed text-text-mid">{rule}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="mt-9 rounded-card border border-[color:var(--hairline)] bg-ink-800/60 p-6">
+              <h3 className="t-caption uppercase tracking-[0.16em] text-text-mid">Cancellation</h3>
+              <p className="mt-3 max-w-[62ch] text-[0.9375rem] leading-relaxed text-text-mid">
+                {p.cancellationPolicy ?? settings.policies.cancellation}
+              </p>
+              {!p.cancellationPolicy && (
+                <p className="t-caption mt-3 max-w-[62ch]">{settings.policies.cancellationNote}</p>
+              )}
+            </div>
+          </Block>
+
           {/* 9 · Pricing, with honest microcopy about what is confirmed when. */}
           <Block title="What it costs">
             <div className="flex flex-wrap items-end justify-between gap-6 rounded-surface border border-[color:var(--hairline)] bg-ink-800/60 px-6 py-6">
@@ -300,9 +399,6 @@ export default async function PropertyPage({
               </p>
             </div>
 
-            {p.minNights > 1 && (
-              <p className="t-caption mt-4">Minimum stay: {plural(p.minNights, "night")}.</p>
-            )}
           </Block>
 
           {/*
@@ -400,30 +496,42 @@ function Block({
   );
 }
 
-/** 4 · Quick facts strip. */
+/**
+ * 4 · Quick facts strip.
+ *
+ * Six facts, because check-out is the one people go looking for on the morning
+ * they leave and it was the only fact on this list a guest could not find
+ * without opening WhatsApp. Two columns on a phone, three on a tablet, six on a
+ * desktop — the dividers follow the column count rather than assuming one.
+ */
 function QuickFacts({ property: p }: { property: PropertyView }) {
   const facts: { icon: Parameters<typeof Icon>[0]["name"]; label: string; value: string }[] = [
     { icon: "guests", label: "Guests", value: String(p.maxGuests) },
     { icon: "bed", label: p.bedrooms === 1 ? "Bedroom" : "Bedrooms", value: String(p.bedrooms) },
     { icon: "bath", label: p.bathrooms === 1 ? "Bathroom" : "Bathrooms", value: String(p.bathrooms) },
+    { icon: "homestay", label: p.beds === 1 ? "Bed" : "Beds", value: String(p.beds) },
     { icon: "clock", label: "Check-in", value: p.checkInTime ?? "Flexible" },
+    { icon: "clock", label: "Check-out", value: p.checkOutTime ?? "Flexible" },
   ];
 
   return (
-    <ul className="grid grid-cols-2 border-y border-[color:var(--hairline)] sm:grid-cols-4">
+    <ul className="grid grid-cols-2 border-y border-[color:var(--hairline)] sm:grid-cols-3 lg:grid-cols-6">
       {facts.map((f, i) => (
         <li
           key={f.label}
           className={[
             "flex items-center gap-3 py-5",
-            i % 2 === 1 ? "border-l border-[color:var(--hairline)] pl-5" : "",
-            "sm:border-l sm:border-[color:var(--hairline)] sm:pl-5 sm:first:border-l-0 sm:first:pl-0",
+            i % 2 === 1 ? "border-l border-[color:var(--hairline)] pl-4" : "",
+            i >= 2 ? "border-t border-[color:var(--hairline)] sm:border-t-0" : "",
+            i % 3 === 0 ? "sm:border-l-0 sm:pl-0" : "sm:border-l sm:border-[color:var(--hairline)] sm:pl-4",
+            i >= 3 ? "sm:border-t sm:border-[color:var(--hairline)] lg:border-t-0" : "",
+            i === 0 ? "lg:border-l-0 lg:pl-0" : "lg:border-l lg:border-[color:var(--hairline)] lg:pl-4",
           ].join(" ")}
         >
-          <Icon name={f.icon} size={22} className="shrink-0 text-text-low" />
-          <span>
+          <Icon name={f.icon} size={21} className="shrink-0 text-text-low" />
+          <span className="min-w-0">
             <span className="t-num block text-lg text-text-hi">{f.value}</span>
-            <span className="t-caption mt-0.5 block capitalize">{f.label}</span>
+            <span className="t-caption mt-0.5 block">{f.label}</span>
           </span>
         </li>
       ))}

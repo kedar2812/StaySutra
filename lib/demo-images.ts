@@ -94,6 +94,7 @@ const SEEDS: Record<string, MediaRef> = {
   "category-highway-stays": img("/img/cat/highway-stays.jpg", "A motorcyclist on a road curving through hills"),
   "category-homestays": img("/img/cat/homestays.jpg", "A living room with low sofas and a wooden floor"),
   "category-mountain-stays": img("/img/cat/mountain-stays.jpg", "A range of mountains seen from high ground"),
+  "category-beach-stays": img("/img/dest/alibaug.jpg", "A fishing boat drawn up on the sand"),
 
   // Stories
   "story-the-old-road-over-khandala": img(
@@ -121,6 +122,9 @@ const SEEDS: Record<string, MediaRef> = {
   "stays-index": img("/img/hero/ghat-dusk.jpg", "A road winding down through the ghats at dusk"),
   "destinations-index": img("/img/dest/lonavala.jpg", "Ridges receding into mist at dusk"),
   "for-riders": img("/img/story/what-rider-friendly-actually-means.jpg", "Two motorcycles standing on the road"),
+  "rider-passport": img("/img/cat/highway-stays.jpg", "A motorcyclist on a road curving through hills"),
+  "rider-passport-band": img("/img/hero/ghat-dusk.jpg", "A road winding down through the ghats at dusk"),
+  "stories-index": img("/img/story/the-old-road-over-khandala.jpg", "A road climbing the side of a hill"),
   "rider-friendly": img("/img/cat/highway-stays.jpg", "A motorcyclist on a road curving through hills"),
   "about-hero": img("/img/story/the-old-road-over-khandala.jpg", "A road climbing the side of a hill"),
   "about-band": img("/img/dest/goa.jpg", "Palms in silhouette against the sea at sunset"),

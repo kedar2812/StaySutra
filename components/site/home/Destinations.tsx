@@ -7,13 +7,20 @@ import { destinations, siteContent } from "@/lib/content";
 const copy = siteContent.home.destinations;
 
 /**
- * ⑥ Asymmetric mosaic — one large tile, the rest smaller. New destinations added
- * from the dashboard appear here automatically, ordered by sortOrder.
- * DPR §7.2 ⑥
+ * ⑥ Asymmetric mosaic. One tall lead, a block of four, and a full-width banner
+ * to close — so every destination we serve is on the page rather than five of
+ * six with a "view all" link doing the apologising.
+ *
+ * New destinations added from the dashboard appear here automatically, ordered
+ * by sortOrder; the layout degrades cleanly at any count because each slot is
+ * taken with `slice`.
  */
 export function Destinations() {
   const [lead, ...rest] = destinations;
   if (!lead) return null;
+
+  const block = rest.slice(0, 4);
+  const banner = rest[4];
 
   return (
     <section aria-labelledby="destinations-title" className="pb-24 lg:pb-32">
@@ -34,7 +41,7 @@ export function Destinations() {
             sizes="(min-width:1024px) 50vw, 92vw"
             className="min-h-[26rem] sm:col-span-2 lg:row-span-2 lg:min-h-[34rem]"
           />
-          {rest.slice(0, 4).map((d) => (
+          {block.map((d) => (
             <DestinationTile
               key={d.slug}
               destination={d}
@@ -43,6 +50,17 @@ export function Destinations() {
             />
           ))}
         </Reveal>
+
+        {banner && (
+          <Reveal className="mt-4">
+            <DestinationTile
+              destination={banner}
+              size="lg"
+              sizes="(min-width:1024px) 92vw, 92vw"
+              className="min-h-[18rem] lg:min-h-[22rem]"
+            />
+          </Reveal>
+        )}
       </div>
     </section>
   );

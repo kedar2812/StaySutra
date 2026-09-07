@@ -9,7 +9,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       <Header />
       <main id="main">{children}</main>
       <Footer />
-      <WhatsAppFloat message={waMessage.general()} source="global" />
+      <WhatsAppFloat message={waMessage.general()} source="global" scope="global" />
     </>
   );
 }

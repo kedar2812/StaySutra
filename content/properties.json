@@ -24,21 +24,76 @@
     "availability": "ON_REQUEST",
     "isRiderFriendly": true,
     "riderNote": "Covered parking for eight bikes inside the gate, a wash-down tap by the shed, and basic tools including a foot pump and chain lube. The gate is manned until 2am.",
-    "amenitySlugs": ["wifi", "hot-water", "power-backup", "kitchen", "meals", "bonfire", "valley-view", "garden", "caretaker"],
-    "facilitySlugs": ["covered-parking", "late-check-in", "wash-down", "basic-tools", "drying-space", "early-breakfast", "route-advice"],
-    "experienceSlugs": ["bonfire-night", "sunrise-ride", "trek", "stargazing"],
+    "amenitySlugs": [
+      "wifi",
+      "hot-water",
+      "power-backup",
+      "kitchen",
+      "meals",
+      "bonfire",
+      "valley-view",
+      "garden",
+      "caretaker"
+    ],
+    "facilitySlugs": [
+      "covered-parking",
+      "late-check-in",
+      "wash-down",
+      "basic-tools",
+      "drying-space",
+      "early-breakfast",
+      "route-advice"
+    ],
+    "experienceSlugs": [
+      "bonfire-night",
+      "sunrise-ride",
+      "trek",
+      "stargazing"
+    ],
     "nearbyRoutes": [
-      { "title": "Old Khandala ghat descent", "distanceKm": 9, "note": "Twelve minutes of switchbacks. Ride it before 8am." },
-      { "title": "Pawna lake loop", "distanceKm": 22, "note": "Flat, quiet, best at last light." },
-      { "title": "Tamhini ghat", "distanceKm": 74, "note": "A full day out and back. Fuel at Mulshi." }
+      {
+        "title": "Old Khandala ghat descent",
+        "distanceKm": 9,
+        "note": "Twelve minutes of switchbacks. Ride it before 8am."
+      },
+      {
+        "title": "Pawna lake loop",
+        "distanceKm": 22,
+        "note": "Flat, quiet, best at last light."
+      },
+      {
+        "title": "Tamhini ghat",
+        "distanceKm": 74,
+        "note": "A full day out and back. Fuel at Mulshi."
+      }
     ],
     "nearbyPlaces": [
-      { "title": "Tiger's Leap", "distanceKm": 7, "type": "Viewpoint" },
-      { "title": "Bhushi Dam", "distanceKm": 11, "type": "Landmark" },
-      { "title": "Fuel station, Aamby Valley Road", "distanceKm": 3, "type": "Fuel" }
+      {
+        "title": "Tiger's Leap",
+        "distanceKm": 7,
+        "type": "Viewpoint"
+      },
+      {
+        "title": "Bhushi Dam",
+        "distanceKm": 11,
+        "type": "Landmark"
+      },
+      {
+        "title": "Fuel station, Aamby Valley Road",
+        "distanceKm": 3,
+        "type": "Fuel"
+      }
     ],
     "imageCount": 9,
-    "placeholder": true
+    "placeholder": true,
+    "curatorNote": "We picked it for the walled courtyard. Eight bikes under cover inside a gate that is manned until two in the morning is the single hardest thing to find at the top of a ghat road — and the caretaker has ridden these roads for twenty years.",
+    "houseRules": [
+      "Quiet after 11pm — the valley carries sound further than you think.",
+      "Bonfire is lit by the caretaker only, and not on high-wind evenings.",
+      "The gate is manned until 2am. Tell us if you expect to arrive later and we will arrange it.",
+      "No pets at this property."
+    ],
+    "cancellationPolicy": null
   },
   {
     "slug": "coastal-rider-villa-alibaug",
@@ -65,20 +120,69 @@
     "availability": "ON_REQUEST",
     "isRiderFriendly": true,
     "riderNote": "Covered gravel parking for six bikes and a freshwater tap for rinsing salt off before it sets. Early breakfast from 6am on request.",
-    "amenitySlugs": ["wifi", "air-conditioning", "hot-water", "power-backup", "meals", "pool", "sea-view", "garden", "pet-friendly", "caretaker"],
-    "facilitySlugs": ["covered-parking", "wash-down", "early-breakfast", "route-advice", "fuel-nearby"],
-    "experienceSlugs": ["local-food", "kayaking", "bonfire-night"],
+    "amenitySlugs": [
+      "wifi",
+      "air-conditioning",
+      "hot-water",
+      "power-backup",
+      "meals",
+      "pool",
+      "sea-view",
+      "garden",
+      "pet-friendly",
+      "caretaker"
+    ],
+    "facilitySlugs": [
+      "covered-parking",
+      "wash-down",
+      "early-breakfast",
+      "route-advice",
+      "fuel-nearby"
+    ],
+    "experienceSlugs": [
+      "local-food",
+      "kayaking",
+      "bonfire-night"
+    ],
     "nearbyRoutes": [
-      { "title": "Kihim to Kashid coast road", "distanceKm": 32, "note": "The reason to come. Slow, and worth being slow on." },
-      { "title": "Murud–Janjira run", "distanceKm": 52, "note": "Fort at the end. Check ferry timings." }
+      {
+        "title": "Kihim to Kashid coast road",
+        "distanceKm": 32,
+        "note": "The reason to come. Slow, and worth being slow on."
+      },
+      {
+        "title": "Murud–Janjira run",
+        "distanceKm": 52,
+        "note": "Fort at the end. Check ferry timings."
+      }
     ],
     "nearbyPlaces": [
-      { "title": "Kihim beach", "distanceKm": 0.4, "type": "Beach" },
-      { "title": "Alibaug jetty", "distanceKm": 12, "type": "Transport" },
-      { "title": "Fuel station, Chondi", "distanceKm": 4, "type": "Fuel" }
+      {
+        "title": "Kihim beach",
+        "distanceKm": 0.4,
+        "type": "Beach"
+      },
+      {
+        "title": "Alibaug jetty",
+        "distanceKm": 12,
+        "type": "Transport"
+      },
+      {
+        "title": "Fuel station, Chondi",
+        "distanceKm": 4,
+        "type": "Fuel"
+      }
     ],
     "imageCount": 7,
-    "placeholder": true
+    "placeholder": true,
+    "curatorNote": "We picked it for the freshwater tap by the parking. On this coast salt takes chrome apart in a season, and this is one of the few places that gives you somewhere to rinse it off before it sets.",
+    "houseRules": [
+      "Pets are welcome — tell us in advance so the owners can prepare.",
+      "The pool closes at 10pm.",
+      "Rinse sand off before going inside; the floors are polished stone.",
+      "The owners live next door. Meals need four hours notice."
+    ],
+    "cancellationPolicy": null
   },
   {
     "slug": "riverside-camp-karjat",
@@ -105,19 +209,61 @@
     "availability": "ON_REQUEST",
     "isRiderFriendly": true,
     "riderNote": "Open parking inside the compound with a tarpaulin for six bikes. The host rides, and will tell you honestly whether the river crossing is passable.",
-    "amenitySlugs": ["hot-water", "power-backup", "meals", "barbecue", "bonfire", "garden", "caretaker"],
-    "facilitySlugs": ["late-check-in", "wash-down", "early-breakfast", "route-advice"],
-    "experienceSlugs": ["trek", "bonfire-night", "local-food", "fort-visit"],
+    "amenitySlugs": [
+      "hot-water",
+      "power-backup",
+      "meals",
+      "barbecue",
+      "bonfire",
+      "garden",
+      "caretaker"
+    ],
+    "facilitySlugs": [
+      "late-check-in",
+      "wash-down",
+      "early-breakfast",
+      "route-advice"
+    ],
+    "experienceSlugs": [
+      "trek",
+      "bonfire-night",
+      "local-food",
+      "fort-visit"
+    ],
     "nearbyRoutes": [
-      { "title": "Karjat to Khopoli", "distanceKm": 28, "note": "Short, fast, empty on a weekday morning." },
-      { "title": "Matheran base road", "distanceKm": 18, "note": "Climb stops at Dasturi. Bikes no further." }
+      {
+        "title": "Karjat to Khopoli",
+        "distanceKm": 28,
+        "note": "Short, fast, empty on a weekday morning."
+      },
+      {
+        "title": "Matheran base road",
+        "distanceKm": 18,
+        "note": "Climb stops at Dasturi. Bikes no further."
+      }
     ],
     "nearbyPlaces": [
-      { "title": "Kondana caves trailhead", "distanceKm": 2, "type": "Trailhead" },
-      { "title": "Karjat station", "distanceKm": 14, "type": "Transport" }
+      {
+        "title": "Kondana caves trailhead",
+        "distanceKm": 2,
+        "type": "Trailhead"
+      },
+      {
+        "title": "Karjat station",
+        "distanceKm": 14,
+        "type": "Transport"
+      }
     ],
     "imageCount": 5,
-    "placeholder": true
+    "placeholder": true,
+    "curatorNote": "We picked it for the river and the price. Fourteen people, six rooms and a bonfire on the bank for less than the cost of two hotel rooms in Lonavala — and the hosts know which crossings are safe after rain.",
+    "houseRules": [
+      "The river is unsupervised. Do not swim after dark or after heavy rain upstream.",
+      "Bonfire is lit at dusk and put out by 11pm.",
+      "No loudspeakers. There are villages on both banks.",
+      "Carry a torch — the path from the parking to the tents is unlit."
+    ],
+    "cancellationPolicy": null
   },
   {
     "slug": "the-halt-khopoli",
@@ -144,18 +290,52 @@
     "availability": "AVAILABLE",
     "isRiderFriendly": true,
     "riderNote": "Lit, covered forecourt parking for twenty bikes with a night watchman. Fuel and a tyre shop are both within a kilometre.",
-    "amenitySlugs": ["wifi", "air-conditioning", "hot-water", "power-backup", "meals"],
-    "facilitySlugs": ["covered-parking", "late-check-in", "wash-down", "basic-tools", "drying-space", "early-breakfast", "fuel-nearby"],
+    "amenitySlugs": [
+      "wifi",
+      "air-conditioning",
+      "hot-water",
+      "power-backup",
+      "meals"
+    ],
+    "facilitySlugs": [
+      "covered-parking",
+      "late-check-in",
+      "wash-down",
+      "basic-tools",
+      "drying-space",
+      "early-breakfast",
+      "fuel-nearby"
+    ],
     "experienceSlugs": [],
     "nearbyRoutes": [
-      { "title": "Old NH-48 over the ghat", "distanceKm": 0, "note": "You are on it." }
+      {
+        "title": "Old NH-48 over the ghat",
+        "distanceKm": 0,
+        "note": "You are on it."
+      }
     ],
     "nearbyPlaces": [
-      { "title": "Fuel station", "distanceKm": 0.6, "type": "Fuel" },
-      { "title": "Tyre and puncture shop", "distanceKm": 0.9, "type": "Service" }
+      {
+        "title": "Fuel station",
+        "distanceKm": 0.6,
+        "type": "Fuel"
+      },
+      {
+        "title": "Tyre and puncture shop",
+        "distanceKm": 0.9,
+        "type": "Service"
+      }
     ],
     "imageCount": 4,
-    "placeholder": true
+    "placeholder": true,
+    "curatorNote": "We picked it for exactly what it is: a clean bed and a locked yard at the bottom of the ghat, at a price that does not punish you for stopping. Twenty-four riders can pull in without booking three properties.",
+    "houseRules": [
+      "Built for groups on the move. This is a stopover, not a weekend destination.",
+      "The yard is locked at midnight. Ask at the desk if you are riding in later.",
+      "Breakfast runs from 5.30am for anyone leaving early.",
+      "No pets at this property."
+    ],
+    "cancellationPolicy": null
   },
   {
     "slug": "ridgeline-house-lonavala",
@@ -182,19 +362,60 @@
     "availability": "ON_REQUEST",
     "isRiderFriendly": true,
     "riderNote": "Parking for four bikes under an extended roof. The last two kilometres are steep and get slick in the monsoon.",
-    "amenitySlugs": ["wifi", "hot-water", "power-backup", "kitchen", "valley-view", "bonfire", "caretaker"],
-    "facilitySlugs": ["covered-parking", "late-check-in", "drying-space", "route-advice"],
-    "experienceSlugs": ["sunrise-ride", "stargazing", "trek"],
+    "amenitySlugs": [
+      "wifi",
+      "hot-water",
+      "power-backup",
+      "kitchen",
+      "valley-view",
+      "bonfire",
+      "caretaker"
+    ],
+    "facilitySlugs": [
+      "covered-parking",
+      "late-check-in",
+      "drying-space",
+      "route-advice"
+    ],
+    "experienceSlugs": [
+      "sunrise-ride",
+      "stargazing",
+      "trek"
+    ],
     "nearbyRoutes": [
-      { "title": "Lion's Point to Bhushi", "distanceKm": 12, "note": "Ride it at dawn or not at all — it is a car park by ten." },
-      { "title": "Pawna lake loop", "distanceKm": 26, "note": "Flat and quiet once past Kusgaon." }
+      {
+        "title": "Lion's Point to Bhushi",
+        "distanceKm": 12,
+        "note": "Ride it at dawn or not at all — it is a car park by ten."
+      },
+      {
+        "title": "Pawna lake loop",
+        "distanceKm": 26,
+        "note": "Flat and quiet once past Kusgaon."
+      }
     ],
     "nearbyPlaces": [
-      { "title": "Lion's Point", "distanceKm": 3, "type": "Viewpoint" },
-      { "title": "Fuel station, Lonavala", "distanceKm": 9, "type": "Fuel" }
+      {
+        "title": "Lion's Point",
+        "distanceKm": 3,
+        "type": "Viewpoint"
+      },
+      {
+        "title": "Fuel station, Lonavala",
+        "distanceKm": 9,
+        "type": "Fuel"
+      }
     ],
     "imageCount": 6,
-    "placeholder": true
+    "placeholder": true,
+    "curatorNote": "We picked it for the sky. Two bedrooms, five people, and nothing between the deck and the ridge — it is the only property on this list where the reason to book is what happens after dark.",
+    "houseRules": [
+      "Two bedrooms, five guests maximum. It does not stretch, and we will not pretend it does.",
+      "Outdoor lights go off at 10pm so the sky is worth looking at.",
+      "Fog can close the approach road between June and September. We will call you if it does.",
+      "No pets at this property."
+    ],
+    "cancellationPolicy": null
   },
   {
     "slug": "old-portuguese-house-goa",
@@ -221,19 +442,61 @@
     "availability": "ON_REQUEST",
     "isRiderFriendly": true,
     "riderNote": "Courtyard parking behind a locked gate. There is a mechanic in the village who will look at anything with two wheels.",
-    "amenitySlugs": ["wifi", "air-conditioning", "hot-water", "kitchen", "meals", "garden", "pet-friendly"],
-    "facilitySlugs": ["covered-parking", "late-check-in", "wash-down", "route-advice", "fuel-nearby"],
-    "experienceSlugs": ["local-food", "fort-visit", "bonfire-night"],
+    "amenitySlugs": [
+      "wifi",
+      "air-conditioning",
+      "hot-water",
+      "kitchen",
+      "meals",
+      "garden",
+      "pet-friendly"
+    ],
+    "facilitySlugs": [
+      "covered-parking",
+      "late-check-in",
+      "wash-down",
+      "route-advice",
+      "fuel-nearby"
+    ],
+    "experienceSlugs": [
+      "local-food",
+      "fort-visit",
+      "bonfire-night"
+    ],
     "nearbyRoutes": [
-      { "title": "Ponda to Chorla ghat", "distanceKm": 68, "note": "The best road in Goa. Leave early." },
-      { "title": "Divar and Chorao island loop", "distanceKm": 30, "note": "Two ferries, no traffic." }
+      {
+        "title": "Ponda to Chorla ghat",
+        "distanceKm": 68,
+        "note": "The best road in Goa. Leave early."
+      },
+      {
+        "title": "Divar and Chorao island loop",
+        "distanceKm": 30,
+        "note": "Two ferries, no traffic."
+      }
     ],
     "nearbyPlaces": [
-      { "title": "Village mechanic", "distanceKm": 0.5, "type": "Service" },
-      { "title": "Fuel station, Ponda", "distanceKm": 3, "type": "Fuel" }
+      {
+        "title": "Village mechanic",
+        "distanceKm": 0.5,
+        "type": "Service"
+      },
+      {
+        "title": "Fuel station, Ponda",
+        "distanceKm": 3,
+        "type": "Fuel"
+      }
     ],
     "imageCount": 8,
-    "placeholder": true
+    "placeholder": true,
+    "curatorNote": "We picked it for the courtyard, and for the fact that nothing about the house has been renovated into something generic. It is the oldest building in this collection and it has been allowed to stay that way.",
+    "houseRules": [
+      "Pets are welcome with advance notice.",
+      "It is a heritage structure. Please do not drill, pin or tape anything to the walls.",
+      "No events or parties. The lane is residential and narrow.",
+      "Bikes park in the courtyard, not on the lane."
+    ],
+    "cancellationPolicy": null
   },
   {
     "slug": "the-lawn-house-pune",
@@ -260,19 +523,65 @@
     "availability": "AVAILABLE",
     "isRiderFriendly": true,
     "riderNote": "Gated compound with covered parking for ten bikes and a wash-down corner. Breakfast from 5.30am for groups leaving early.",
-    "amenitySlugs": ["wifi", "air-conditioning", "hot-water", "power-backup", "kitchen", "meals", "barbecue", "garden", "caretaker"],
-    "facilitySlugs": ["covered-parking", "late-check-in", "wash-down", "basic-tools", "early-breakfast", "route-advice", "fuel-nearby"],
-    "experienceSlugs": ["bonfire-night", "sunrise-ride", "local-food"],
+    "amenitySlugs": [
+      "wifi",
+      "air-conditioning",
+      "hot-water",
+      "power-backup",
+      "kitchen",
+      "meals",
+      "barbecue",
+      "garden",
+      "caretaker"
+    ],
+    "facilitySlugs": [
+      "covered-parking",
+      "late-check-in",
+      "wash-down",
+      "basic-tools",
+      "early-breakfast",
+      "route-advice",
+      "fuel-nearby"
+    ],
+    "experienceSlugs": [
+      "bonfire-night",
+      "sunrise-ride",
+      "local-food"
+    ],
     "nearbyRoutes": [
-      { "title": "Mulshi to Tamhini", "distanceKm": 45, "note": "Reservoir on one side the whole way." },
-      { "title": "Sinhagad climb", "distanceKm": 34, "note": "Steep, narrow, closes to vehicles some days." }
+      {
+        "title": "Mulshi to Tamhini",
+        "distanceKm": 45,
+        "note": "Reservoir on one side the whole way."
+      },
+      {
+        "title": "Sinhagad climb",
+        "distanceKm": 34,
+        "note": "Steep, narrow, closes to vehicles some days."
+      }
     ],
     "nearbyPlaces": [
-      { "title": "Fuel station, Pirangut", "distanceKm": 2, "type": "Fuel" },
-      { "title": "Mulshi dam", "distanceKm": 28, "type": "Landmark" }
+      {
+        "title": "Fuel station, Pirangut",
+        "distanceKm": 2,
+        "type": "Fuel"
+      },
+      {
+        "title": "Mulshi dam",
+        "distanceKm": 28,
+        "type": "Landmark"
+      }
     ],
     "imageCount": 6,
-    "placeholder": true
+    "placeholder": true,
+    "curatorNote": "We picked it for the lawn and the distance. Forty minutes out of the city, ten guests, and enough ground that a group can be loud without anyone minding — the easiest short escape on this list.",
+    "houseRules": [
+      "Music outdoors until 11pm, indoors after that.",
+      "Barbecue is available on request and cleaned by the caretaker, not by you.",
+      "Ten guests maximum, including children.",
+      "No pets at this property."
+    ],
+    "cancellationPolicy": null
   },
   {
     "slug": "sea-line-resort-alibaug",
@@ -282,7 +591,7 @@
     "status": "PUBLISHED",
     "featured": false,
     "featureOrder": null,
-    "categorySlug": "resorts",
+    "categorySlug": "beach-stays",
     "destinationSlug": "alibaug",
     "locality": "Nagaon",
     "city": "Alibaug",
@@ -299,18 +608,52 @@
     "availability": "AVAILABLE",
     "isRiderFriendly": false,
     "riderNote": null,
-    "amenitySlugs": ["wifi", "air-conditioning", "hot-water", "power-backup", "meals", "pool", "garden", "caretaker"],
-    "facilitySlugs": ["fuel-nearby"],
-    "experienceSlugs": ["kayaking", "local-food"],
+    "amenitySlugs": [
+      "wifi",
+      "air-conditioning",
+      "hot-water",
+      "power-backup",
+      "meals",
+      "pool",
+      "garden",
+      "caretaker"
+    ],
+    "facilitySlugs": [
+      "fuel-nearby"
+    ],
+    "experienceSlugs": [
+      "kayaking",
+      "local-food"
+    ],
     "nearbyRoutes": [
-      { "title": "Nagaon to Kashid", "distanceKm": 24, "note": "Coast road, twenty minutes, no reason to hurry." }
+      {
+        "title": "Nagaon to Kashid",
+        "distanceKm": 24,
+        "note": "Coast road, twenty minutes, no reason to hurry."
+      }
     ],
     "nearbyPlaces": [
-      { "title": "Nagaon beach", "distanceKm": 0.6, "type": "Beach" },
-      { "title": "Fuel station, Nagaon", "distanceKm": 2.5, "type": "Fuel" }
+      {
+        "title": "Nagaon beach",
+        "distanceKm": 0.6,
+        "type": "Beach"
+      },
+      {
+        "title": "Fuel station, Nagaon",
+        "distanceKm": 2.5,
+        "type": "Fuel"
+      }
     ],
     "imageCount": 6,
-    "placeholder": true
+    "placeholder": true,
+    "curatorNote": "We picked it for scale. Forty-eight people on the beach side of the road, under one booking and one bill — the only property here that can take an entire riding club or a whole family at once.",
+    "houseRules": [
+      "Large groups need one named point of contact for the whole booking.",
+      "The beach is public. Valuables stay in the room safe.",
+      "Pool hours are 7am to 8pm.",
+      "No pets at this property."
+    ],
+    "cancellationPolicy": null
   },
   {
     "slug": "the-terrace-mumbai",
@@ -337,17 +680,48 @@
     "availability": "ON_REQUEST",
     "isRiderFriendly": true,
     "riderNote": "Basement parking with a shutter and a watchman. Gate opens at 4am on request — say so when you enquire.",
-    "amenitySlugs": ["wifi", "air-conditioning", "hot-water", "power-backup", "kitchen"],
-    "facilitySlugs": ["covered-parking", "late-check-in", "drying-space", "fuel-nearby"],
+    "amenitySlugs": [
+      "wifi",
+      "air-conditioning",
+      "hot-water",
+      "power-backup",
+      "kitchen"
+    ],
+    "facilitySlugs": [
+      "covered-parking",
+      "late-check-in",
+      "drying-space",
+      "fuel-nearby"
+    ],
     "experienceSlugs": [],
     "nearbyRoutes": [
-      { "title": "Panvel to Khopoli on the old road", "distanceKm": 42, "note": "Clear before six, gridlocked after nine." }
+      {
+        "title": "Panvel to Khopoli on the old road",
+        "distanceKm": 42,
+        "note": "Clear before six, gridlocked after nine."
+      }
     ],
     "nearbyPlaces": [
-      { "title": "Fuel station, Panvel bypass", "distanceKm": 1.2, "type": "Fuel" },
-      { "title": "Panvel station", "distanceKm": 3, "type": "Transport" }
+      {
+        "title": "Fuel station, Panvel bypass",
+        "distanceKm": 1.2,
+        "type": "Fuel"
+      },
+      {
+        "title": "Panvel station",
+        "distanceKm": 3,
+        "type": "Transport"
+      }
     ],
     "imageCount": 4,
-    "placeholder": true
+    "placeholder": true,
+    "curatorNote": "We picked it because it solves the hardest problem in the city: somewhere to leave the bike overnight that you do not have to worry about, within reach of the highway out.",
+    "houseRules": [
+      "Building quiet hours are 10.30pm to 7am and they are enforced by the society.",
+      "Parking is allotted per booking. Do not use a neighbouring bay.",
+      "Visitors must be signed in at the gate.",
+      "No pets at this property."
+    ],
+    "cancellationPolicy": null
   }
 ]

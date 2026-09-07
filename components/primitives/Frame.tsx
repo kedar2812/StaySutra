@@ -28,6 +28,13 @@ interface FrameProps {
   mood?: PlateMood;
   /** Duotone secondary imagery so mixed sources read as one brand. */
   muted?: boolean;
+  /**
+   * Overrides the crop anchor. Defaults below to the ground for tall frames,
+   * which is right for a portrait tile and wrong for a landscape photograph
+   * cropped into a phone-height hero — there the subject is the horizon, and
+   * anchoring to the bottom shows the viewer a hillside.
+   */
+  anchor?: "center" | "bottom";
   children?: React.ReactNode;
 }
 
@@ -56,10 +63,11 @@ export function Frame({
   scene,
   mood,
   muted = false,
+  anchor: anchorProp,
   children,
 }: FrameProps) {
   // A frame taller than it is wide keeps its ground rather than its sky.
-  const anchor = fill || ratio === "3/4" ? "bottom" : "center";
+  const anchor = anchorProp ?? (fill || ratio === "3/4" ? "bottom" : "center");
 
   /*
    * Real media always wins. Failing that, the demo photography stands in — see

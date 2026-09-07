@@ -94,7 +94,7 @@ export function PageHero({
         {overline && (
           <>
             <Rule className="mb-5 max-w-24" />
-            <p className="t-overline t-overline-gold">{overline}</p>
+            <p className="t-overline">{overline}</p>
           </>
         )}
         <h1

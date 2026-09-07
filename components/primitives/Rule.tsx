@@ -40,11 +40,23 @@ export function SectionHead({
             align === "center" && "sm:flex-col sm:items-center",
           )}
         >
-          {title && <h2 className="t-display-l max-w-[16ch] text-balance">{title}</h2>}
+          {/*
+            The lede belongs with the title, not after the action. Stacked on a
+            phone the action would otherwise land between a heading and the
+            sentence explaining it, which reads as a misplaced button.
+          */}
+          <div className={cn("min-w-0", align === "center" && "text-center")}>
+            {title && <h2 className="t-display-l max-w-[16ch] text-balance">{title}</h2>}
+            {lede && (
+              <p className={cn("t-lede mt-6 max-w-[52ch]", align === "center" && "mx-auto")}>
+                {lede}
+              </p>
+            )}
+          </div>
           {action && <div className="shrink-0 pb-1">{action}</div>}
         </div>
       )}
-      {lede && (
+      {!title && !action && lede && (
         <p className={cn("t-lede mt-6 max-w-[52ch]", align === "center" && "mx-auto")}>{lede}</p>
       )}
     </header>

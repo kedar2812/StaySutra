@@ -10,15 +10,25 @@ import { cn } from "@/lib/utils";
 /**
  * Present on every public page. Sits above the mobile sticky CTA bar where one
  * exists — never over a form field or the footer CTA. DPR §6.2
+ *
+ * The layout renders a global one and property and destination pages render a
+ * second carrying their own pre-filled message. Both used to paint: on desktop
+ * they sat at identical coordinates and read as one button, and on a phone the
+ * global one dropped to the bottom corner and covered the "Check availability"
+ * pill. `scope` is what globals.css keys off to hide the global instance
+ * whenever a page-specific one is on the document.
  */
 export function WhatsAppFloat({
   message,
   source,
   raised = false,
+  scope = "page",
 }: {
   message: string;
   source: string;
   raised?: boolean;
+  /** "global" instances yield to any page-specific float on the same document. */
+  scope?: "global" | "page";
 }) {
   const reduced = useReducedMotion();
 
@@ -28,6 +38,7 @@ export function WhatsAppFloat({
       target="_blank"
       rel="noreferrer noopener"
       aria-label="Chat with StaySutra on WhatsApp"
+      data-wa-float={scope}
       data-motion=""
       onClick={() => track("whatsapp_click", { source })}
       className={cn(

@@ -566,6 +566,25 @@
 
 }
 
+/*
+ * One WhatsApp button, ever.
+ *
+ * The site layout renders a global float; property and destination pages
+ * render their own carrying a pre-filled message. The page-specific one always
+ * wins — it is strictly more useful — and the global one steps aside rather
+ * than stacking behind it on desktop and sitting on top of the mobile CTA bar
+ * on a phone.
+ *
+ * This lives in `utilities`, not `components`: the float carries Tailwind's
+ * own `grid` utility, and utilities beat components in the cascade layer order,
+ * so the same rule one layer down would lose and paint both buttons.
+ */
+@layer utilities {
+  body:has([data-wa-float="page"]) [data-wa-float="global"] {
+    display: none;
+  }
+}
+
 /* ==========================================================================
    Reduced motion / transparency / contrast. DPR §4.5, §6.5
 

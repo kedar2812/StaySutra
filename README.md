@@ -54,7 +54,7 @@ app/
 components/
   primitives/   Button, Chip, Field, Frame, Icon, Plate, Rule, Sheet, Skeleton
   site/         Public composites — header, footer, cards, forms, gallery
-    home/       The ten homepage sections, one file each
+    home/       The twelve homepage sections, one file each
   motion/       Reveal, Parallax, MaskLines, SmoothScroll
 lib/            content, filters, motion, plate, prose, seo, site, validation
 content/        Phase 1 content — JSON + story markdown
@@ -81,6 +81,12 @@ Break these and the site stops looking designed.
 - **No fabricated statistic, rating, review or testimonial** — anywhere, in the
   markup or in the database. Rating fields render only when a real value exists,
   and the JSON-LD omits `aggregateRating` when it does not.
+- **Nothing implies instant booking.** There is no inventory behind this site.
+  Confirmation is a person on WhatsApp, every CTA says so, and the word "book"
+  never appears on a button.
+- **No filter, chip or category leads to an empty page.** A category with no
+  listings says "Onboarding"; a story category with nothing published is not
+  offered. An empty result is the loudest "this is a demo" signal there is.
 - **If an animation costs a performance budget, the budget wins.**
 
 Full design system: DPR §4. The anti-pattern list in §4.6 is a rejection list.

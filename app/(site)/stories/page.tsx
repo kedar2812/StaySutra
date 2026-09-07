@@ -6,7 +6,7 @@ import { JsonLd } from "@/components/site/JsonLd";
 import { Frame } from "@/components/primitives/Frame";
 import { ChipLink } from "@/components/primitives/Chip";
 import { Reveal } from "@/components/motion/Reveal";
-import { stories, storyCategories } from "@/lib/content";
+import { activeStoryCategories, stories } from "@/lib/content";
 import { breadcrumbSchema, pageMeta } from "@/lib/seo";
 import { formatDate } from "@/lib/utils";
 import type { SearchParams } from "@/lib/filters";
@@ -53,7 +53,7 @@ export default async function StoriesPage({
           <ChipLink href="/stories" active={!category}>
             All
           </ChipLink>
-          {storyCategories.map((c) => (
+          {activeStoryCategories.map((c) => (
             <ChipLink
               key={c.slug}
               href={`/stories?category=${c.slug}`}

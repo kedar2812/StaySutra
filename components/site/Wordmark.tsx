@@ -19,13 +19,13 @@ export function Wordmark({
   className?: string;
 }) {
   const type = {
-    sm: "text-[1.0625rem] tracking-[0.06em]",
+    sm: "text-[1rem] tracking-[0.05em] sm:text-[1.0625rem] sm:tracking-[0.06em]",
     md: "text-[1.3125rem] tracking-[0.07em]",
     lg: "text-[clamp(1.75rem,4vw,2.75rem)] tracking-[0.08em]",
   }[size];
 
   const lockup = {
-    sm: "text-[0.4375rem] tracking-[0.3em]",
+    sm: "text-[0.4rem] tracking-[0.18em] sm:text-[0.4375rem] sm:tracking-[0.3em]",
     md: "text-[0.5rem] tracking-[0.3em]",
     lg: "text-[0.625rem] tracking-[0.36em]",
   }[size];

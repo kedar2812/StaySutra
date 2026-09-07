@@ -24,9 +24,9 @@ export default function DestinationsPage() {
   return (
     <>
       <PageHero
-        overline="Where we ride"
-        title="Destinations"
-        lede="Six to start with, chosen because the roads to them are worth the ride and the hosts there understand who is arriving. More as both line up."
+        overline="Destinations"
+        title="Places worth riding to."
+        lede="Six regions across Maharashtra and Goa, chosen because the roads to them are worth the journey and the hosts there understand who is arriving."
         seed="destinations-index"
         scene="ghat"
         mood="dusk"

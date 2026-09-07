@@ -11,8 +11,22 @@ import { track } from "@/lib/analytics";
  * source = GENERAL so the interest is visible in the Phase 2 inbox rather than
  * evaporating. DPR §7.7
  */
-export function InterestCapture({ feature }: { feature: string }) {
-  const [open, setOpen] = useState(false);
+export function InterestCapture({
+  feature,
+  /** Overrides for places where "tell me when it's ready" is too small a promise. */
+  openLabel = "Tell me when it’s ready",
+  submitLabel = "Keep me posted",
+  doneMessage,
+  /** Skips the collapsed state — used where the form is the point of the page. */
+  expanded = false,
+}: {
+  feature: string;
+  openLabel?: string;
+  submitLabel?: string;
+  doneMessage?: string;
+  expanded?: boolean;
+}) {
+  const [open, setOpen] = useState(expanded);
   const [done, setDone] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -24,7 +38,7 @@ export function InterestCapture({ feature }: { feature: string }) {
     return (
       <p className="flex items-center gap-2 text-[0.9375rem] text-text-mid">
         <Icon name="check" size={17} className="shrink-0 text-gold-500" />
-        We will tell you when {feature} is ready.
+        {doneMessage ?? `We will tell you when ${feature} is ready.`}
       </p>
     );
   }
@@ -37,7 +51,7 @@ export function InterestCapture({ feature }: { feature: string }) {
         className="press inline-flex items-center gap-2 rounded-pill border border-[color:var(--hairline-str)] px-5 py-2.5 text-[0.8125rem] font-medium text-text-hi transition-colors hover:border-gold-500 hover:text-gold-400"
       >
         <Icon name="mail" size={15} />
-        Tell me when it&rsquo;s ready
+        {openLabel}
       </button>
     );
   }
@@ -103,7 +117,7 @@ export function InterestCapture({ feature }: { feature: string }) {
         error={error ?? undefined}
       />
       <Button type="submit" size="sm" disabled={busy} icon="arrowRight">
-        {busy ? "Sending…" : "Keep me posted"}
+        {busy ? "Sending…" : submitLabel}
       </Button>
       <p className="t-caption">
         One message when {feature} goes live. Nothing else.

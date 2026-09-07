@@ -6,7 +6,7 @@ the empty state ships and the gap is logged here rather than invented.
 
 Nothing in this file blocks the build. Several items block **launch**.
 
-Last updated: 4 September 2026 · Kedar Gurav
+Last updated: 7 September 2026 · Kedar Gurav
 
 ---
 
@@ -55,6 +55,48 @@ rider-facility answers in particular must come from the host, not from us — a
 wrong "yes" on covered parking is the one failure this brand cannot absorb.
 **Note:** `startingPrice` values currently in the seed are illustrative. Do not
 publish them.
+
+### 2b. Curator notes — "Why StaySutra picked it" — all 9 listings
+
+**Status:** written by us, on every property, in `content/properties.json` →
+`curatorNote`.
+**Currently rendering:** one or two sentences per property naming the single
+concrete reason that property is on the network — the walled courtyard, the
+freshwater tap, the sky. It appears on every property card and again, at
+editorial size, on the property page.
+**Needed:** the client's own line, in the client's voice, for each property.
+**Why it matters more than it looks:** this is the only field on the site a
+listing marketplace has no equivalent for, and the whole "curated, not listed"
+positioning rests on it. A generic line here ("a lovely property in a great
+location") undoes the argument the rest of the page is making. It should read
+like a person who has been there wrote it, because that is the claim.
+
+### 2c. House rules — all 9 listings
+
+**Status:** written by us, in `content/properties.json` → `houseRules`.
+**Currently rendering:** three to four rules per property, inferred from data we
+already hold — quiet hours, whether pets are accepted, gate and bonfire times,
+capacity limits.
+**Needed:** confirmation from each host. These are inferences, not statements
+from the property, and a guest who is refused at the gate over a rule we made up
+is a complaint the client has to answer.
+
+### 2d. Cancellation policy — site-wide default, unsigned
+
+**Status:** one default in `content/site.json` → `settings.policies.cancellation`,
+flagged in that object with a `_placeholder` key. Every property carries
+`cancellationPolicy: null`, which falls back to it.
+**Currently rendering:** the honest description of how the flow works today —
+nothing is charged on the site, and the host's terms are sent in writing with the
+quote before any money moves. It states no percentages and no deadlines, so there
+is nothing here the client can be held to that is not already true.
+**Needed:** the client's own commercial policy, signed off. Set it site-wide in
+`settings.policies.cancellation`, and set `cancellationPolicy` on any individual
+property whose host insists on different terms — the property value overrides
+the default with no code change.
+**Why it blocks launch:** a stay page that takes a booking enquiry and says
+nothing enforceable about cancellation is a consumer-law exposure, not a design
+gap.
 
 ### 3. Ratings and review counts — deliberately absent everywhere
 
@@ -120,9 +162,9 @@ The reference footer linked **Careers**, **Resources**, **Partner Program** and
 **Owner Login**. None of these exist in this contract, and Owner Login is not
 built at all.
 
-**Shipped:** they are omitted rather than faked. The footer now has three real
-columns (Company, Stay, For owners) plus a Destinations list generated from the
-database. Every link resolves.
+**Shipped:** they are omitted rather than faked. The footer now has four real
+columns (Company, Stay, Ride, For owners) plus a Destinations list generated from
+the database. Every link resolves.
 
 **Client confirms:** either that omitting them is correct, or supplies the pages.
 Dead-end links are a trust and SEO problem, which is why they are not shipped
@@ -158,7 +200,48 @@ explaining what rider-friendly means.
 in their voice, or replace. They are written to be publishable as-is if the
 client is happy to own them.
 
-### 11. Newsletter field — omitted
+### 11. Rider Passport — the page is real, the product is not
+
+**Status:** `/rider-passport` is built, in the primary navigation, in the
+sitemap, and has a prominent homepage section.
+**Currently rendering:** what the passport will be, how it will work in four
+steps, and a join form. The page says in plain words that it is not live yet.
+The form writes an `Enquiry` with `source = GENERAL` and the message
+`Interested in: the Rider Passport`, so the waiting list is a real, countable
+list in the Phase 2 inbox from day one rather than a promise nobody recorded.
+**Needed, before the product exists:** nothing. The page is honest as it stands.
+**Needed to build it:** a decision on what a "stamp" actually is — a row against
+a confirmed booking is the cheapest version and needs no new guest-facing
+surface, and the schema already supports it.
+**Do not** change the copy to imply it is live. The prominence the client asked
+for is carried by the design, not by overclaiming.
+
+### 12. Beach Stays — a new category with one property in it
+
+**Status:** added to `content/taxonomy.json` at the client's request. To avoid
+shipping a category tile that leads to an empty grid, `sea-line-resort-alibaug`
+was moved from Resorts to Beach Stays — it is beachfront, so the move is
+defensible, but it was our call, not the client's.
+**Needed:** confirmation of that reclassification, and at least two more genuine
+beach properties. A category with one listing reads as a category that is not
+really there.
+**Note:** the category grid and the search "Stay type" menu both label a category
+with no listings as "Onboarding" rather than showing a dead filter, so an empty
+category degrades honestly if the client would rather leave it empty for now.
+
+### 13. Mobile crops — the hero photograph in particular
+
+**Status:** every image slot ships one landscape file, cropped by CSS.
+**Currently rendering:** the homepage hero is centre-anchored so a phone shows
+the horizon rather than a hillside (`anchor` on `components/primitives/Frame.tsx`).
+That is a mitigation, not a fix.
+**Needed:** with the real shoot, a portrait or square crop of the hero and of the
+destination tiles. Most of the launch traffic is expected from Instagram and
+WhatsApp — that is a phone-first audience looking at a 9:16 screen, and a
+landscape ghat photograph loses its subject at that ratio no matter where it is
+anchored.
+
+### 14. Newsletter field — omitted
 
 DPR §7.1 says the newsletter field ships only if the client confirms a mailing
 tool. None confirmed, so it is not built. Say the word and it takes an hour.

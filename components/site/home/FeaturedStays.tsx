@@ -23,6 +23,7 @@ export function FeaturedStays() {
           <SectionHead
             overline={copy.overline}
             title={<span id="featured-title">{copy.title}</span>}
+            lede={copy.lede}
             action={<TextLink href={copy.action.href}>{copy.action.label}</TextLink>}
           />
         </Reveal>
@@ -44,7 +45,7 @@ export function FeaturedStays() {
                   sizes="(min-width:1024px) 56vw, 100vw"
                 />
               </div>
-              <div className="col-span-5 flex flex-col justify-end gap-10">
+              <div className="col-span-5 flex flex-col justify-between gap-10">
                 {rest.slice(0, 2).map((p) => (
                   <PropertyCard
                     key={p.slug}

@@ -10,6 +10,7 @@ import type {
   PropertySeed,
   PropertyView,
   Story,
+  StoryCategory,
 } from "./types";
 
 /**
@@ -38,11 +39,21 @@ export const stories = [...(storiesRaw as Story[])].sort((a, b) =>
   b.publishedAt.localeCompare(a.publishedAt),
 );
 
-export const storyCategories = [
-  { slug: "routes", name: "Routes" },
-  { slug: "stays", name: "Stays" },
-  { slug: "riding", name: "Riding" },
-];
+/**
+ * Every story category the taxonomy knows about, and — separately — the ones a
+ * reader can actually filter by. A chip that leads to an empty page is the
+ * single loudest "this is a demo" signal on a content site, so the UI renders
+ * `activeStoryCategories` and Phase 2 fills the rest in simply by publishing.
+ */
+export const storyCategories = taxonomy.storyCategories as StoryCategory[];
+
+export const activeStoryCategories = storyCategories.filter((c) =>
+  stories.some((s) => s.categorySlug === c.slug),
+);
+
+export function getStoryCategory(slug: string): StoryCategory | undefined {
+  return storyCategories.find((c) => c.slug === slug);
+}
 
 export const siteContent = site;
 

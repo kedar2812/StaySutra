@@ -31,6 +31,12 @@ export interface Destination {
   mood?: string;
 }
 
+export interface StoryCategory {
+  slug: string;
+  name: string;
+  description?: string;
+}
+
 export interface ManagedItem {
   slug: string;
   name: string;
@@ -65,6 +71,15 @@ export interface PropertySeed {
   availability: AvailabilityStatus;
   isRiderFriendly: boolean;
   riderNote: string | null;
+  /**
+   * Why StaySutra picked it — one or two sentences in the curator's voice.
+   * This is the whole difference between a curated network and a listing wall,
+   * so it renders on the card and again, at size, on the property page.
+   */
+  curatorNote: string | null;
+  houseRules: string[];
+  /** Null falls back to the site-wide policy in site.json. */
+  cancellationPolicy: string | null;
   amenitySlugs: string[];
   facilitySlugs: string[];
   experienceSlugs: string[];

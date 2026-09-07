@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { Frame } from "@/components/primitives/Frame";
 import { motion, useMotionValueEvent, useReducedMotion, useScroll } from "motion/react";
+import { Icon, iconFor } from "@/components/primitives/Icon";
 import { Rule } from "@/components/primitives/Rule";
 import { siteContent } from "@/lib/content";
 import { cn } from "@/lib/utils";
@@ -39,7 +40,7 @@ export function MadeForTheRoad() {
       ref={ref}
       aria-labelledby="road-title"
       className="relative"
-      style={{ height: `${(road.pillars.length + 1) * 62}vh` }}
+      style={{ height: `${(road.pillars.length + 1) * 52}vh` }}
     >
       <div className="sticky top-0 flex min-h-[38rem] items-center overflow-hidden py-16 h-svh">
         <div className="absolute inset-0 -z-10">
@@ -81,11 +82,17 @@ export function MadeForTheRoad() {
                       <div>
                         <h3
                           className={cn(
-                            "font-display text-base uppercase leading-tight tracking-tight transition-colors duration-500 lg:text-lg",
+                            "flex items-center gap-3 font-display text-base uppercase leading-tight tracking-tight transition-colors duration-500 lg:text-lg",
                             on ? "text-text-hi" : "text-text-low",
                           )}
                           style={{ fontWeight: 700 }}
                         >
+                          <Icon
+                            name={iconFor(pillar.iconKey)}
+                            size={20}
+                            className="shrink-0 transition-opacity duration-500"
+                            style={{ opacity: on ? 1 : 0.55 }}
+                          />
                           {pillar.title}
                         </h3>
                         <motion.p
@@ -135,7 +142,11 @@ function StackedFallback() {
             >
               <span className="t-num pt-1 text-sm text-text-low">{p.number}</span>
               <div>
-                <h3 className="font-display text-lg uppercase text-text-hi" style={{ fontWeight: 700 }}>
+                <h3
+                  className="flex items-center gap-3 font-display text-lg uppercase text-text-hi"
+                  style={{ fontWeight: 700 }}
+                >
+                  <Icon name={iconFor(p.iconKey)} size={20} className="shrink-0 text-text-low" />
                   {p.title}
                 </h3>
                 <p className="mt-2 text-[0.9375rem] leading-relaxed text-text-mid">{p.body}</p>

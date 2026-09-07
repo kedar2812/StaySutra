@@ -16,7 +16,7 @@ import { ButtonLink } from "@/components/primitives/Button";
 import { Icon } from "@/components/primitives/Icon";
 import { siteContent } from "@/lib/content";
 import { spring } from "@/lib/motion";
-import { brand } from "@/lib/site";
+import { brand, waMessage, whatsappLink } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 const nav = siteContent.nav;
@@ -156,7 +156,7 @@ export function Header() {
           }}
           transition={reduced ? { duration: 0.2 } : spring.ui}
           className={cn(
-            "relative mx-auto flex items-center gap-5 px-4 sm:px-5",
+            "relative mx-auto flex items-center gap-3 px-3 sm:gap-5 sm:px-5",
             condensed ? "glass-liquid" : "border-t border-transparent",
           )}
         >
@@ -168,20 +168,29 @@ export function Header() {
             <Wordmark size="sm" showLockup={!condensed} />
           </Link>
 
-          <div className="relative z-10 hidden min-w-0 flex-1 justify-center lg:flex">
+          {/*
+            Six stops. At lg the road, the wordmark and a gold CTA together
+            overrun the bar and the labels start wrapping, so the route appears
+            at xl and the drawer covers everything below it.
+          */}
+          <div className="relative z-10 hidden min-w-0 flex-1 justify-center xl:flex">
             <Route pathname={pathname} reduced={!!reduced} />
           </div>
 
-          <div className="relative z-10 ml-auto flex shrink-0 items-center gap-2 lg:ml-0">
+          <div className="relative z-10 ml-auto flex shrink-0 items-center gap-2 xl:ml-0">
+            {/*
+              Owner acquisition is the second revenue line, so it is the one
+              gold element in the bar rather than an outline afterthought. It
+              never drops below the fold on mobile either — it shortens.
+            */}
             <ButtonLink
               href="/list-your-property"
-              variant="outline"
               size="sm"
               icon="arrowUpRight"
-              className="hidden sm:inline-flex"
+              className="px-3.5 max-sm:[&>svg]:hidden sm:px-4"
             >
-              <span className="hidden xl:inline">List your property</span>
-              <span className="xl:hidden">List yours</span>
+              <span className="hidden 2xl:inline">List your property</span>
+              <span className="2xl:hidden">List yours</span>
             </ButtonLink>
 
             <button
@@ -189,7 +198,7 @@ export function Header() {
               onClick={() => setOpen(true)}
               aria-label="Open menu"
               aria-expanded={open}
-              className="press grid size-11 place-items-center rounded-pill text-text-hi lg:hidden"
+              className="press -mr-1 grid size-11 place-items-center rounded-pill text-text-hi xl:hidden"
             >
               <Icon name="menu" />
             </button>
@@ -290,7 +299,7 @@ function Route({ pathname, reduced }: { pathname: string; reduced: boolean }) {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 onMouseEnter={() => setHover(item.href)}
-                className="press-sm group relative flex flex-col items-center gap-1.5 px-3.5 py-2.5 xl:px-4"
+                className="press-sm group relative flex flex-col items-center gap-1.5 px-3 py-2.5 2xl:px-4"
               >
                 {/* The stop. Gold when you are on it. */}
                 <span aria-hidden className="grid h-2.5 place-items-center">
@@ -387,7 +396,7 @@ function MobileNav({
       {open && (
         <>
           <motion.div
-            className="fixed inset-0 z-[60] bg-ink-900/70 lg:hidden"
+            className="fixed inset-0 z-[60] bg-ink-900/70 xl:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -402,7 +411,7 @@ function MobileNav({
             role="dialog"
             aria-modal="true"
             aria-label="Menu"
-            className="fixed inset-y-0 right-0 z-[61] flex w-[min(22rem,88vw)] flex-col bg-ink-800 lg:hidden"
+            className="fixed inset-y-0 right-0 z-[61] flex w-[min(22rem,88vw)] flex-col bg-ink-800 xl:hidden"
             style={{ borderLeft: "1px solid var(--hairline)" }}
             initial={reduced ? { opacity: 0 } : { x: "100%" }}
             animate={reduced ? { opacity: 1 } : { x: 0 }}
@@ -480,9 +489,24 @@ function MobileNav({
               </ul>
             </nav>
 
-            <div className="px-6 pb-8 pt-6">
-              <ButtonLink href="/list-your-property" className="w-full" icon="arrowRight">
-                List your property
+            {/*
+              The drawer ends on the booking flow, not on a second copy of the
+              bar's own CTA. Contact left the primary nav to make room for six
+              stops, so it lives here and in the footer.
+            */}
+            <div className="space-y-3 px-6 pb-8 pt-6">
+              <ButtonLink
+                href={whatsappLink(waMessage.general())}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="w-full"
+                icon="whatsapp"
+                iconAfter={false}
+              >
+                Talk to us on WhatsApp
+              </ButtonLink>
+              <ButtonLink href="/contact" variant="outline" className="w-full">
+                Contact
               </ButtonLink>
             </div>
           </motion.div>

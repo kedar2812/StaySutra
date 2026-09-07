@@ -6,7 +6,8 @@ import { destinations, siteContent, countIn } from "@/lib/content";
 import { settings, brand } from "@/lib/site";
 
 /**
- * Four columns: brand, then three link groups, with Destinations generated from
+ * Brand, then the link groups (now four — Ride was split out when the Rider
+ * Passport got its own page), with Destinations generated from
  * content rather than hardcoded — a seventh destination added in Phase 2 appears
  * here on its own. Every link goes somewhere real; the reference's Careers,
  * Owner Login, Resources and Partner Program are omitted rather than faked.
@@ -18,8 +19,8 @@ export function Footer() {
   return (
     <footer className="relative border-t border-[color:var(--hairline)] bg-ink-900">
       <div className="shell py-16 lg:py-24">
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))] lg:gap-8">
-          <div className="max-w-sm">
+        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.5fr)_repeat(4,minmax(0,1fr))] lg:gap-8">
+          <div className="max-w-sm sm:col-span-2 lg:col-span-1">
             <Wordmark size="md" />
             <p className="mt-6 text-[0.9375rem] leading-relaxed text-text-low">
               {brand.positioning}

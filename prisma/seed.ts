@@ -173,6 +173,9 @@ async function main() {
       availability: p.availability,
       isRiderFriendly: p.isRiderFriendly,
       riderNote: p.riderNote,
+      curatorNote: p.curatorNote,
+      houseRules: p.houseRules,
+      cancellationPolicy: p.cancellationPolicy,
       // Ratings are deliberately left null. Never seed a fake value. DPR §4.6
       ratingValue: null,
       ratingCount: null,

@@ -25,19 +25,19 @@
       "sortOrder": 3
     },
     {
-      "slug": "highway-stays",
-      "name": "Highway Stay",
-      "plural": "Highway Stays",
-      "description": "Off the road, into a bed. Built for long hauls.",
-      "iconKey": "highway",
-      "sortOrder": 4
-    },
-    {
       "slug": "homestays",
       "name": "Homestay",
       "plural": "Homestays",
       "description": "Someone's home, someone's cooking, local road advice.",
       "iconKey": "homestay",
+      "sortOrder": 4
+    },
+    {
+      "slug": "highway-stays",
+      "name": "Highway Stay",
+      "plural": "Highway Stays",
+      "description": "Off the road, into a bed. Built for long hauls.",
+      "iconKey": "highway",
       "sortOrder": 5
     },
     {
@@ -47,26 +47,116 @@
       "description": "Above the ghat, where the air changes.",
       "iconKey": "mountain",
       "sortOrder": 6
+    },
+    {
+      "slug": "beach-stays",
+      "name": "Beach Stay",
+      "plural": "Beach Stays",
+      "description": "Sand at the end of the lane, and salt in everything.",
+      "iconKey": "beach",
+      "sortOrder": 7
     }
   ],
-
   "amenities": [
-    { "slug": "wifi", "name": "Wi-Fi", "iconKey": "wifi", "group": "Essentials", "sortOrder": 1 },
-    { "slug": "air-conditioning", "name": "Air conditioning", "iconKey": "ac", "group": "Essentials", "sortOrder": 2 },
-    { "slug": "hot-water", "name": "Hot water", "iconKey": "bath", "group": "Essentials", "sortOrder": 3 },
-    { "slug": "power-backup", "name": "Power backup", "iconKey": "shield", "group": "Essentials", "sortOrder": 4 },
-    { "slug": "kitchen", "name": "Kitchen access", "iconKey": "kitchen", "group": "Food", "sortOrder": 5 },
-    { "slug": "meals", "name": "Meals available", "iconKey": "meals", "group": "Food", "sortOrder": 6 },
-    { "slug": "barbecue", "name": "Barbecue", "iconKey": "bonfire", "group": "Food", "sortOrder": 7 },
-    { "slug": "pool", "name": "Swimming pool", "iconKey": "pool", "group": "Outdoors", "sortOrder": 8 },
-    { "slug": "bonfire", "name": "Bonfire pit", "iconKey": "bonfire", "group": "Outdoors", "sortOrder": 9 },
-    { "slug": "valley-view", "name": "Valley view", "iconKey": "view", "group": "Outdoors", "sortOrder": 10 },
-    { "slug": "sea-view", "name": "Sea view", "iconKey": "view", "group": "Outdoors", "sortOrder": 11 },
-    { "slug": "garden", "name": "Garden / lawn", "iconKey": "trek", "group": "Outdoors", "sortOrder": 12 },
-    { "slug": "pet-friendly", "name": "Pet friendly", "iconKey": "pets", "group": "Policies", "sortOrder": 13 },
-    { "slug": "caretaker", "name": "On-site caretaker", "iconKey": "headset", "group": "Policies", "sortOrder": 14 }
+    {
+      "slug": "wifi",
+      "name": "Wi-Fi",
+      "iconKey": "wifi",
+      "group": "Essentials",
+      "sortOrder": 1
+    },
+    {
+      "slug": "air-conditioning",
+      "name": "Air conditioning",
+      "iconKey": "ac",
+      "group": "Essentials",
+      "sortOrder": 2
+    },
+    {
+      "slug": "hot-water",
+      "name": "Hot water",
+      "iconKey": "bath",
+      "group": "Essentials",
+      "sortOrder": 3
+    },
+    {
+      "slug": "power-backup",
+      "name": "Power backup",
+      "iconKey": "shield",
+      "group": "Essentials",
+      "sortOrder": 4
+    },
+    {
+      "slug": "kitchen",
+      "name": "Kitchen access",
+      "iconKey": "kitchen",
+      "group": "Food",
+      "sortOrder": 5
+    },
+    {
+      "slug": "meals",
+      "name": "Meals available",
+      "iconKey": "meals",
+      "group": "Food",
+      "sortOrder": 6
+    },
+    {
+      "slug": "barbecue",
+      "name": "Barbecue",
+      "iconKey": "bonfire",
+      "group": "Food",
+      "sortOrder": 7
+    },
+    {
+      "slug": "pool",
+      "name": "Swimming pool",
+      "iconKey": "pool",
+      "group": "Outdoors",
+      "sortOrder": 8
+    },
+    {
+      "slug": "bonfire",
+      "name": "Bonfire pit",
+      "iconKey": "bonfire",
+      "group": "Outdoors",
+      "sortOrder": 9
+    },
+    {
+      "slug": "valley-view",
+      "name": "Valley view",
+      "iconKey": "view",
+      "group": "Outdoors",
+      "sortOrder": 10
+    },
+    {
+      "slug": "sea-view",
+      "name": "Sea view",
+      "iconKey": "view",
+      "group": "Outdoors",
+      "sortOrder": 11
+    },
+    {
+      "slug": "garden",
+      "name": "Garden / lawn",
+      "iconKey": "trek",
+      "group": "Outdoors",
+      "sortOrder": 12
+    },
+    {
+      "slug": "pet-friendly",
+      "name": "Pet friendly",
+      "iconKey": "pets",
+      "group": "Policies",
+      "sortOrder": 13
+    },
+    {
+      "slug": "caretaker",
+      "name": "On-site caretaker",
+      "iconKey": "headset",
+      "group": "Policies",
+      "sortOrder": 14
+    }
   ],
-
   "facilities": [
     {
       "slug": "covered-parking",
@@ -125,14 +215,75 @@
       "sortOrder": 8
     }
   ],
-
   "experiences": [
-    { "slug": "bonfire-night", "name": "Bonfire night", "iconKey": "bonfire", "sortOrder": 1 },
-    { "slug": "sunrise-ride", "name": "Sunrise ride-out", "iconKey": "motorcycle", "sortOrder": 2 },
-    { "slug": "trek", "name": "Guided trek", "iconKey": "trek", "sortOrder": 3 },
-    { "slug": "local-food", "name": "Local food trail", "iconKey": "meals", "sortOrder": 4 },
-    { "slug": "kayaking", "name": "Kayaking", "iconKey": "pool", "sortOrder": 5 },
-    { "slug": "fort-visit", "name": "Fort visit", "iconKey": "compass", "sortOrder": 6 },
-    { "slug": "stargazing", "name": "Stargazing", "iconKey": "star", "sortOrder": 7 }
+    {
+      "slug": "bonfire-night",
+      "name": "Bonfire night",
+      "iconKey": "bonfire",
+      "sortOrder": 1
+    },
+    {
+      "slug": "sunrise-ride",
+      "name": "Sunrise ride-out",
+      "iconKey": "motorcycle",
+      "sortOrder": 2
+    },
+    {
+      "slug": "trek",
+      "name": "Guided trek",
+      "iconKey": "trek",
+      "sortOrder": 3
+    },
+    {
+      "slug": "local-food",
+      "name": "Local food trail",
+      "iconKey": "meals",
+      "sortOrder": 4
+    },
+    {
+      "slug": "kayaking",
+      "name": "Kayaking",
+      "iconKey": "pool",
+      "sortOrder": 5
+    },
+    {
+      "slug": "fort-visit",
+      "name": "Fort visit",
+      "iconKey": "compass",
+      "sortOrder": 6
+    },
+    {
+      "slug": "stargazing",
+      "name": "Stargazing",
+      "iconKey": "star",
+      "sortOrder": 7
+    }
+  ],
+  "storyCategories": [
+    {
+      "slug": "rides",
+      "name": "Rides",
+      "description": "What happened on the road."
+    },
+    {
+      "slug": "destinations",
+      "name": "Destinations",
+      "description": "Where to go, and when."
+    },
+    {
+      "slug": "stays",
+      "name": "Stays",
+      "description": "The places themselves."
+    },
+    {
+      "slug": "rider-guides",
+      "name": "Rider Guides",
+      "description": "Practical, checked, and written by riders."
+    },
+    {
+      "slug": "travel-stories",
+      "name": "Travel Stories",
+      "description": "The longer read."
+    }
   ]
 }
