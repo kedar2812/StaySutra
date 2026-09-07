@@ -418,6 +418,15 @@
     transition: opacity 340ms var(--ease-out-quint);
   }
 
+  /*
+   * A full-height panel of text needs more ground under it than a bar does.
+   * Same lens and the same blur — a heavier tint, so menu labels never end up
+   * sitting on a photograph that is still moving behind them.
+   */
+  .glass-panel {
+    --glass-bg: rgba(10, 22, 40, 0.78);
+  }
+
   /* Bigger surface reads as thicker material. */
   .glass-sheet {
     --glass-blur: 44px;
@@ -646,6 +655,15 @@
   }
   .glass-liquid::after {
     display: none;
+  }
+  /*
+   * .glass-panel sets --glass-bg on the element, so it wins over the :root
+   * value above and would leave the drawer 22% see-through with the blur
+   * switched off — menu labels sitting on raw page content, for exactly the
+   * people who asked for less transparency. It goes effectively opaque.
+   */
+  .glass-panel {
+    --glass-bg: rgba(10, 22, 40, 0.99);
   }
 }
 

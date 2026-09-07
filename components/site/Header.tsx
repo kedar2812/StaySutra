@@ -396,7 +396,7 @@ function MobileNav({
       {open && (
         <>
           <motion.div
-            className="fixed inset-0 z-[60] bg-ink-900/70 xl:hidden"
+            className="fixed inset-0 z-[60] bg-ink-900/60 xl:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -411,14 +411,13 @@ function MobileNav({
             role="dialog"
             aria-modal="true"
             aria-label="Menu"
-            className="fixed inset-y-0 right-0 z-[61] flex w-[min(22rem,88vw)] flex-col bg-ink-800 xl:hidden"
-            style={{ borderLeft: "1px solid var(--hairline)" }}
+            className="glass-liquid glass-panel fixed inset-y-0 right-0 z-[61] flex w-[min(22rem,88vw)] flex-col xl:hidden"
             initial={reduced ? { opacity: 0 } : { x: "100%" }}
             animate={reduced ? { opacity: 1 } : { x: 0 }}
             exit={reduced ? { opacity: 0 } : { x: "100%" }}
             transition={reduced ? { duration: 0.2 } : spring.sheet}
           >
-            <div className="flex h-[4.5rem] items-center justify-between px-6">
+            <div className="relative z-10 flex h-[4.5rem] items-center justify-between px-6">
               <span className="t-caption uppercase tracking-[0.2em]">Menu</span>
               <button
                 type="button"
@@ -431,7 +430,7 @@ function MobileNav({
             </div>
 
             {/* The same road, stood on end. */}
-            <nav aria-label="Mobile" className="relative flex-1 overflow-y-auto px-6 pt-4">
+            <nav aria-label="Mobile" className="relative z-10 flex-1 overflow-y-auto px-6 pt-4">
               <span
                 aria-hidden
                 className="absolute bottom-8 left-[2.15rem] top-6 w-px bg-[var(--hairline)]"
@@ -469,14 +468,14 @@ function MobileNav({
                               "block rounded-pill border",
                               active
                                 ? "size-2 border-gold-500 bg-gold-500"
-                                : "size-[5px] border-[color:var(--hairline-str)] bg-ink-800",
+                                : "size-[5px] border-[color:var(--hairline-str)] bg-transparent",
                             )}
                           />
                         </span>
                         <span
                           className={cn(
                             "flex-1 font-display text-lg uppercase tracking-tight",
-                            active ? "text-text-hi" : "text-text-low",
+                            active ? "text-text-hi" : "text-text-mid",
                           )}
                         >
                           {item.label}
@@ -494,7 +493,7 @@ function MobileNav({
               bar's own CTA. Contact left the primary nav to make room for six
               stops, so it lives here and in the footer.
             */}
-            <div className="space-y-3 px-6 pb-8 pt-6">
+            <div className="relative z-10 space-y-3 px-6 pb-8 pt-6">
               <ButtonLink
                 href={whatsappLink(waMessage.general())}
                 target="_blank"
