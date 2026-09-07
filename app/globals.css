@@ -72,7 +72,15 @@
 
   --glass-bg: rgba(12, 26, 45, 0.55);
   --glass-edge: rgba(255, 255, 255, 0.16);
-  --glass-blur: 24px;
+  /*
+   * Blur radius for every glass surface, set here so no component carries its
+   * own. 24px let hard edges behind the bar — a headline, a card border, a
+   * bright sky — resolve through it and compete with the bar's own labels.
+   * At 34px the backdrop reads as colour and light rather than as content,
+   * which is the whole point of the material: it should say what is behind it
+   * without letting you read it.
+   */
+  --glass-blur: 34px;
   --glass-sat: 165%;
 
   --shadow-card: 0 12px 32px -16px rgba(0, 0, 0, 0.6);
@@ -400,12 +408,14 @@
 
   /* Bigger surface reads as thicker material. */
   .glass-sheet {
-    --glass-blur: 32px;
+    --glass-blur: 44px;
     box-shadow: 0 -32px 80px -24px rgba(0, 0, 0, 0.7);
   }
 
+  /* A chip sits on top of one image, not over a scrolling page — it needs
+     enough blur to hold its label and no more. */
   .glass-chip {
-    --glass-blur: 12px;
+    --glass-blur: 18px;
     box-shadow: none;
     border-bottom-color: transparent;
   }
