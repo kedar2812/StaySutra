@@ -312,8 +312,19 @@
 
   .glass {
     background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+  /*
+   * ORDER IS LOAD-BEARING: -webkit- first, the standard property last.
+   *
+   * The production minifier (Lightning CSS, via Tailwind v4) parses
+   * `-webkit-backdrop-filter` and `backdrop-filter` as one logical property and
+   * keeps the declaration it sees last. With the standard property written
+   * first it was dropped from every build, leaving only the -webkit- form —
+   * which Safari honours and modern Chrome does not. The glass had no blur in
+   * production at all, while dev (unminified, both declarations present)
+   * looked correct. Do not "tidy" these back into alphabetical order.
+   */
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
     border-top: 1px solid var(--glass-edge);
     border-bottom: 1px solid rgba(0, 0, 0, 0.25);
     box-shadow: var(--shadow-float);
@@ -343,8 +354,9 @@
         rgb(255 255 255 / 0) 60%
       ),
       var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat)) brightness(1.05);
+    /* -webkit- first, standard last. See the note on .glass. */
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat)) brightness(1.05);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat)) brightness(1.05);
     box-shadow:
       inset 0 1px 0 rgb(255 255 255 / 0.20),
       inset 0 -1px 0 rgb(0 0 0 / 0.32),
@@ -624,8 +636,9 @@
   }
   .glass,
   .glass-liquid {
-    backdrop-filter: none !important;
+    /* -webkit- first, standard last. See the note on .glass. */
     -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
   }
   /* With transparency reduced there is no lens to catch light. */
   .glass-liquid {
