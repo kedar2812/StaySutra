@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { Frame } from "@/components/primitives/Frame";
 import { Parallax } from "@/components/motion/Parallax";
-import { countIn } from "@/lib/content";
-import { cn, plural } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import type { Destination } from "@/lib/types";
 import type { PlateMood, PlateScene } from "@/lib/plate";
 
@@ -19,8 +18,6 @@ export function DestinationTile({
   className?: string;
   sizes?: string;
 }) {
-  const count = countIn(d.slug);
-
   const image = (
     <Frame
       seed={`destination-${d.slug}`}
@@ -28,7 +25,6 @@ export function DestinationTile({
       mood={d.mood as PlateMood | undefined}
       fill
       sizes={sizes}
-      muted={size === "sm"}
       className="rounded-card"
       imgClassName="transition-transform duration-[520ms] ease-out-quint group-hover:scale-[1.045]"
     />
@@ -43,10 +39,16 @@ export function DestinationTile({
         {parallax ? <Parallax className="h-full">{image}</Parallax> : image}
       </div>
 
+      {/*
+        Place photography is shown in colour — it is what the tile is selling.
+        The scrim is weighted to the lower third, where the type sits, so a
+        bright sky or a waterfall never decides whether the label is legible.
+      */}
       <div className="pointer-events-none absolute inset-0 scrim-b" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-ink-900/70 to-transparent" />
 
       <div className="relative flex h-full flex-col justify-end p-5 lg:p-7">
-        <p className="t-caption uppercase tracking-[0.2em]">{d.state}</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-mid">{d.state}</p>
         <h3
           className={cn(
             "mt-2 font-display uppercase leading-[0.92] tracking-[-0.025em] text-text-hi",
@@ -58,14 +60,11 @@ export function DestinationTile({
         </h3>
 
         {size === "lg" && (
-          <p className="mt-4 max-w-[38ch] text-[0.9375rem] leading-relaxed text-text-mid">
+          <p className="mt-3 max-w-[38ch] text-[0.9375rem] leading-relaxed text-text-mid">
             {d.shortIntro}
           </p>
         )}
 
-        <p className="t-caption mt-3 tabular-nums">
-          {count > 0 ? plural(count, "stay") : "Onboarding stays"}
-        </p>
       </div>
     </Link>
   );

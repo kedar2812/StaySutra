@@ -340,6 +340,38 @@ Read `docs/StaySutra_DPR.md` §4 before changing anything visual. In particular:
 
 If an animation costs a performance budget, **the budget wins**.
 
+### Where the build deliberately departs from the DPR
+
+A design audit in October 2026 (every page at 375×667, 390, 768, 1024, 1440
+and 1920 on a production build) changed these on purpose. They supersede the
+DPR on these points only — do not "restore" them from the document.
+
+- **Uppercase is for display XL only** — the hero, page openers set at `lg`,
+  the final call. Section and card headings are sentence case. With every
+  heading in 800-weight capitals the page had no hierarchy left.
+- **The homepage is eight sections, stays first:** hero + search, featured
+  stays, Made for the Road, destinations, stories, more for riders, owners,
+  final call. Categories, the five-column "Why book" strip and the separate
+  Rider Passport section were cut — the same four promises were being made
+  three times, and the page ran nineteen phone screens.
+- **Primary nav:** Stays, Destinations, Rider-friendly, Stories, About,
+  Contact. Rider Passport and For riders live in the footer and the homepage.
+  The owner CTA is an outline button at desktop and sits in the drawer on a
+  phone. Desktop nav starts at 1024px.
+- **Pinning only where it fits.** The `pin` variant in `globals.css` is a
+  ≥1024px-wide, ≥720px-tall, motion-allowed window. Anywhere else the same
+  markup stacks.
+- **Overlay scroll lock goes through `lib/scroll-lock.ts`.** `overflow:
+  hidden` alone does not stop Lenis. Scrollable regions inside an overlay need
+  `data-lenis-prevent`.
+- **Floating WhatsApp** hides over the first screen, while you scroll down,
+  near anything marked `data-wa-hide`, and under any open overlay. On property
+  pages the docked price bar carries WhatsApp below desktop width instead.
+- **Demo galleries show only a property's own photo.** No borrowing from
+  other listings to fill frames.
+- **Date fields use `components/primitives/DateInput.tsx`** — the native
+  control underneath, our type on top.
+
 ---
 
 ## 11. Performance budgets

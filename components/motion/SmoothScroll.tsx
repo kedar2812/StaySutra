@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Lenis from "lenis";
+import { registerLenis } from "@/lib/scroll-lock";
 
 /**
  * Lenis smooth scroll. Native scrollbars are preserved and the whole thing is
@@ -40,6 +41,7 @@ export function SmoothScroll() {
         smoothWheel: true,
         anchors: true,
       });
+      registerLenis(lenis.current);
       const loop = (time: number) => {
         lenis.current?.raf(time);
         raf = requestAnimationFrame(loop);
@@ -52,6 +54,7 @@ export function SmoothScroll() {
       raf = 0;
       lenis.current?.destroy();
       lenis.current = null;
+      registerLenis(null);
     };
 
     if (query.matches) stop();

@@ -3,7 +3,6 @@ import { PageHero } from "@/components/site/PageHero";
 import { ContactForm } from "@/components/site/ContactForm";
 import { JsonLd } from "@/components/site/JsonLd";
 import { Icon } from "@/components/primitives/Icon";
-import { Rule } from "@/components/primitives/Rule";
 import { ButtonLink } from "@/components/primitives/Button";
 import { breadcrumbSchema, pageMeta } from "@/lib/seo";
 import { settings, waMessage, whatsappLink } from "@/lib/site";
@@ -24,7 +23,6 @@ export default function ContactPage() {
   return (
     <>
       <PageHero
-        overline="Talk to us"
         title="Contact"
         lede={settings.responseTime}
         seed="contact-hero"
@@ -35,10 +33,8 @@ export default function ContactPage() {
       />
 
       <div className="shell grid gap-14 pb-24 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] lg:gap-24 lg:pb-32">
-        <aside>
-          <Rule className="mb-5 max-w-24" />
-          <p className="t-overline">Fastest first</p>
-          <h2 className="t-display-m mt-4 max-w-[14ch] text-balance">
+        <aside data-wa-hide="">
+          <h2 className="t-display-m max-w-[18ch]">
             WhatsApp is where this actually happens
           </h2>
           <p className="mt-6 max-w-[42ch] text-[0.9375rem] leading-relaxed text-text-mid">
@@ -112,9 +108,7 @@ export default function ContactPage() {
         </aside>
 
         <div>
-          <Rule className="mb-5 max-w-24" />
-          <p className="t-overline">Or write to us</p>
-          <h2 className="t-display-m mt-4">Send a message</h2>
+          <h2 className="t-display-m">Send a message</h2>
           <div className="mt-9 max-w-xl">
             <ContactForm />
           </div>

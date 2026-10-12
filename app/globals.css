@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/*
+ * Pinned scroll moments. Only where there is room for them: a desktop-width
+ * window tall enough to hold the pinned frame without clipping it under the
+ * header, and only for people who have not asked for less motion. Everywhere
+ * else the same markup reads as a plain stacked section. DPR §4.5
+ */
+@custom-variant pin (@media (min-width: 1024px) and (min-height: 720px) and (prefers-reduced-motion: no-preference));
+
 /* ==========================================================================
    StaySutra — design tokens
    The single source of truth for colour, spacing, radius and material.
@@ -90,7 +98,8 @@
   --content-max: 1320px;
   --gutter: 24px;
 
-  --header-h: 68px;
+  /* The header's real bottom edge: top inset plus bar height. */
+  --header-h: 72px;
 
   /* Film grain — tiled fractal noise, generated not downloaded. DPR §4.6 */
   --grain-url: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='128' height='128' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -101,7 +110,7 @@
 @media (min-width: 768px) {
   :root {
     --gutter: 40px;
-    --header-h: 76px;
+    --header-h: 88px;
   }
 }
 
@@ -129,6 +138,8 @@
 
   html {
     -webkit-text-size-adjust: 100%;
+    /* Locking scroll for an overlay must not shift the page sideways. */
+    scrollbar-gutter: stable;
     scrollbar-color: var(--color-ink-500) var(--color-ink-900);
   }
 
@@ -203,24 +214,31 @@
     color: var(--color-text-hi);
   }
 
+  /*
+   * Uppercase is reserved for display XL — the hero, page openers, the final
+   * call. Section and sub-section headings are set in sentence case. When every
+   * heading on a page shouts, none of them is louder than the others and the
+   * page loses its hierarchy; the change of case is what lets the big moments
+   * stay big.
+   */
   .t-display-l {
     font-family: var(--font-display);
     font-weight: 800;
-    text-transform: uppercase;
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    line-height: 1;
-    letter-spacing: -0.02em;
+    font-size: clamp(2rem, 4.6vw, 3.375rem);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
     color: var(--color-text-hi);
+    text-wrap: balance;
   }
 
   .t-display-m {
     font-family: var(--font-display);
     font-weight: 800;
-    text-transform: uppercase;
-    font-size: clamp(1.5rem, 3.2vw, 2.25rem);
-    line-height: 1.05;
-    letter-spacing: -0.02em;
+    font-size: clamp(1.625rem, 3.2vw, 2.375rem);
+    line-height: 1.06;
+    letter-spacing: -0.025em;
     color: var(--color-text-hi);
+    text-wrap: balance;
   }
 
   .t-heading {
@@ -613,6 +631,23 @@
 @layer utilities {
   body:has([data-wa-float="page"]) [data-wa-float="global"] {
     display: none;
+  }
+
+  /* An open overlay owns the screen; floating chrome steps aside. */
+  .is-scroll-locked [data-wa-float] {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  /*
+   * The docked CTA bar on a property page must never cover the last line of
+   * the page. The footer takes the bar's height as extra bottom padding below
+   * the desktop breakpoint, where the bar exists. DPR §7.6 (3)
+   */
+  @media (max-width: 1023.98px) {
+    body:has([data-sticky-bar]) footer {
+      padding-bottom: calc(env(safe-area-inset-bottom) + 5.5rem);
+    }
   }
 }
 

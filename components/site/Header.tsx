@@ -3,37 +3,33 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import {
-  AnimatePresence,
-  motion,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-  useTransform,
-} from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Wordmark } from "./Wordmark";
 import { ButtonLink } from "@/components/primitives/Button";
 import { Icon } from "@/components/primitives/Icon";
 import { siteContent } from "@/lib/content";
 import { spring } from "@/lib/motion";
-import { brand, waMessage, whatsappLink } from "@/lib/site";
+import { waMessage, whatsappLink, brand } from "@/lib/site";
 import { cn } from "@/lib/utils";
+import { lockScroll } from "@/lib/scroll-lock";
 
 const nav = siteContent.nav;
 
 /**
  * The route bar.
  *
- * Navigation drawn as a road: a measured hairline with a node at every stop and
- * the stop you are on lit in gold. Minor ticks run the length of it like the
- * gradations on a map scale.
+ * Navigation drawn as a road: a hairline with a node at every stop, and the
+ * stop you are on lit in gold. The bar never leaves. It takes on glass once you
+ * move off the top of the page.
  *
- * The bar never leaves. It detaches from the page edge and takes on glass once
- * you move off the top, and page progress is traced around its own border, so
- * the indicator follows the corner radius instead of cutting across it.
+ * The bar sits inside `.shell` and bleeds 12–16px past it on both sides, with
+ * the same amount of inner padding. The wordmark therefore lands exactly on the
+ * content edge at every width, and the bar is the same width as the sticky
+ * filter bar on /stays — two floating bars of different widths stacked on top
+ * of each other read as a mistake.
  *
- * DPR §7.1 (glass, content scrolls underneath), §4.5 (interruptible springs,
- * feedback on pointer-down, reduced-motion fallbacks).
+ * Its width no longer animates between states. Only the glass fades in, which
+ * is compositor work rather than layout. DPR §7.1, §4.5 (9)
  */
 
 export function Header() {
@@ -43,16 +39,6 @@ export function Header() {
   const [condensed, setCondensed] = useState(false);
   const [open, setOpen] = useState(false);
   const bar = useRef<HTMLDivElement>(null);
-  const [box, setBox] = useState({ w: 0, h: 0 });
-
-  const { scrollYProgress } = useScroll();
-  const progress = useSpring(scrollYProgress, {
-    stiffness: 240,
-    damping: 40,
-    mass: 0.3,
-  });
-  // strokeDashoffset runs 1 → 0 as the page is consumed.
-  const traced = useTransform(progress, (v) => 1 - v);
 
   useEffect(() => {
     let frame = 0;
@@ -60,7 +46,7 @@ export function Header() {
       if (frame) return;
       frame = requestAnimationFrame(() => {
         frame = 0;
-        setCondensed(window.scrollY > 64);
+        setCondensed(window.scrollY > 48);
       });
     };
     onScroll();
@@ -72,30 +58,10 @@ export function Header() {
   }, []);
 
   /*
-   * The traced border is a real <rect>, so it needs real pixels. The bar's
-   * width and radius animate, so observe it rather than assuming.
-   */
-  useEffect(() => {
-    const el = bar.current;
-    if (!el) return;
-    const observer = new ResizeObserver(([entry]) => {
-      const r = entry?.contentRect;
-      if (r) setBox({ w: el.offsetWidth, h: el.offsetHeight });
-    });
-    observer.observe(el);
-    setBox({ w: el.offsetWidth, h: el.offsetHeight });
-    return () => observer.disconnect();
-  }, []);
-
-  /*
-   * The specular highlight follows the pointer across the bar.
-   *
-   * Position is written straight to the element as a custom property on an
-   * animation frame — it is deliberately not React state, so sweeping the
-   * cursor over the header costs no render and touches only compositor work.
-   * Under reduced motion it is skipped outright: a highlight chasing the
-   * pointer is incidental movement, which is exactly what that setting asks
-   * us to drop.
+   * The specular highlight follows the pointer across the bar. Written straight
+   * to the element as custom properties on an animation frame — not React
+   * state — so sweeping the cursor costs no render. Skipped under reduced
+   * motion: a highlight chasing the pointer is incidental movement.
    */
   useEffect(() => {
     const el = bar.current;
@@ -111,7 +77,6 @@ export function Header() {
       el.style.setProperty("--gx", `${((px - r.left) / r.width) * 100}%`);
       el.style.setProperty("--gy", `${((py - r.top) / r.height) * 100}%`);
     };
-
     const move = (e: PointerEvent) => {
       px = e.clientX;
       py = e.clientY;
@@ -146,104 +111,59 @@ export function Header() {
         Skip to content
       </a>
 
-      {/* Pinned. It does not retract, condense away, or hide. */}
-      <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
-        <motion.div
-          ref={bar}
-          animate={{
-            maxWidth: condensed ? 1240 : 1420,
-            borderRadius: condensed ? 18 : 22,
-          }}
-          transition={reduced ? { duration: 0.2 } : spring.ui}
-          className={cn(
-            "relative mx-auto flex items-center gap-3 px-3 sm:gap-5 sm:px-5",
-            condensed ? "glass-liquid" : "border-t border-transparent",
-          )}
-        >
-          <Link
-            href="/"
-            aria-label={`${brand.name} — home`}
-            className="press-sm relative z-10 flex h-[3.75rem] shrink-0 items-center sm:h-[4.5rem]"
+      <header className="fixed inset-x-0 top-0 z-50 pt-3 md:pt-4">
+        <div className="shell">
+          <div
+            ref={bar}
+            className="relative -mx-3 flex h-[3.75rem] items-center gap-4 rounded-[18px] px-3 md:-mx-4 md:h-[4.5rem] md:px-4"
           >
-            <Wordmark size="sm" showLockup={!condensed} />
-          </Link>
-
-          {/*
-            Six stops. At lg the road, the wordmark and a gold CTA together
-            overrun the bar and the labels start wrapping, so the route appears
-            at xl and the drawer covers everything below it.
-          */}
-          <div className="relative z-10 hidden min-w-0 flex-1 justify-center xl:flex">
-            <Route pathname={pathname} reduced={!!reduced} />
-          </div>
-
-          <div className="relative z-10 ml-auto flex shrink-0 items-center gap-2 xl:ml-0">
-            {/*
-              Owner acquisition is the second revenue line, so it is the one
-              gold element in the bar rather than an outline afterthought. It
-              never drops below the fold on mobile either — it shortens.
-            */}
-            <ButtonLink
-              href="/list-your-property"
-              size="sm"
-              icon="arrowUpRight"
-              className="px-3.5 max-sm:[&>svg]:hidden sm:px-4"
-            >
-              <span className="hidden 2xl:inline">List your property</span>
-              <span className="2xl:hidden">List yours</span>
-            </ButtonLink>
-
-            <button
-              type="button"
-              onClick={() => setOpen(true)}
-              aria-label="Open menu"
-              aria-expanded={open}
-              className="press -mr-1 grid size-11 place-items-center rounded-pill text-text-hi xl:hidden"
-            >
-              <Icon name="menu" />
-            </button>
-          </div>
-
-          {/*
-            Page progress, drawn around the bar's own border. pathLength
-            normalises the perimeter to 1, so the dash offset is the scroll
-            fraction directly and the line follows the corner radius rather
-            than cutting across it.
-          */}
-          {box.w > 0 && (
-            <svg
+            {/* The glass, as its own layer so it can fade rather than snap. */}
+            <div
               aria-hidden
-              className="pointer-events-none absolute inset-0 z-10 overflow-visible"
-              width={box.w}
-              height={box.h}
-              viewBox={`0 0 ${box.w} ${box.h}`}
-              fill="none"
+              className={cn(
+                "glass-liquid pointer-events-none absolute inset-0 rounded-[inherit] transition-opacity duration-300",
+                condensed ? "opacity-100" : "opacity-0",
+              )}
+            />
+
+            <Link
+              href="/"
+              aria-label={`${brand.name} — home`}
+              className="press-sm relative z-10 flex h-full shrink-0 items-center"
             >
+              <Wordmark size="sm" showLockup={false} />
+            </Link>
+
+            <div className="relative z-10 hidden min-w-0 flex-1 justify-center lg:flex">
+              <Route pathname={pathname} reduced={!!reduced} />
+            </div>
+
+            <div className="relative z-10 ml-auto flex shrink-0 items-center gap-2 lg:ml-0">
               {/*
-                A rect path natively begins top-left and runs right. Mirrored
-                vertically it begins bottom-left and runs right instead — the
-                edge the eye already reads as progress — then wraps the corner
-                and carries on around. The shape is symmetric, so the mirror
-                costs nothing.
+                Owners are the second audience, not the first. Outlined, and on
+                a phone it lives in the drawer — the bar there is for riders.
               */}
-              <motion.rect
-                transform={`scale(1,-1) translate(0,${-box.h})`}
-                x={0.75}
-                y={0.75}
-                width={Math.max(0, box.w - 1.5)}
-                height={Math.max(0, box.h - 1.5)}
-                rx={condensed ? 17.25 : 21.25}
-                pathLength={1}
-                stroke="var(--color-gold-500)"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeDasharray="1 1"
-                style={{ strokeDashoffset: traced }}
-                opacity={0.85}
-              />
-            </svg>
-          )}
-        </motion.div>
+              <ButtonLink
+                href="/list-your-property"
+                variant="outline"
+                size="sm"
+                className="hidden lg:inline-flex"
+              >
+                List your property
+              </ButtonLink>
+
+              <button
+                type="button"
+                onClick={() => setOpen(true)}
+                aria-label="Open menu"
+                aria-expanded={open}
+                className="press -mr-1.5 grid size-11 place-items-center rounded-pill text-text-hi lg:hidden"
+              >
+                <Icon name="menu" />
+              </button>
+            </div>
+          </div>
+        </div>
       </header>
 
       <MobileNav open={open} onClose={() => setOpen(false)} pathname={pathname} />
@@ -253,62 +173,40 @@ export function Header() {
 
 /* — The route ————————————————————————————————————————————————— */
 
+function isActive(pathname: string, href: string) {
+  return pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
+}
+
 function Route({ pathname, reduced }: { pathname: string; reduced: boolean }) {
   const [hover, setHover] = useState<string | null>(null);
 
   return (
-    <nav aria-label="Primary" className="relative px-2">
-      {/*
-        The road, measured. A hairline with minor gradations along it — the
-        marks are a scale, not a claim, so nothing here asserts a distance the
-        site cannot back up.
-      */}
-      <span
-        aria-hidden
-        className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-[var(--hairline)]"
-      />
-      <span
-        aria-hidden
-        className="absolute inset-x-0 top-1/2 h-[5px] -translate-y-[3px] opacity-45"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(to right, var(--hairline-str) 0 1px, transparent 1px 11px)",
-          maskImage: "linear-gradient(to bottom, #000 0 2px, transparent 2px)",
-          WebkitMaskImage: "linear-gradient(to bottom, #000 0 2px, transparent 2px)",
-        }}
-      />
+    <nav aria-label="Primary" className="relative">
+      {/* The road. It runs through the centre of every stop. */}
+      <span aria-hidden className="absolute inset-x-3 top-[15px] h-px bg-[var(--hairline)]" />
 
       <ul className="relative flex items-center" onMouseLeave={() => setHover(null)}>
-        {nav.map((item, i) => {
-          const active =
-            pathname === item.href ||
-            (item.href !== "/" && pathname.startsWith(`${item.href}/`));
+        {nav.map((item) => {
+          const active = isActive(pathname, item.href);
           const lit = active || hover === item.href;
 
           return (
-            <li key={item.href} className="relative flex items-center">
-              {/* Milestone between stops — a taller gradation on the road. */}
-              {i > 0 && (
-                <span
-                  aria-hidden
-                  className="h-2 w-px shrink-0 bg-[var(--hairline-str)] opacity-70"
-                />
-              )}
-
+            <li key={item.href}>
               <Link
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 onMouseEnter={() => setHover(item.href)}
-                className="press-sm group relative flex flex-col items-center gap-1.5 px-3 py-2.5 2xl:px-4"
+                className="press-sm relative flex flex-col items-center gap-1.5 px-2.5 py-2.5 xl:px-3.5"
               >
-                {/* The stop. Gold when you are on it. */}
                 <span aria-hidden className="grid h-2.5 place-items-center">
                   <motion.span
                     className={cn(
                       "block rounded-pill border",
-                      lit
+                      active
                         ? "border-gold-500 bg-gold-500"
-                        : "border-[color:var(--hairline-str)] bg-ink-900",
+                        : lit
+                          ? "border-text-mid bg-text-mid"
+                          : "border-[color:var(--hairline-str)] bg-ink-900",
                     )}
                     animate={{
                       width: active ? 8 : lit ? 7 : 5,
@@ -320,8 +218,8 @@ function Route({ pathname, reduced }: { pathname: string; reduced: boolean }) {
 
                 <span
                   className={cn(
-                    "text-[0.6875rem] font-semibold uppercase leading-none tracking-[0.13em] transition-colors duration-200",
-                    lit ? "text-text-hi" : "text-text-low",
+                    "whitespace-nowrap text-[0.875rem] font-medium leading-none transition-colors duration-200",
+                    lit ? "text-text-hi" : "text-text-mid",
                   )}
                 >
                   {item.label}
@@ -350,12 +248,11 @@ function MobileNav({
   const panel = useRef<HTMLDivElement>(null);
   const returnTo = useRef<Element | null>(null);
 
-  /* Body scroll lock, focus trap, and focus returned to the trigger. DPR §6.5 */
+  /* Scroll lock, focus trap, and focus returned to the trigger. DPR §6.5 */
   useEffect(() => {
     if (!open) return;
     returnTo.current = document.activeElement;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const unlock = lockScroll();
 
     const first = panel.current?.querySelector<HTMLElement>(
       "a, button, [tabindex]:not([tabindex='-1'])",
@@ -386,7 +283,7 @@ function MobileNav({
     document.addEventListener("keydown", onKey);
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
+      unlock();
       (returnTo.current as HTMLElement | null)?.focus?.();
     };
   }, [open, onClose]);
@@ -396,7 +293,7 @@ function MobileNav({
       {open && (
         <>
           <motion.div
-            className="fixed inset-0 z-[60] bg-ink-900/60 xl:hidden"
+            className="fixed inset-0 z-[60] bg-ink-900/60 lg:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -411,14 +308,14 @@ function MobileNav({
             role="dialog"
             aria-modal="true"
             aria-label="Menu"
-            className="glass-liquid glass-panel fixed inset-y-0 right-0 z-[61] flex w-[min(22rem,88vw)] flex-col xl:hidden"
+            className="glass-liquid glass-panel fixed inset-y-0 right-0 z-[61] flex w-[min(22rem,88vw)] flex-col lg:hidden"
             initial={reduced ? { opacity: 0 } : { x: "100%" }}
             animate={reduced ? { opacity: 1 } : { x: 0 }}
             exit={reduced ? { opacity: 0 } : { x: "100%" }}
             transition={reduced ? { duration: 0.2 } : spring.sheet}
           >
             <div className="relative z-10 flex h-[4.5rem] items-center justify-between px-6">
-              <span className="t-caption uppercase tracking-[0.2em]">Menu</span>
+              <span className="t-caption">Menu</span>
               <button
                 type="button"
                 onClick={onClose}
@@ -430,26 +327,18 @@ function MobileNav({
             </div>
 
             {/* The same road, stood on end. */}
-            <nav aria-label="Mobile" className="relative z-10 flex-1 overflow-y-auto px-6 pt-4">
+            <nav
+              aria-label="Mobile"
+              data-lenis-prevent
+              className="relative z-10 flex-1 overflow-y-auto px-6 pt-2"
+            >
               <span
                 aria-hidden
-                className="absolute bottom-8 left-[2.15rem] top-6 w-px bg-[var(--hairline)]"
-              />
-              <span
-                aria-hidden
-                className="absolute bottom-8 left-[2.09rem] top-6 w-[5px] opacity-45"
-                style={{
-                  backgroundImage:
-                    "repeating-linear-gradient(to bottom, var(--hairline-str) 0 1px, transparent 1px 11px)",
-                  maskImage: "linear-gradient(to right, #000 0 2px, transparent 2px)",
-                  WebkitMaskImage: "linear-gradient(to right, #000 0 2px, transparent 2px)",
-                }}
+                className="absolute bottom-6 left-[2.15rem] top-6 w-px bg-[var(--hairline)]"
               />
               <ul className="relative">
                 {nav.map((item, i) => {
-                  const active =
-                    pathname === item.href ||
-                    (item.href !== "/" && pathname.startsWith(`${item.href}/`));
+                  const active = isActive(pathname, item.href);
                   return (
                     <motion.li
                       key={item.href}
@@ -468,15 +357,16 @@ function MobileNav({
                               "block rounded-pill border",
                               active
                                 ? "size-2 border-gold-500 bg-gold-500"
-                                : "size-[5px] border-[color:var(--hairline-str)] bg-transparent",
+                                : "size-[5px] border-[color:var(--hairline-str)] bg-ink-800",
                             )}
                           />
                         </span>
                         <span
                           className={cn(
-                            "flex-1 font-display text-lg uppercase tracking-tight",
+                            "flex-1 font-display text-xl tracking-[-0.01em]",
                             active ? "text-text-hi" : "text-text-mid",
                           )}
+                          style={{ fontWeight: 700 }}
                         >
                           {item.label}
                         </span>
@@ -488,12 +378,8 @@ function MobileNav({
               </ul>
             </nav>
 
-            {/*
-              The drawer ends on the booking flow, not on a second copy of the
-              bar's own CTA. Contact left the primary nav to make room for six
-              stops, so it lives here and in the footer.
-            */}
-            <div className="relative z-10 space-y-3 px-6 pb-8 pt-6">
+            {/* The drawer ends on the conversation, then the owner route. */}
+            <div className="relative z-10 space-y-3 px-6 pb-[calc(env(safe-area-inset-bottom)+2rem)] pt-6">
               <ButtonLink
                 href={whatsappLink(waMessage.general())}
                 target="_blank"
@@ -504,8 +390,8 @@ function MobileNav({
               >
                 Talk to us on WhatsApp
               </ButtonLink>
-              <ButtonLink href="/contact" variant="outline" className="w-full">
-                Contact
+              <ButtonLink href="/list-your-property" variant="outline" className="w-full">
+                List your property
               </ButtonLink>
             </div>
           </motion.div>

@@ -75,8 +75,8 @@ const SEEDS: Record<string, MediaRef> = {
     "A road running between dense green trees",
   ),
   "list-your-property": img(
-    "/img/prop/the-lawn-house-pune.jpg",
-    "A low modern house with its outdoor lighting on at night",
+    "/img/prop/sea-line-resort-alibaug.jpg",
+    "An open-sided terrace lounge with deep sofas and hanging chairs",
   ),
 
   // Destinations
@@ -119,38 +119,44 @@ const SEEDS: Record<string, MediaRef> = {
   ),
 
   // Page heroes and editorial bands — reused deliberately across pages.
-  "stays-index": img("/img/hero/ghat-dusk.jpg", "A road winding down through the ghats at dusk"),
+  "stays-index": img("/img/cat/mountain-stays.jpg", "A range of mountains seen from high ground"),
   "destinations-index": img("/img/dest/lonavala.jpg", "Ridges receding into mist at dusk"),
-  "for-riders": img("/img/story/what-rider-friendly-actually-means.jpg", "Two motorcycles standing on the road"),
-  "rider-passport": img("/img/cat/highway-stays.jpg", "A motorcyclist on a road curving through hills"),
+  "for-riders": img("/img/cat/highway-stays.jpg", "A motorcyclist on a road curving through hills"),
+  "rider-passport": img("/img/story/two-days-to-goa-the-slow-way.jpg", "A single palm on a beach with the ocean behind it"),
   "rider-passport-band": img("/img/hero/ghat-dusk.jpg", "A road winding down through the ghats at dusk"),
-  "stories-index": img("/img/story/the-old-road-over-khandala.jpg", "A road climbing the side of a hill"),
-  "rider-friendly": img("/img/cat/highway-stays.jpg", "A motorcyclist on a road curving through hills"),
-  "about-hero": img("/img/story/the-old-road-over-khandala.jpg", "A road climbing the side of a hill"),
+  "stories-index": img("/img/story/coast-road-to-kashid.jpg", "Palm trees along the water on the coast road"),
+  "rider-friendly": img("/img/story/what-rider-friendly-actually-means.jpg", "Two motorcycles standing on the road"),
+  "about-hero": img("/img/cat/farmhouses.jpg", "A fire pit burning against a stone wall at night"),
   "about-band": img("/img/dest/goa.jpg", "Palms in silhouette against the sea at sunset"),
   "contact-hero": img("/img/dest/alibaug.jpg", "A fishing boat drawn up on the sand"),
   "owner-band": img("/img/prop/sea-line-resort-alibaug.jpg", "An open-sided terrace lounge above the sea"),
   "list-your-property-hero": img("/img/cat/villas.jpg", "A stone villa terrace shaded by a wide umbrella"),
   "legal-privacy": img("/img/dest/pune.jpg", "Wooded hills at first light"),
   "legal-terms": img("/img/dest/pune.jpg", "Wooded hills at first light"),
-  "not-found": img("/img/cat/highway-stays.jpg", "A motorcyclist on a road curving through hills"),
+  "not-found": img("/img/hero/ghat-dusk.jpg", "A road winding down through the ghats at dusk"),
 };
 
 /**
- * Gallery frames are seeded `<propertySlug>-<index>`. One photograph per
- * property exists, so a gallery rotates through the whole property pool
- * starting from the property's own image — nine identical frames would read
- * worse than nine different rooms.
+ * Gallery frames are seeded `<propertySlug>-<index>`. Only one photograph per
+ * property exists, and it is the only one a gallery may show. Rotating through
+ * the other properties' photos to fill nine frames put the Alibaug villa's pool
+ * inside the Lonavala farmhouse's gallery — a photo of somewhere else, presented
+ * as this place, which is worse than showing one.
  */
-const POOL = Object.keys(PROPERTIES);
-
 function galleryImage(seed: string): MediaRef | null {
   const m = /^(.*)-(\d+)$/.exec(seed);
   if (!m) return null;
   const [, slug, n] = m;
-  const start = POOL.indexOf(slug!);
-  if (start < 0) return null;
-  return PROPERTIES[POOL[(start + Number(n)) % POOL.length]!]!;
+  return Number(n) === 0 ? (PROPERTIES[slug!] ?? null) : null;
+}
+
+/**
+ * How many photographs a property's gallery really has while it runs on demo
+ * photography: one, or null when there is no demo photo and the declared
+ * `imageCount` (generated plates) stands.
+ */
+export function demoGalleryCount(slug: string): number | null {
+  return PROPERTIES[slug] ? 1 : null;
 }
 
 /** The demo photograph for a seed, or null to fall back to a generated plate. */

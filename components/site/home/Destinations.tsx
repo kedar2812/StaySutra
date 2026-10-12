@@ -3,64 +3,53 @@ import { SectionHead } from "@/components/primitives/Rule";
 import { TextLink } from "@/components/primitives/Button";
 import { Reveal } from "@/components/motion/Reveal";
 import { destinations, siteContent } from "@/lib/content";
+import { cn } from "@/lib/utils";
 
 const copy = siteContent.home.destinations;
 
 /**
- * ⑥ Asymmetric mosaic. One tall lead, a block of four, and a full-width banner
- * to close — so every destination we serve is on the page rather than five of
- * six with a "view all" link doing the apologising.
+ * Asymmetric mosaic: one lead over two rows, two tiles stacked beside it, the
+ * rest three across underneath. Every destination we serve is on the page.
  *
- * New destinations added from the dashboard appear here automatically, ordered
- * by sortOrder; the layout degrades cleanly at any count because each slot is
- * taken with `slice`.
+ * The old layout ended on a full-width banner, which at desktop width cropped
+ * the Goa photograph down to a strip of glittering water and set its text on
+ * top of it. Every tile here is close enough to its photograph's own shape to
+ * keep the subject. New destinations from the dashboard slot in by sortOrder.
  */
 export function Destinations() {
   const [lead, ...rest] = destinations;
   if (!lead) return null;
 
-  const block = rest.slice(0, 4);
-  const banner = rest[4];
-
   return (
-    <section aria-labelledby="destinations-title" className="pb-24 lg:pb-32">
+    <section aria-labelledby="destinations-title" className="section">
       <div className="shell">
         <Reveal>
           <SectionHead
-            overline={copy.overline}
             title={<span id="destinations-title">{copy.title}</span>}
             lede={copy.lede}
             action={<TextLink href="/destinations">All destinations</TextLink>}
           />
         </Reveal>
 
-        <Reveal className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2">
+        <Reveal className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <DestinationTile
             destination={lead}
             size="lg"
-            sizes="(min-width:1024px) 50vw, 92vw"
+            sizes="(min-width:1024px) 62vw, 92vw"
             className="min-h-[26rem] sm:col-span-2 lg:row-span-2 lg:min-h-[34rem]"
           />
-          {block.map((d) => (
+          {rest.map((d, i) => (
             <DestinationTile
               key={d.slug}
               destination={d}
-              sizes="(min-width:1024px) 25vw, 45vw"
-              className="min-h-[15rem] lg:min-h-[16.75rem]"
+              sizes="(min-width:1024px) 30vw, 45vw"
+              className={cn(
+                "min-h-[15rem] lg:min-h-[16.5rem]",
+                i === rest.length - 1 && rest.length % 2 === 1 && "sm:col-span-2 lg:col-span-1",
+              )}
             />
           ))}
         </Reveal>
-
-        {banner && (
-          <Reveal className="mt-4">
-            <DestinationTile
-              destination={banner}
-              size="lg"
-              sizes="(min-width:1024px) 92vw, 92vw"
-              className="min-h-[18rem] lg:min-h-[22rem]"
-            />
-          </Reveal>
-        )}
       </div>
     </section>
   );

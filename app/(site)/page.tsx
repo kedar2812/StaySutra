@@ -1,15 +1,12 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/site/home/Hero";
 import { SearchWidget } from "@/components/site/home/SearchWidget";
-import { MadeForTheRoad } from "@/components/site/home/MadeForTheRoad";
 import { FeaturedStays } from "@/components/site/home/FeaturedStays";
-import { Categories } from "@/components/site/home/Categories";
+import { MadeForTheRoad } from "@/components/site/home/MadeForTheRoad";
 import { Destinations } from "@/components/site/home/Destinations";
-import { RiderPassport } from "@/components/site/home/RiderPassport";
+import { StoriesBand } from "@/components/site/home/StoriesBand";
 import { ForTheRiders } from "@/components/site/home/ForTheRiders";
 import { ListYourProperty } from "@/components/site/home/ListYourProperty";
-import { StoriesBand } from "@/components/site/home/StoriesBand";
-import { Trust } from "@/components/site/home/Trust";
 import { FinalCta } from "@/components/site/home/FinalCta";
 import { pageMeta } from "@/lib/seo";
 
@@ -21,26 +18,29 @@ export const metadata: Metadata = pageMeta({
 });
 
 /**
- * Twelve sections, in order. No two consecutive sections share a layout
- * skeleton — hero, glass rail, pinned editorial list, mixed-scale grid,
- * two-row tile mosaic, asymmetric destination mosaic, the passport artefact,
- * two-column list, sticky-column argument, snap rail, hairline table, and
- * open type. DPR §7.2, §4.6
+ * Eight sections, stays first.
+ *
+ * The page used to run twelve sections and about nineteen phone screens, with
+ * the properties holding one of them and the same four promises — curated,
+ * late check-in, parking, support — made three separate times. It now opens on
+ * the stays, makes the rider argument once, and gives the unbuilt parts of the
+ * ecosystem one honest section instead of two plus a passport pitch.
+ *
+ * Categories left the homepage (the type filter on /stays and in the search
+ * does the same job without seven tiles reading "1 stay"), and the
+ * five-column "Why book with us" strip went with them. DPR §7.2, §4.6
  */
 export default function HomePage() {
   return (
     <>
       <Hero />
       <SearchWidget />
-      <MadeForTheRoad />
       <FeaturedStays />
-      <Categories />
+      <MadeForTheRoad />
       <Destinations />
-      <RiderPassport />
+      <StoriesBand />
       <ForTheRiders />
       <ListYourProperty />
-      <StoriesBand />
-      <Trust />
       <FinalCta />
     </>
   );

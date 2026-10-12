@@ -306,7 +306,7 @@ export function OwnerForm() {
                   />
                   <span
                     className={cn(
-                      "mt-2.5 block text-[0.6875rem] font-semibold uppercase tracking-[0.14em] transition-colors",
+                      "mt-2.5 block text-xs font-semibold uppercase tracking-[0.14em] transition-colors",
                       state === "current"
                         ? "text-text-hi"
                         : state === "done"
@@ -625,7 +625,7 @@ function StepThree({
                 type="button"
                 onClick={() => onRemove(f.id)}
                 aria-label={`Remove ${f.file.name}`}
-                className="press absolute right-1.5 top-1.5 grid size-8 place-items-center rounded-pill bg-ink-900/85 text-text-hi"
+                className="press absolute right-1.5 top-1.5 grid size-8 place-items-center after:absolute after:-inset-1.5 after:content-[''] rounded-pill bg-ink-900/85 text-text-hi"
               >
                 <Icon name="close" size={15} />
               </button>
@@ -662,7 +662,7 @@ function StepThree({
                 type="button"
                 onClick={() => onRemove(f.id)}
                 aria-label={`Remove ${f.file.name}`}
-                className="press grid size-9 shrink-0 place-items-center rounded-pill text-text-low hover:text-text-hi"
+                className="press relative grid size-9 shrink-0 place-items-center rounded-pill text-text-low after:absolute after:-inset-1 after:content-[''] hover:text-text-hi"
               >
                 <Icon name="close" size={15} />
               </button>
@@ -806,7 +806,7 @@ function Fieldset({
     <fieldset className="space-y-6">
       <legend className="mb-6">
         <span
-          className="block font-display text-xl uppercase leading-tight tracking-[-0.01em] text-text-hi lg:text-2xl"
+          className="block font-display text-xl leading-tight tracking-[-0.01em] text-text-hi lg:text-2xl"
           style={{ fontWeight: 800 }}
         >
           {legend}
@@ -835,7 +835,7 @@ function PickList({
 }) {
   return (
     <fieldset>
-      <legend className="text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-text-low">
+      <legend className="text-xs font-semibold uppercase tracking-[0.16em] text-text-low">
         {legend}
       </legend>
       {hint && <p className="t-caption mt-1.5">{hint}</p>}
@@ -884,7 +884,7 @@ function DropZone({
   return (
     <div>
       <div className="mb-2 flex items-baseline justify-between gap-4">
-        <span className="text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-text-low">
+        <span className="text-xs font-semibold uppercase tracking-[0.16em] text-text-low">
           {label}
         </span>
         <span className="t-caption tabular-nums">

@@ -3,7 +3,6 @@ import { PageHero } from "@/components/site/PageHero";
 import { OwnerForm } from "@/components/site/OwnerForm";
 import { JsonLd } from "@/components/site/JsonLd";
 import { Icon } from "@/components/primitives/Icon";
-import { Rule } from "@/components/primitives/Rule";
 import { Frame } from "@/components/primitives/Frame";
 import { Reveal } from "@/components/motion/Reveal";
 import { siteContent } from "@/lib/content";
@@ -41,9 +40,7 @@ export default function ListYourPropertyPage() {
       <section className="shell py-20 lg:py-28">
         <Reveal className="grid gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-20">
           <div>
-            <Rule className="mb-5 max-w-24" />
-            <p className="t-overline">What we handle</p>
-            <h2 className="t-display-m mt-4 max-w-[17ch] text-balance">
+            <h2 className="t-display-m max-w-[17ch] text-balance">
               You keep running the property
             </h2>
             <ul className="mt-8">
@@ -60,9 +57,7 @@ export default function ListYourPropertyPage() {
           </div>
 
           <div>
-            <Rule className="mb-5 max-w-24" />
-            <p className="t-overline">How it works</p>
-            <h2 className="t-display-m mt-4 max-w-[17ch] text-balance">
+            <h2 className="t-display-m max-w-[17ch] text-balance">
               Four steps, about ten minutes
             </h2>
             <ol className="mt-8">
@@ -103,9 +98,7 @@ export default function ListYourPropertyPage() {
       >
         <div className="shell py-20 lg:py-28">
           <div className="max-w-3xl">
-            <Rule className="mb-5 max-w-24" />
-            <p className="t-overline">Submit your property</p>
-            <h2 id="submit-title" className="t-display-m mt-4">
+            <h2 id="submit-title" className="t-display-m">
               Send us the details
             </h2>
             <p className="mt-5 max-w-[52ch] text-[0.9375rem] leading-relaxed text-text-mid">
@@ -120,16 +113,19 @@ export default function ListYourPropertyPage() {
 
             <p className="t-caption mt-10 flex items-start gap-2">
               <Icon name="whatsapp" size={14} className="mt-0.5 shrink-0" />
-              Would rather talk first?{" "}
-              <a
-                href={whatsappLink(waMessage.owner())}
-                target="_blank"
-                rel="noreferrer noopener"
-                className="text-gold-500 underline underline-offset-4 transition-colors hover:text-gold-400"
-              >
-                Message us on WhatsApp
-              </a>
-              .
+              {/* One flex item, or the gap lands between "WhatsApp" and the full stop. */}
+              <span>
+                Would rather talk first?{" "}
+                <a
+                  href={whatsappLink(waMessage.owner())}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="text-text-hi underline decoration-[color:var(--hairline-str)] underline-offset-4 transition-colors hover:text-gold-400"
+                >
+                  Message us on WhatsApp
+                </a>
+                .
+              </span>
             </p>
           </div>
         </div>

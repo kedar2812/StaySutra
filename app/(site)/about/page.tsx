@@ -34,7 +34,6 @@ export default function AboutPage() {
   return (
     <>
       <PageHero
-        overline={copy.overline}
         title={copy.title}
         lede={copy.lede}
         seed="about-hero"

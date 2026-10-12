@@ -6,7 +6,7 @@ import { Button } from "@/components/primitives/Button";
 import { Chip, FilterChip } from "@/components/primitives/Chip";
 import { Icon, iconFor } from "@/components/primitives/Icon";
 import { Sheet } from "@/components/primitives/Sheet";
-import { amenities, categories, destinations, facilities } from "@/lib/content";
+import { amenities, categories, countInCategory, destinations, facilities } from "@/lib/content";
 import { parseFilters, toQuery, countActive, type Filters, type SortKey } from "@/lib/filters";
 import { track } from "@/lib/analytics";
 import { inr, plural } from "@/lib/utils";
@@ -30,7 +30,14 @@ const PRICE_BANDS = [
  * drag-dismissible sheet on mobile. Changes are written to the URL with
  * `replace`, so Back does not walk through every toggle. DPR §6.3, §7.3
  */
-export function FilterBar({ resultCount }: { resultCount: number }) {
+export function FilterBar({
+  resultCount,
+  riderToggle = true,
+}: {
+  resultCount: number;
+  /** Off where the list is already rider-friendly only — the toggle would do nothing. */
+  riderToggle?: boolean;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -89,7 +96,9 @@ export function FilterBar({ resultCount }: { resultCount: number }) {
         onChange={(v) => apply({ category: v || undefined })}
         options={[
           { value: "", label: "Any type" },
-          ...categories.map((c) => ({ value: c.slug, label: c.plural })),
+          ...categories
+            .filter((c) => countInCategory(c.slug) > 0 || c.slug === filters.category)
+            .map((c) => ({ value: c.slug, label: c.plural })),
         ]}
       />
       <SelectControl
@@ -131,9 +140,15 @@ export function FilterBar({ resultCount }: { resultCount: number }) {
 
   return (
     <>
-      <div className="sticky top-[var(--header-h)] z-30 -mx-[var(--gutter)] px-[var(--gutter)] py-3 lg:py-4">
-        <div className="glass rounded-surface px-4 py-3 lg:px-5">
-          <div className="flex items-center gap-4">
+      {/*
+        Sticks just under the header bar, bleeding past the content edge by the
+        same 12–16px the header does, so the two floating bars are one width.
+        Solid rather than glass: glass under glass is the stack DPR §4.4 rules
+        out, and a near-opaque bar is easier to read over moving photographs.
+      */}
+      <div className="sticky top-[calc(var(--header-h)+0.5rem)] z-30 -mx-3 py-2 md:-mx-4 lg:py-3">
+        <div className="rounded-[18px] border border-[color:var(--hairline-str)] bg-ink-800/95 px-3 py-2.5 shadow-[var(--shadow-float)] md:px-4 lg:py-3">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 xl:flex-nowrap">
             <p
               className="shrink-0 text-[0.8125rem] tabular-nums text-text-mid"
               aria-live="polite"
@@ -142,14 +157,15 @@ export function FilterBar({ resultCount }: { resultCount: number }) {
               {resultCount === 1 ? "stay" : "stays"}
             </p>
 
-            <div className="hidden flex-1 items-center gap-2 lg:flex">{controls}</div>
+            <div className="hidden flex-1 flex-wrap items-center gap-2 lg:flex">{controls}</div>
 
             <button
               type="button"
               onClick={() => apply({ riderFriendly: !filters.riderFriendly })}
               aria-pressed={filters.riderFriendly}
               className={[
-                "press hidden shrink-0 items-center gap-2 rounded-pill border px-4 py-2 text-[0.8125rem] transition-colors lg:inline-flex",
+                "press hidden min-h-10 shrink-0 items-center gap-2 rounded-pill border px-4 py-2 text-[0.875rem] transition-colors",
+                riderToggle ? "lg:inline-flex" : "",
                 filters.riderFriendly
                   ? "border-transparent bg-gold-500 text-gold-ink"
                   : "border-[color:var(--hairline-str)] text-text-mid hover:text-text-hi",
@@ -167,7 +183,7 @@ export function FilterBar({ resultCount }: { resultCount: number }) {
               <Icon name="filter" size={16} />
               Filters
               {active > 0 && (
-                <span className="t-num rounded-pill bg-gold-500 px-1.5 py-0.5 text-[0.6875rem] text-gold-ink">
+                <span className="t-num rounded-pill bg-gold-500 px-1.5 py-0.5 text-xs text-gold-ink">
                   {active}
                 </span>
               )}
@@ -255,7 +271,8 @@ export function FilterBar({ resultCount }: { resultCount: number }) {
             onClick={() => apply({ riderFriendly: !filters.riderFriendly })}
             aria-pressed={filters.riderFriendly}
             className={[
-              "press flex w-full items-center gap-3 rounded-card border px-4 py-3.5 text-left transition-colors",
+              "press w-full items-center gap-3 rounded-card border px-4 py-3.5 text-left transition-colors",
+              riderToggle ? "flex" : "hidden",
               filters.riderFriendly
                 ? "border-transparent bg-gold-500 text-gold-ink"
                 : "border-[color:var(--hairline-str)] text-text-hi",
@@ -267,7 +284,7 @@ export function FilterBar({ resultCount }: { resultCount: number }) {
           </button>
 
           <fieldset>
-            <legend className="mb-3 text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-text-low">
+            <legend className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-text-low">
               Rider facilities
             </legend>
             <div className="flex flex-wrap gap-2">
@@ -292,7 +309,7 @@ export function FilterBar({ resultCount }: { resultCount: number }) {
           </fieldset>
 
           <fieldset>
-            <legend className="mb-3 text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-text-low">
+            <legend className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-text-low">
               Amenities
             </legend>
             <div className="flex flex-wrap gap-2">
@@ -350,7 +367,7 @@ function SelectControl({
           className={
             hideLabel
               ? "sr-only"
-              : "mb-1.5 block text-[0.625rem] font-semibold uppercase tracking-[0.16em] text-text-low lg:hidden"
+              : "mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-text-low lg:hidden"
           }
         >
           {label}
@@ -359,7 +376,7 @@ function SelectControl({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           aria-label={label}
-          className="press-sm w-full appearance-none rounded-pill border border-[color:var(--hairline-str)] bg-ink-800/60 py-2 pl-4 pr-9 text-[0.8125rem] text-text-hi outline-none transition-colors hover:border-white/25 focus:border-gold-500 lg:w-auto"
+          className="press-sm min-h-11 w-full appearance-none rounded-pill border border-[color:var(--hairline-str)] bg-ink-700 py-2 pl-4 pr-9 text-[0.875rem] text-text-hi outline-none transition-colors hover:border-white/25 focus:border-gold-500 lg:min-h-10 lg:w-auto"
         >
           {options.map((o) => (
             <option key={o.value} value={o.value} className="bg-ink-800">

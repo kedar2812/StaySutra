@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Icon, iconFor } from "@/components/primitives/Icon";
-import { Rule } from "@/components/primitives/Rule";
 import { TextLink } from "@/components/primitives/Button";
 import { Reveal } from "@/components/motion/Reveal";
 import { siteContent } from "@/lib/content";
@@ -21,10 +20,10 @@ export function ForTheRiders() {
   return (
     <section aria-labelledby="riders-title" className="border-y border-[color:var(--hairline)] bg-ink-800">
       <div className="shell grid gap-12 py-24 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-20 lg:py-32">
-        <Reveal>
-          <Rule className="mb-5 max-w-24" />
-          <p className="t-overline">{copy.overline}</p>
-          <h2 id="riders-title" className="t-display-l mt-4 max-w-[12ch] text-balance">
+        {/* Holds its place while the list passes, instead of leaving half the
+            section empty. */}
+        <Reveal className="lg:sticky lg:top-[calc(var(--header-h)+3rem)] lg:self-start">
+          <h2 id="riders-title" className="t-display-l max-w-[12ch]">
             {copy.title}
           </h2>
           <p className="t-lede mt-6 max-w-[42ch]">{copy.lede}</p>
@@ -36,7 +35,9 @@ export function ForTheRiders() {
         <Reveal delay={0.08}>
           <ul>
             {copy.items.map((item) => {
-              const live = item.status === "live";
+              // "waitlist" is a real page with a real form behind it, so it
+              // links like a live item — but it says what it is.
+              const live = item.status === "live" || item.status === "waitlist";
               const href = "href" in item ? (item.href as string) : undefined;
               const row = (
                 <>
@@ -48,14 +49,14 @@ export function ForTheRiders() {
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                       <h3
-                        className="font-display text-lg uppercase leading-tight tracking-tight text-text-hi"
+                        className="font-display text-xl leading-tight tracking-[-0.015em] text-text-hi"
                         style={{ fontWeight: 700 }}
                       >
                         {item.title}
                       </h3>
-                      {!live && (
-                        <span className="rounded-chip border border-[color:var(--hairline)] px-2 py-0.5 text-[0.5625rem] font-semibold uppercase tracking-[0.16em] text-text-low">
-                          Coming soon
+                      {item.status !== "live" && (
+                        <span className="rounded-chip border border-[color:var(--hairline-str)] px-2 py-0.5 text-xs font-medium text-text-mid">
+                          {item.status === "waitlist" ? "Waitlist open" : "Coming soon"}
                         </span>
                       )}
                     </div>

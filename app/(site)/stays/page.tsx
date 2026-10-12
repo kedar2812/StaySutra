@@ -31,7 +31,6 @@ export default async function StaysPage({
   return (
     <>
       <PageHero
-        overline="Every stay we have"
         title="Explore stays"
         lede="Mountains, beaches, forests or highways — filtered the way a rider actually chooses: by what happens to the bike overnight."
         seed="stays-index"

@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Icon } from "./Icon";
 import { nearestSnap, project, rubberband, spring, VelocityTracker } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { lockScroll } from "@/lib/scroll-lock";
 
 /**
  * Drag-dismissible bottom sheet.
@@ -53,8 +54,7 @@ export function Sheet({
     setTop(points[points.length - 1] ?? window.innerHeight * 0.5);
 
     returnTo.current = document.activeElement;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const unlock = lockScroll();
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -63,7 +63,7 @@ export function Sheet({
 
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
+      unlock();
       (returnTo.current as HTMLElement | null)?.focus?.();
     };
   }, [open, onClose, heights]);
@@ -144,21 +144,21 @@ export function Sheet({
                 aria-hidden
               />
               <div className="mt-4 flex items-center justify-between">
-                <h2 className="on-glass font-display text-base uppercase tracking-tight">
+                <h2 className="on-glass font-display text-base tracking-tight">
                   {title}
                 </h2>
                 <button
                   type="button"
                   onClick={onClose}
                   aria-label={`Close ${title}`}
-                  className="press -mr-2 grid size-10 place-items-center rounded-pill text-text-hi"
+                  className="press -mr-2 grid size-11 place-items-center rounded-pill text-text-hi"
                 >
                   <Icon name="close" size={20} />
                 </button>
               </div>
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-6">
+            <div data-lenis-prevent className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-6">
               {children}
             </div>
 

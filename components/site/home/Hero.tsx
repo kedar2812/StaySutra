@@ -7,6 +7,7 @@ import { MaskLines } from "@/components/motion/MaskLines";
 import { ButtonLink } from "@/components/primitives/Button";
 import { Icon, iconFor } from "@/components/primitives/Icon";
 import { siteContent } from "@/lib/content";
+import { Unbroken } from "@/components/primitives/Unbroken";
 
 const hero = siteContent.home.hero;
 
@@ -59,14 +60,13 @@ export function Hero() {
           />
         </motion.div>
         {/*
-          Four layers, in order: a flat tint that seats the photograph in the
-          palette, then bottom, left and top scrims. Real photography is much
-          lighter than the plate these were first tuned against — without the
-          tint and the top scrim the nav sits on bare highlights.
+          Bottom, left and top scrims — each one where type sits, and nowhere
+          else. There used to be a flat 30% tint over the whole frame as well,
+          which, stacked under the other three, turned the road into mud. The
+          right half of the frame is now the photograph, not a dark rectangle.
         */}
-        <div className="absolute inset-0 bg-ink-900/30" />
         <div className="absolute inset-0 scrim-b" />
-        <div className="absolute inset-0 scrim-l opacity-90 lg:opacity-100" />
+        <div className="absolute inset-0 scrim-l opacity-90 lg:opacity-[0.85]" />
         <div className="absolute inset-0 scrim-t" />
       </motion.div>
 
@@ -154,7 +154,7 @@ export function Hero() {
               />
               <span className="min-w-0">
                 <span className="block text-[0.9375rem] font-medium leading-tight text-text-hi">
-                  {item.title}
+                  <Unbroken>{item.title}</Unbroken>
                 </span>
                 <span className="t-caption mt-1 block">{item.note}</span>
               </span>

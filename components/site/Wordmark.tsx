@@ -25,9 +25,11 @@ export function Wordmark({
   }[size];
 
   const lockup = {
-    sm: "text-[0.4rem] tracking-[0.18em] sm:text-[0.4375rem] sm:tracking-[0.3em]",
-    md: "text-[0.5rem] tracking-[0.3em]",
-    lg: "text-[0.625rem] tracking-[0.36em]",
+    // A logotype — exempt from the 12px floor, and sized to sit within the
+    // width of the wordmark above it rather than to be read as body text.
+    sm: "text-[0.5625rem] tracking-[0.22em]",
+    md: "text-[0.625rem] tracking-[0.26em]",
+    lg: "text-[0.6875rem] tracking-[0.32em]",
   }[size];
 
   return (

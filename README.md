@@ -54,7 +54,7 @@ app/
 components/
   primitives/   Button, Chip, Field, Frame, Icon, Plate, Rule, Sheet, Skeleton
   site/         Public composites — header, footer, cards, forms, gallery
-    home/       The twelve homepage sections, one file each
+    home/       The eight homepage sections, one file each
   motion/       Reveal, Parallax, MaskLines, SmoothScroll
 lib/            content, filters, motion, plate, prose, seo, site, validation
 content/        Phase 1 content — JSON + story markdown

@@ -3,7 +3,6 @@ import { PageHero } from "@/components/site/PageHero";
 import { JsonLd } from "@/components/site/JsonLd";
 import { InterestCapture } from "@/components/site/InterestCapture";
 import { Icon, iconFor } from "@/components/primitives/Icon";
-import { Rule } from "@/components/primitives/Rule";
 import { ButtonLink } from "@/components/primitives/Button";
 import { Reveal } from "@/components/motion/Reveal";
 import { siteContent } from "@/lib/content";
@@ -34,7 +33,6 @@ export default function ForRidersPage() {
   return (
     <>
       <PageHero
-        overline={copy.overline}
         title={copy.title}
         lede={copy.lede}
         seed="for-riders"
@@ -44,21 +42,17 @@ export default function ForRidersPage() {
       />
 
       <section className="shell py-20 lg:py-28">
-        <ol className="grid gap-y-4">
+        <ul className="grid gap-y-4">
           {items.map((item, i) => {
-            const live = item.status === "live";
+            const live = item.status === "live" || item.status === "waitlist";
             const href = "href" in item ? (item.href as string) : undefined;
             return (
               <Reveal
                 as="li"
                 key={item.title}
                 delay={Math.min(i, 5) * 0.05}
-                className="grid grid-cols-[auto_1fr] gap-x-5 border-t border-[color:var(--hairline)] pt-8 lg:grid-cols-[4rem_minmax(0,1fr)_minmax(0,1fr)] lg:gap-x-10"
+                className="grid border-t border-[color:var(--hairline)] pt-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:gap-x-16"
               >
-                <span className="t-num text-sm text-text-low lg:text-base">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                     <Icon
@@ -67,22 +61,18 @@ export default function ForRidersPage() {
                       className="shrink-0 text-text-low"
                     />
                     <h2
-                      className="font-display text-xl uppercase leading-tight tracking-[-0.01em] text-text-hi lg:text-2xl"
+                      className="font-display text-xl leading-tight tracking-[-0.01em] text-text-hi lg:text-2xl"
                       style={{ fontWeight: 800 }}
                     >
                       {item.title}
                     </h2>
-                    {live ? (
-                      <span className="rounded-chip bg-gold-500 px-2 py-0.5 text-[0.5625rem] font-semibold uppercase tracking-[0.16em] text-gold-ink">
-                        Live
-                      </span>
-                    ) : (
-                      <span className="rounded-chip border border-[color:var(--hairline)] px-2 py-0.5 text-[0.5625rem] font-semibold uppercase tracking-[0.16em] text-text-low">
-                        Coming soon
+                    {item.status !== "live" && (
+                      <span className="rounded-chip border border-[color:var(--hairline-str)] px-2 py-0.5 text-xs font-medium text-text-mid">
+                        {item.status === "waitlist" ? "Waitlist open" : "Coming soon"}
                       </span>
                     )}
                   </div>
-                  <p className="mt-4 max-w-[40ch] font-display text-[1.0625rem] uppercase leading-tight tracking-[-0.01em] text-text-hi">
+                  <p className="mt-3 max-w-[40ch] text-[1.0625rem] font-medium leading-snug text-text-hi">
                     {item.tagline}
                   </p>
                   <p className="mt-3 max-w-[46ch] text-[0.9375rem] leading-relaxed text-text-mid">
@@ -90,7 +80,7 @@ export default function ForRidersPage() {
                   </p>
                 </div>
 
-                <div className="col-start-2 mt-6 pb-10 lg:col-start-3 lg:mt-0">
+                <div className="mt-6 pb-10 lg:mt-0">
                   {live && href ? (
                     <ButtonLink href={href} variant="outline" icon="arrowRight">
                       {href === "/rider-passport" ? "Join the passport" : "Read the stories"}
@@ -102,14 +92,12 @@ export default function ForRidersPage() {
               </Reveal>
             );
           })}
-        </ol>
+        </ul>
       </section>
 
       <section className="border-t border-[color:var(--hairline)] bg-ink-800/40">
         <div className="shell py-20 lg:py-28">
-          <Rule className="mb-5 max-w-24" />
-          <p className="t-overline">In the meantime</p>
-          <h2 className="t-display-m mt-4 max-w-[18ch] text-balance">
+          <h2 className="t-display-m max-w-[18ch] text-balance">
             The stays are live now, and that is the part that matters
           </h2>
           <p className="mt-6 max-w-[48ch] text-[0.9375rem] leading-relaxed text-text-mid">

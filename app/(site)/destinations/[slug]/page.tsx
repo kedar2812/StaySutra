@@ -6,6 +6,7 @@ import { PropertyCard } from "@/components/site/PropertyCard";
 import { DestinationTile } from "@/components/site/DestinationTile";
 import { EnquiryForm } from "@/components/site/EnquiryForm";
 import { EmptyState } from "@/components/site/EmptyState";
+import { AskTile } from "@/components/site/AskTile";
 import { WhatsAppFloat } from "@/components/site/WhatsAppFloat";
 import { JsonLd } from "@/components/site/JsonLd";
 import { Frame } from "@/components/primitives/Frame";
@@ -22,7 +23,7 @@ import {
 } from "@/lib/content";
 import { breadcrumbSchema, destinationSchema, pageMeta } from "@/lib/seo";
 import { waMessage } from "@/lib/site";
-import { formatDate, plural } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import type { PlateMood, PlateScene } from "@/lib/plate";
 
 export function generateStaticParams() {
@@ -80,16 +81,12 @@ export default async function DestinationPage({
         scene={d.scene as PlateScene | undefined}
         mood={d.mood as PlateMood | undefined}
         size="lg"
+        tone="photo"
         trail={trail}
-        meta={
-          <p className="t-caption tabular-nums">
-            {stays.length > 0 ? plural(stays.length, "stay") : "Stays being onboarded"}
-          </p>
-        }
       />
 
       {/* Long description + the rider brief, side by side. */}
-      <section className="shell py-20 lg:py-28">
+      <section className="shell pb-20 pt-14 lg:pb-28 lg:pt-20">
         <Reveal className="grid gap-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-20">
           <div className="max-w-[68ch] space-y-5 text-[1.0625rem] leading-relaxed text-text-mid">
             {d.description.split("\n\n").map((para) => (
@@ -135,13 +132,9 @@ export default async function DestinationPage({
       >
         <div className="shell py-20 lg:py-28">
           <Reveal className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <Rule className="mb-5 max-w-24" />
-              <p className="t-overline">Where to sleep</p>
-              <h2 id="stays-here" className="t-display-m mt-4">
-                Stays in {d.name}
-              </h2>
-            </div>
+            <h2 id="stays-here" className="t-display-m">
+              Stays in {d.name}
+            </h2>
             {stays.length > 0 && (
               <TextLink href={`/stays?destination=${d.slug}`}>
                 Filter all {d.name} stays
@@ -151,9 +144,10 @@ export default async function DestinationPage({
 
           {stays.length > 0 ? (
             <Reveal className="mt-12 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-              {stays.map((p, i) => (
-                <PropertyCard key={p.slug} property={p} priority={i < 3} />
+              {stays.map((p) => (
+                <PropertyCard key={p.slug} property={p} />
               ))}
+              {stays.length % 3 !== 0 && <AskTile place={d.name} message={wa} />}
             </Reveal>
           ) : (
             <EmptyState
@@ -175,9 +169,7 @@ export default async function DestinationPage({
       {stories.length > 0 && (
         <section aria-labelledby="stories-here" className="shell py-20 lg:py-28">
           <Reveal>
-            <Rule className="mb-5 max-w-24" />
-            <p className="t-overline">From the road</p>
-            <h2 id="stories-here" className="t-display-m mt-4">
+            <h2 id="stories-here" className="t-display-m">
               Stories from {d.name}
             </h2>
           </Reveal>
@@ -187,7 +179,6 @@ export default async function DestinationPage({
                 <Frame
                   seed={`story-${s.slug}`}
                   ratio="16/9"
-                  muted
                   sizes="(min-width:1024px) 30vw, 45vw"
                   className="rounded-card"
                   imgClassName="transition-transform duration-[480ms] ease-out-quint group-hover:scale-[1.05]"
@@ -196,7 +187,7 @@ export default async function DestinationPage({
                   {formatDate(s.publishedAt)} · {s.readMinutes} min read
                 </p>
                 <h3
-                  className="mt-2 font-display text-lg uppercase leading-tight tracking-tight text-text-hi"
+                  className="mt-2 font-display text-lg leading-tight tracking-tight text-text-hi"
                   style={{ fontWeight: 700 }}
                 >
                   {s.title}
@@ -208,12 +199,10 @@ export default async function DestinationPage({
       )}
 
       {/* Enquiry + nearby */}
-      <section className="border-t border-[color:var(--hairline)]">
+      <section data-wa-hide="" className="border-t border-[color:var(--hairline)]">
         <div className="shell grid gap-14 py-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-20 lg:py-28">
           <div>
-            <Rule className="mb-5 max-w-24" />
-            <p className="t-overline">Tell us what you need</p>
-            <h2 className="t-display-m mt-4 max-w-[16ch] text-balance">
+            <h2 className="t-display-m max-w-[16ch]">
               Planning a ride to {d.name}?
             </h2>
             <p className="mt-6 max-w-[44ch] text-[0.9375rem] leading-relaxed text-text-mid">

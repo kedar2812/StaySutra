@@ -17,11 +17,10 @@ export function FeaturedStays() {
   const [lead, ...rest] = featuredProperties;
 
   return (
-    <section aria-labelledby="featured-title" className="section">
+    <section aria-labelledby="featured-title" className="pb-24 pt-20 lg:pb-32 lg:pt-28">
       <div className="shell">
         <Reveal>
           <SectionHead
-            overline={copy.overline}
             title={<span id="featured-title">{copy.title}</span>}
             lede={copy.lede}
             action={<TextLink href={copy.action.href}>{copy.action.label}</TextLink>}
@@ -38,14 +37,14 @@ export function FeaturedStays() {
         ) : (
           <>
             <Reveal className="mt-12 hidden lg:grid lg:grid-cols-12 lg:gap-x-8 lg:gap-y-14">
-              <div className="col-span-7">
+              <div className="col-span-7 min-h-0">
                 <PropertyCard
                   property={lead}
                   scale="lead"
                   sizes="(min-width:1024px) 56vw, 100vw"
                 />
               </div>
-              <div className="col-span-5 flex flex-col justify-between gap-10">
+              <div className="col-span-5 flex flex-col gap-10">
                 {rest.slice(0, 2).map((p) => (
                   <PropertyCard
                     key={p.slug}

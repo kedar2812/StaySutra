@@ -52,14 +52,14 @@
           "note": "Every stay chosen by hand"
         },
         {
-          "iconKey": "clock",
-          "title": "Late check-in",
-          "note": "Arrive when the road allows"
+          "iconKey": "whatsapp",
+          "title": "Confirmed by a person",
+          "note": "Dates checked with the host, same day"
         },
         {
-          "iconKey": "parking",
-          "title": "Secure parking",
-          "note": "Covered, inside the gate"
+          "iconKey": "shield",
+          "title": "Nothing to pay online",
+          "note": "A written quote before any money moves"
         },
         {
           "iconKey": "headset",
@@ -74,31 +74,26 @@
       "lede": "Because every road deserves a great place to end. Five things decide whether a long day on a bike finishes well — and they are the five things we check before a property ever goes on this site.",
       "pillars": [
         {
-          "number": "01",
           "iconKey": "motorcycle",
           "title": "Rider-friendly",
           "body": "Not a badge we hand out. A stay earns it by having what a rider actually needs at the end of the day — and every one of those answers is printed on the listing."
         },
         {
-          "number": "02",
           "iconKey": "clock",
           "title": "Late check-in",
           "body": "Ghats close, weather turns, days run long. Someone is awake and the gate opens when you finally roll in — no argument at a reception desk at one in the morning."
         },
         {
-          "number": "03",
           "iconKey": "parking",
           "title": "Secure parking",
           "body": "Covered, off the road, inside the gate. On the coast, a freshwater tap too, so the salt comes off before it starts eating the chrome."
         },
         {
-          "number": "04",
           "iconKey": "wrench",
           "title": "Rider support",
           "body": "Chain lube, a foot pump and the spanners you forgot. Drying space for gear that met the monsoon. And the number of a mechanic who is genuinely open."
         },
         {
-          "number": "05",
           "iconKey": "route",
           "title": "Great riding routes",
           "body": "Every stay lists the roads around it, with distances and an honest note on what the surface is really like — written by people who rode it, not scraped off a map."
@@ -106,66 +101,27 @@
       ]
     },
     "featured": {
-      "overline": "Curated, not listed",
       "title": "Featured stays",
-      "lede": "A few at a time, each chosen for a reason we are happy to put in writing.",
+      "lede": "Each one chosen for a reason we are happy to put in writing.",
       "action": {
         "label": "View all stays",
         "href": "/stays"
       }
     },
-    "categories": {
-      "overline": "Every kind of stop",
-      "title": "Find your kind of stay"
-    },
     "destinations": {
-      "overline": "Destinations",
       "title": "Places worth riding to.",
       "lede": "Six regions across Maharashtra and Goa — each with its own roads, its own season, and its own reason to go."
     },
-    "passport": {
-      "overline": "Rider Passport",
-      "titleLines": [
-        "Your journey.",
-        "Your stays.",
-        "Your passport."
-      ],
-      "lede": "Keep a record of every StaySutra stay, route and ride.",
-      "body": "Most trips leave nothing behind but a bank statement. The Rider Passport is the other record — stamped at every StaySutra stay, carried between trips, and yours to keep.",
-      "cta": {
-        "label": "Join the Rider Passport",
-        "href": "/rider-passport"
-      },
-      "serialNote": "Issued on your first StaySutra stay.",
-      "stamps": [
-        {
-          "iconKey": "pin",
-          "title": "Every stay, stamped",
-          "body": "The property, the destination and the date it happened."
-        },
-        {
-          "iconKey": "route",
-          "title": "Every route, logged",
-          "body": "The ghats, the coast roads and the long hauls, in the order you rode them."
-        },
-        {
-          "iconKey": "star",
-          "title": "First look, every time",
-          "body": "New properties and routes reach passport holders before the site."
-        }
-      ]
-    },
     "riders": {
-      "overline": "The ecosystem",
-      "title": "More than a place to sleep",
-      "lede": "StaySutra started with stays. The rest is being built in the open — here is where each piece stands today.",
+      "title": "More for riders",
+      "lede": "StaySutra started with stays. The rest is being built in the open — here is where each piece stands.",
       "items": [
         {
           "iconKey": "book",
           "title": "Rider Passport",
           "tagline": "Your journey. Your stays. Your passport.",
           "body": "One record of every stay, every route and every ride you take with us.",
-          "status": "live",
+          "status": "waitlist",
           "href": "/rider-passport"
         },
         {
@@ -201,7 +157,7 @@
     },
     "owners": {
       "overline": "For property owners",
-      "title": "Turn your property into a stay people remember.",
+      "title": "Turn your property into a stay riders come back to.",
       "lede": "We take the whole job off your hands — photography, listing, pricing, marketing and every guest message — and put your property in front of people who come back.",
       "services": [
         {
@@ -237,33 +193,7 @@
         "label": "Partner with StaySutra",
         "href": "/list-your-property"
       },
-      "note": "Onboarding across six destinations in Maharashtra and Goa."
-    },
-    "trust": {
-      "overline": "No fine print",
-      "title": "Why book with StaySutra?",
-      "items": [
-        {
-          "title": "Curated properties",
-          "body": "Chosen one at a time. We turn down more than we take on."
-        },
-        {
-          "title": "Verified property information",
-          "body": "Capacity, amenities and facilities checked with the host before anything is published."
-        },
-        {
-          "title": "Rider-friendly stays",
-          "body": "Parking, late check-in and bike facilities stated plainly, never implied."
-        },
-        {
-          "title": "Local support",
-          "body": "People who know the roads, the seasons, and who to call when something changes."
-        },
-        {
-          "title": "Personal booking assistance",
-          "body": "A real conversation on WhatsApp, not a checkout page and an automated email."
-        }
-      ]
+      "note": "Lonavala, Karjat, Alibaug, Pune, Mumbai and Goa."
     },
     "stories": {
       "overline": "#staysutrariders",
@@ -279,7 +209,7 @@
         "Stay deep.",
         "Repeat."
       ],
-      "lede": "Where every journey finds its perfect stay.",
+      "lede": "Tell us where you are headed and when. We come back the same day with what is free — and what the roads are doing.",
       "primaryCta": {
         "label": "Explore stays",
         "href": "/stays"
@@ -297,7 +227,7 @@
     "body": "Most listing sites will tell you a place is good for bikers. Almost none of them will tell you whether there is a roof over the parking, whether the gate is manned at midnight, or whether there is a tap you can rinse the salt off with before it eats the chrome. Those are the questions we ask before a property goes on this site, and the answers are printed on every listing."
   },
   "riderPassport": {
-    "overline": "Your journey. Your stays. Your passport.",
+    "overline": "Waitlist open",
     "title": "Rider Passport",
     "lede": "Keep a record of every StaySutra stay, route and ride.",
     "body": "Most trips leave nothing behind but a bank statement. The Rider Passport is the other record — where you stayed, what you rode to get there, and in what order. It is stamped at every StaySutra property, it travels with you between trips, and it is yours to keep.\n\nWe are building it now. Join the list and you will be among the first to carry one — and you will hear about new properties and new routes before they reach the site.",
@@ -327,7 +257,25 @@
       "Your journey.",
       "Your stays.",
       "Your passport."
-    ]
+    ],
+    "stamps": [
+      {
+        "iconKey": "pin",
+        "title": "Every stay, stamped",
+        "body": "The property, the destination and the date it happened."
+      },
+      {
+        "iconKey": "route",
+        "title": "Every route, logged",
+        "body": "The ghats, the coast roads and the long hauls, in the order you rode them."
+      },
+      {
+        "iconKey": "star",
+        "title": "First look, every time",
+        "body": "New properties and routes reach passport holders before the site."
+      }
+    ],
+    "serialNote": "Issued on your first StaySutra stay."
   },
   "forRiders": {
     "overline": "The ecosystem",
@@ -411,12 +359,12 @@
         "title": "Ride",
         "links": [
           {
-            "label": "Rider Passport",
-            "href": "/rider-passport"
-          },
-          {
             "label": "For riders",
             "href": "/for-riders"
+          },
+          {
+            "label": "Rider Passport",
+            "href": "/rider-passport"
           }
         ]
       },
@@ -451,12 +399,8 @@
       "href": "/destinations"
     },
     {
-      "label": "Rider-Friendly",
+      "label": "Rider-friendly",
       "href": "/rider-friendly-stays"
-    },
-    {
-      "label": "Rider Passport",
-      "href": "/rider-passport"
     },
     {
       "label": "Stories",
@@ -465,6 +409,10 @@
     {
       "label": "About",
       "href": "/about"
+    },
+    {
+      "label": "Contact",
+      "href": "/contact"
     }
   ]
 }

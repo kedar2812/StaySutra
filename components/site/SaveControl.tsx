@@ -50,7 +50,7 @@ export function SaveControl({
       aria-pressed={saved}
       aria-label={saved ? `Remove ${name} from your shortlist` : `Save ${name} to your shortlist`}
       className={cn(
-        "press glass-chip relative z-10 grid size-10 place-items-center rounded-pill",
+        "press glass-chip relative z-10 grid size-11 place-items-center rounded-pill",
         "border border-[color:var(--glass-edge)] transition-colors",
         saved ? "text-gold-500" : "text-text-hi/85 hover:text-text-hi",
         className,

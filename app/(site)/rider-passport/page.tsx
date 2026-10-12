@@ -4,14 +4,13 @@ import { JsonLd } from "@/components/site/JsonLd";
 import { InterestCapture } from "@/components/site/InterestCapture";
 import { ButtonLink } from "@/components/primitives/Button";
 import { Icon, iconFor } from "@/components/primitives/Icon";
-import { Rule } from "@/components/primitives/Rule";
 import { Reveal } from "@/components/motion/Reveal";
 import { siteContent } from "@/lib/content";
 import { breadcrumbSchema, pageMeta } from "@/lib/seo";
 import { brand, waMessage, whatsappLink } from "@/lib/site";
 
 const copy = siteContent.riderPassport;
-const stamps = siteContent.home.passport.stamps;
+const stamps = siteContent.riderPassport.stamps;
 
 export const metadata: Metadata = pageMeta({
   title: "Rider Passport",
@@ -47,7 +46,7 @@ export default function RiderPassportPage() {
           <>
             <span className="block">{lineOne}</span>
             <span className="block">{lineTwo}</span>
-            <span className="block text-gold-500">{lineThree}</span>
+            <span className="block">{lineThree}</span>
           </>
         }
         lede={copy.lede}
@@ -67,9 +66,7 @@ export default function RiderPassportPage() {
       {/* What it records */}
       <section aria-labelledby="passport-holds" className="shell py-20 lg:py-28">
         <Reveal>
-          <Rule className="mb-5 max-w-24" />
-          <p className="t-overline">What it holds</p>
-          <h2 id="passport-holds" className="t-display-m mt-4 max-w-[18ch] text-balance">
+          <h2 id="passport-holds" className="t-display-m max-w-[18ch] text-balance">
             {copy.title}
           </h2>
           <div className="mt-7 max-w-[62ch] space-y-4 text-[1.0625rem] leading-relaxed text-text-mid">
@@ -86,7 +83,7 @@ export default function RiderPassportPage() {
                 <Icon name={iconFor(stamp.iconKey)} size={19} className="text-text-mid" />
               </span>
               <h3
-                className="mt-4 font-display text-[1.0625rem] uppercase leading-tight text-text-hi"
+                className="mt-4 font-display text-[1.0625rem] leading-tight text-text-hi"
                 style={{ fontWeight: 700 }}
               >
                 {stamp.title}
@@ -104,9 +101,7 @@ export default function RiderPassportPage() {
       >
         <div className="shell py-20 lg:py-28">
           <Reveal>
-            <Rule className="mb-5 max-w-24" />
-            <p className="t-overline">How it works</p>
-            <h2 id="passport-how" className="t-display-m mt-4 max-w-[16ch] text-balance">
+            <h2 id="passport-how" className="t-display-m max-w-[16ch] text-balance">
               Four steps. You only do the first one.
             </h2>
           </Reveal>
@@ -135,7 +130,7 @@ export default function RiderPassportPage() {
                     {step.number}
                   </span>
                   <h3
-                    className="mt-3 font-display text-[1.0625rem] uppercase leading-tight text-text-hi"
+                    className="mt-3 font-display text-[1.0625rem] leading-tight text-text-hi"
                     style={{ fontWeight: 700 }}
                   >
                     {step.title}
@@ -154,9 +149,7 @@ export default function RiderPassportPage() {
       <section id="join" aria-labelledby="passport-join" className="scroll-mt-28">
         <div className="shell grid gap-12 py-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-20 lg:py-28">
           <Reveal>
-            <Rule className="mb-5 max-w-24" />
-            <p className="t-overline">Join the list</p>
-            <h2 id="passport-join" className="t-display-m mt-4 max-w-[14ch] text-balance">
+            <h2 id="passport-join" className="t-display-m max-w-[14ch] text-balance">
               Be among the first to carry one
             </h2>
             <p className="mt-6 max-w-[44ch] text-[0.9375rem] leading-relaxed text-text-mid">

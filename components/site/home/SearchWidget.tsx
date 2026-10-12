@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 import { Button } from "@/components/primitives/Button";
+import { DateInput } from "@/components/primitives/DateInput";
 import { Icon } from "@/components/primitives/Icon";
 import { Sheet } from "@/components/primitives/Sheet";
 import { categories, countInCategory, destinations, properties } from "@/lib/content";
@@ -77,7 +78,7 @@ export function SearchWidget() {
             {stayTypeName ? ` · ${stayTypeName}` : ""}
           </span>
           <span className="t-caption mt-0.5 block truncate">
-            {checkIn ? `${checkIn} — ${checkOut || "…"}` : "Any dates"} ·{" "}
+            {checkIn ? `${shortDay(checkIn)} – ${checkOut ? shortDay(checkOut) : "…"}` : "Any dates"} ·{" "}
             {guests} {guests === 1 ? "guest" : "guests"}
           </span>
         </span>
@@ -115,7 +116,7 @@ const fieldShell =
   "lg:hover:bg-white/[0.05] max-lg:border max-lg:border-[color:var(--hairline)]";
 
 const labelClass =
-  "text-[0.625rem] font-semibold uppercase tracking-[0.16em] text-text-low";
+  "text-xs font-semibold uppercase tracking-[0.16em] text-text-low";
 
 function DestinationField({
   value,
@@ -170,13 +171,12 @@ function DateField({
       <label htmlFor={id} className={labelClass}>
         {label}
       </label>
-      <input
+      <DateInput
         id={id}
-        type="date"
         value={value}
         min={min || today}
         onChange={(e) => onChange(e.target.value)}
-        className="on-glass w-full bg-transparent text-[0.9375rem] outline-none [color-scheme:dark]"
+        textClassName="on-glass text-[0.9375rem]"
       />
     </div>
   );
@@ -207,10 +207,18 @@ function GuestField({ value, onChange }: { value: number; onChange: (v: number) 
   );
 }
 
+/** "2026-10-17" → "17 Oct", for the one-line summary on a phone. */
+function shortDay(iso: string): string {
+  const [y, m, d] = iso.split("-").map(Number);
+  if (!y || !m || !d) return iso;
+  return new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short" }).format(
+    new Date(y, m - 1, d),
+  );
+}
+
 /**
- * Stay type. Category counts are shown so nobody picks a filter that returns
- * an empty grid, and a category with nothing in it yet says so rather than
- * silently offering a dead end.
+ * Stay type. Only categories with at least one stay are offered, so nobody
+ * picks a filter that returns an empty grid.
  */
 function StayTypeField({
   value,
@@ -232,14 +240,15 @@ function StayTypeField({
         className="on-glass w-full appearance-none bg-transparent pr-6 text-[0.9375rem] outline-none"
       >
         <option value="">Any type</option>
-        {categories.map((c) => {
-          const n = countInCategory(c.slug);
-          return (
+        {/* Only types that have a stay behind them — a choice that returns an
+            empty grid is a dead end, not an option. */}
+        {categories
+          .filter((c) => countInCategory(c.slug) > 0)
+          .map((c) => (
             <option key={c.slug} value={c.slug} className="bg-ink-800">
-              {c.plural} {n > 0 ? `(${n})` : "— onboarding"}
+              {c.plural}
             </option>
-          );
-        })}
+          ))}
       </select>
       <Icon
         name="chevronDown"
@@ -276,7 +285,7 @@ function Stepper({
           onClick();
         }
       }}
-      className="press grid size-8 shrink-0 place-items-center rounded-pill border border-[color:var(--hairline-str)] text-text-hi transition-colors hover:border-gold-500 hover:text-gold-400 disabled:opacity-30"
+      className="press relative grid size-8 shrink-0 place-items-center rounded-pill border after:absolute after:-inset-1.5 after:content-['']  border-[color:var(--hairline-str)] text-text-hi transition-colors hover:border-gold-500 hover:text-gold-400 disabled:opacity-30"
     >
       <Icon name={icon} size={14} />
     </button>

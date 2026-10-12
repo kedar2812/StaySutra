@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { Icon } from "@/components/primitives/Icon";
 import { Rule } from "@/components/primitives/Rule";
 import { cn } from "@/lib/utils";
+import { Unbroken } from "@/components/primitives/Unbroken";
 import type { PlateMood, PlateScene } from "@/lib/plate";
 
 export interface Crumb {
@@ -25,7 +26,10 @@ export function Breadcrumbs({ trail }: { trail: Crumb[] }) {
                 </span>
               ) : (
                 <>
-                  <Link href={c.path} className="t-caption transition-colors hover:text-text-hi">
+                  <Link
+                    href={c.path}
+                    className="t-caption -my-2 inline-block py-2 text-text-mid transition-colors hover:text-text-hi"
+                  >
                     {c.name}
                   </Link>
                   <Icon name="chevronRight" size={12} className="text-text-low" />
@@ -54,6 +58,7 @@ export function PageHero({
   meta,
   children,
   size = "md",
+  tone = "muted",
 }: {
   overline?: string;
   title: ReactNode;
@@ -65,6 +70,13 @@ export function PageHero({
   meta?: ReactNode;
   children?: ReactNode;
   size?: "sm" | "md" | "lg";
+  /**
+   * "muted" duotones the photograph into the palette — right for an editorial
+   * backdrop. "photo" keeps it in colour with a lighter cover, for pages whose
+   * subject is the place itself: a destination page that opens on a nearly
+   * black band never shows you the destination.
+   */
+  tone?: "muted" | "photo";
 }) {
   const pad = {
     sm: "pb-12 lg:pb-16",
@@ -79,10 +91,26 @@ export function PageHero({
         pad,
       )}
     >
+      {/*
+        Centre-anchored: these are landscape photographs in a wide band, and a
+        bottom anchor cropped a road shot down to a slab of asphalt. The top
+        scrim is what keeps the navigation legible over a bright sky or a
+        sunlit verge before the bar has turned to glass.
+      */}
       <div className="absolute inset-0 -z-10">
-        <Frame seed={seed} scene={scene} mood={mood} muted fill sizes="100vw" />
+        <Frame
+          seed={seed}
+          scene={scene}
+          mood={mood}
+          muted={tone === "muted"}
+          fill
+          anchor="center"
+          sizes="100vw"
+          priority
+        />
         <div className="absolute inset-0 scrim-b" />
-        <div className="absolute inset-0 bg-ink-900/45" />
+        <div className={cn("absolute inset-0", tone === "muted" ? "bg-ink-900/45" : "bg-ink-900/20")} />
+        <div className="absolute inset-0 scrim-t" />
       </div>
 
       <div className="shell relative">
@@ -99,11 +127,12 @@ export function PageHero({
         )}
         <h1
           className={cn(
-            "mt-4 max-w-[16ch] text-balance",
+            overline ? "mt-4" : "mt-0",
+            "max-w-[16ch] text-balance",
             size === "lg" ? "t-display-xl" : "t-display-l",
           )}
         >
-          {title}
+          {typeof title === "string" ? <Unbroken>{title}</Unbroken> : title}
         </h1>
         {lede && <p className="t-lede mt-6 max-w-[54ch]">{lede}</p>}
         {meta && <div className="mt-8">{meta}</div>}

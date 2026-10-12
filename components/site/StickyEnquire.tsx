@@ -33,6 +33,31 @@ export function StickyEnquire({
 }) {
   const reduced = useReducedMotion();
   const [past, setPast] = useState(false);
+  const [covered, setCovered] = useState(false);
+
+  /*
+   * The bar repeats an action. While the thing it points at — the inline
+   * availability panel or the enquiry form — is already on screen, it steps
+   * away rather than sitting on top of a second copy of itself.
+   */
+  useEffect(() => {
+    const targets = ["availability", "enquire"]
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => Boolean(el));
+    if (!targets.length) return;
+    const visible = new Set<Element>();
+    const observer = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) visible.add(e.target);
+        else visible.delete(e.target);
+      }
+      setCovered(visible.size > 0);
+    });
+    targets.forEach((t) => observer.observe(t));
+    return () => observer.disconnect();
+  }, []);
+
+  const showBar = past && !covered;
 
   useEffect(() => {
     let frame = 0;
@@ -79,9 +104,16 @@ export function StickyEnquire({
 
       {/* Mobile CTA bar */}
       <motion.div
+        data-sticky-bar=""
         className="glass fixed inset-x-0 bottom-0 z-40 px-4 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] pt-3 lg:hidden"
         initial={reduced ? { opacity: 0 } : { y: "110%" }}
-        animate={past ? { y: 0, opacity: 1 } : { y: reduced ? 0 : "110%", opacity: 1 }}
+        animate={
+          showBar
+            ? { y: 0, opacity: 1 }
+            : reduced
+              ? { y: 0, opacity: 0 }
+              : { y: "110%", opacity: 1 }
+        }
         transition={reduced ? { duration: 0.2 } : spring.sheet}
       >
         <div className="flex items-center gap-3">
@@ -93,13 +125,13 @@ export function StickyEnquire({
             target="_blank"
             rel="noreferrer noopener"
             aria-label="Ask about this stay on WhatsApp"
+            tabIndex={showBar ? undefined : -1}
             /*
-              Hidden on the narrowest phones. Below 480px this bar cannot hold
-              a price, two round buttons and a pill without clipping the label
-              on the one control that matters — and the floating WhatsApp
-              button is already on screen, six pixels above it.
+              The page's only WhatsApp button below the desktop breakpoint —
+              the floating one stands down on property pages so the two never
+              stack in the same corner.
             */
-            className="press grid size-12 shrink-0 place-items-center rounded-pill border border-[color:var(--hairline-str)] text-text-hi max-sm:hidden"
+            className="press grid size-12 shrink-0 place-items-center rounded-pill border border-[color:var(--hairline-str)] text-text-hi"
           >
             <Icon name="whatsapp" size={20} />
           </a>
@@ -110,9 +142,10 @@ export function StickyEnquire({
           */}
           <a
             href="#availability"
-            className="press flex h-12 shrink-0 items-center justify-center rounded-pill bg-gold-500 px-5 text-[0.6875rem] font-semibold uppercase tracking-[0.09em] text-gold-ink"
+            tabIndex={showBar ? undefined : -1}
+            className="press flex h-12 shrink-0 items-center justify-center rounded-pill bg-gold-500 px-5 text-xs font-semibold uppercase tracking-[0.08em] text-gold-ink"
           >
-            Check availability
+            Check dates
           </a>
         </div>
       </motion.div>
@@ -136,14 +169,14 @@ function Price({ property: p, compact = false }: { property: PropertyView; compa
       <p className="flex items-baseline gap-2">
         <span className="t-caption shrink-0 uppercase tracking-[0.14em]">From</span>
         <span
-          className={cn("t-num text-text-hi", compact ? "text-xl" : "text-2xl")}
+          className={cn("t-num text-text-hi", compact ? "text-lg" : "text-2xl")}
           style={{ fontWeight: 800 }}
         >
           {inr(p.startingPrice)}
         </span>
       </p>
-      <p className={compact ? "t-caption mt-1 truncate" : "t-caption mt-1.5 max-w-[26ch]"}>
-        {p.priceNote ?? "per night"}
+      <p className={compact ? "t-caption mt-0.5" : "t-caption mt-1.5 max-w-[26ch]"}>
+        {compact ? "per night" : (p.priceNote ?? "per night")}
         {!compact && " · final rate confirmed on enquiry"}
       </p>
     </div>

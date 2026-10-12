@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useMemo, useState } from "react";
+import { DateInput } from "@/components/primitives/DateInput";
 import { Icon } from "@/components/primitives/Icon";
 import { track } from "@/lib/analytics";
 import { waMessage, whatsappLink } from "@/lib/site";
@@ -88,7 +89,7 @@ export function CheckAvailability({
             variant === "panel" ? "col-span-2" : "sm:col-span-1 sm:border-l sm:border-t-0",
           )}
         >
-          <span className="text-[0.625rem] font-semibold uppercase tracking-[0.16em] text-text-low">
+          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-text-low">
             Guests
           </span>
           <div className="flex items-center justify-between gap-3">
@@ -182,25 +183,19 @@ function DateCell({
   className?: string;
 }) {
   return (
-    /*
-     * px-3 below 480px is not cosmetic: a native date control needs roughly
-     * 110px to render dd-mmm-yyyy, and two of them in a half-width cell with
-     * px-4 clips the year.
-     */
     <div className={cn("flex flex-col justify-center gap-1 px-3 py-3 sm:px-4", className)}>
       <label
         htmlFor={id}
-        className="text-[0.625rem] font-semibold uppercase tracking-[0.16em] text-text-low"
+        className="text-xs font-semibold uppercase tracking-[0.14em] text-text-low"
       >
         {label}
       </label>
-      <input
+      <DateInput
         id={id}
-        type="date"
         value={value}
         min={min}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full min-w-0 bg-transparent text-[0.875rem] font-medium text-text-hi outline-none [color-scheme:dark] sm:text-[0.9375rem]"
+        textClassName="text-[0.9375rem] font-medium text-text-hi"
       />
     </div>
   );
@@ -232,7 +227,7 @@ function Stepper({
           onClick();
         }
       }}
-      className="press grid size-9 shrink-0 place-items-center rounded-pill border border-[color:var(--hairline-str)] text-text-hi transition-colors hover:border-gold-500 hover:text-gold-400 disabled:opacity-30"
+      className="press relative grid size-9 shrink-0 place-items-center rounded-pill border after:absolute after:-inset-1 after:content-['']  border-[color:var(--hairline-str)] text-text-hi transition-colors hover:border-gold-500 hover:text-gold-400 disabled:opacity-30"
     >
       <Icon name={icon} size={14} />
     </button>

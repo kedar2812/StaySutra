@@ -3,6 +3,7 @@
 import { useId, type ReactNode, type SelectHTMLAttributes } from "react";
 import type { InputHTMLAttributes, TextareaHTMLAttributes } from "react";
 import { Icon } from "./Icon";
+import { DateInput } from "./DateInput";
 import { cn } from "@/lib/utils";
 
 /**
@@ -39,7 +40,7 @@ function Shell({
     <div className={cn("min-w-0", className)}>
       <label
         htmlFor={id}
-        className="mb-2 block text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-text-low"
+        className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-text-low"
       >
         {label}
         {required && (
@@ -88,13 +89,23 @@ export function Field({
       required={rest.required}
       className={className}
     >
-      <input
-        id={fieldId}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={error ? `${fieldId}-error` : hint ? `${fieldId}-hint` : undefined}
-        className={cn(shell, error ? bad : ok, rest.type === "date" && "[color-scheme:dark]")}
-        {...rest}
-      />
+      {rest.type === "date" ? (
+        <DateInput
+          id={fieldId}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? `${fieldId}-error` : hint ? `${fieldId}-hint` : undefined}
+          className={cn(shell, error ? bad : ok, "min-h-[3.125rem]")}
+          {...withoutType(rest)}
+        />
+      ) : (
+        <input
+          id={fieldId}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? `${fieldId}-error` : hint ? `${fieldId}-hint` : undefined}
+          className={cn(shell, error ? bad : ok)}
+          {...rest}
+        />
+      )}
     </Shell>
   );
 }
@@ -168,6 +179,12 @@ export function Select({
       </div>
     </Shell>
   );
+}
+
+function withoutType<T extends { type?: unknown }>(props: T): Omit<T, "type"> {
+  const copy = { ...props };
+  delete copy.type;
+  return copy;
 }
 
 /** A honeypot no human sees and no bot can resist. */

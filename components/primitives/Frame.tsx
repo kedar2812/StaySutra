@@ -66,8 +66,13 @@ export function Frame({
   anchor: anchorProp,
   children,
 }: FrameProps) {
-  // A frame taller than it is wide keeps its ground rather than its sky.
-  const anchor = anchorProp ?? (fill || ratio === "3/4" ? "bottom" : "center");
+  /*
+   * A portrait frame keeps its ground rather than its sky. Fill frames are
+   * centred: they are almost always wide bands behind type, and anchoring a
+   * landscape photograph to its bottom edge in a short, wide band cropped a
+   * road shot down to a slab of asphalt.
+   */
+  const anchor = anchorProp ?? (ratio === "3/4" && !fill ? "bottom" : "center");
 
   /*
    * Real media always wins. Failing that, the demo photography stands in — see

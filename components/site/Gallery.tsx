@@ -6,6 +6,7 @@ import { Frame } from "@/components/primitives/Frame";
 import { Icon } from "@/components/primitives/Icon";
 import { nearestSnap, project, spring, VelocityTracker } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { lockScroll } from "@/lib/scroll-lock";
 import type { PlateMood, PlateScene } from "@/lib/plate";
 
 /**
@@ -67,18 +68,30 @@ export function Gallery({
           type="button"
           ref={trigger}
           onClick={() => openAt(0)}
-          aria-label={`Open the photo gallery for ${name}`}
-          className="press group relative block overflow-hidden rounded-card"
+          aria-label={single ? `View the photo of ${name} full screen` : `Open the photo gallery for ${name}`}
+          /*
+            Edge to edge on a phone. The photograph is the first thing a guest
+            judges a stay on, and a card inset by the gutter on both sides gave
+            it a third less width than the screen has.
+          */
+          className="press-sm group relative block overflow-hidden rounded-card max-sm:-mx-[var(--gutter)] max-sm:rounded-none"
         >
           <Frame
             seed={shots[0]!.seed}
             scene={scene}
             mood={shots[0]!.mood}
-            ratio={single ? "16/9" : "4/3"}
-            sizes="(min-width:1024px) 66vw, 100vw"
+            ratio="4/3"
+            className={single ? "sm:aspect-[16/9] lg:aspect-[21/9]" : undefined}
+            sizes={single ? "100vw" : "(min-width:1024px) 66vw, 100vw"}
             priority
             imgClassName="transition-transform duration-[500ms] ease-out-quint group-hover:scale-[1.03]"
           />
+          {!single && (
+            <span className="glass pointer-events-none absolute bottom-3 right-3 z-10 inline-flex items-center gap-2 rounded-pill px-3.5 py-2 text-[0.8125rem] font-medium text-text-hi lg:hidden">
+              <Icon name="camera" size={15} />
+              {shots.length} photos
+            </span>
+          )}
         </button>
 
         {!single && (
@@ -105,14 +118,16 @@ export function Gallery({
         )}
       </div>
 
-      <button
-        type="button"
-        onClick={() => openAt(0)}
-        className="press glass mt-4 inline-flex items-center gap-2 rounded-pill px-5 py-2.5 text-[0.8125rem] font-medium text-text-hi"
-      >
-        <Icon name="camera" size={16} />
-        View all {shots.length} photos
-      </button>
+      {!single && (
+        <button
+          type="button"
+          onClick={() => openAt(0)}
+          className="press glass mt-4 hidden min-h-11 items-center gap-2 rounded-pill px-5 py-2.5 text-[0.8125rem] font-medium text-text-hi lg:inline-flex"
+        >
+          <Icon name="camera" size={16} />
+          View all {shots.length} photos
+        </button>
+      )}
 
       <Lightbox
         open={open}
@@ -151,8 +166,7 @@ function Lightbox({
 
   useEffect(() => {
     if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const unlock = lockScroll();
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -162,7 +176,7 @@ function Lightbox({
     document.addEventListener("keydown", onKey);
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
+      unlock();
     };
   }, [open, onClose, index, setIndex, shots.length]);
 
@@ -192,7 +206,7 @@ function Lightbox({
         >
           <div className="flex items-center justify-between px-5 py-4">
             <p className="t-caption tabular-nums text-text-mid">
-              {index + 1} / {shots.length}
+              {shots.length > 1 ? `${index + 1} / ${shots.length}` : name}
             </p>
             <button
               type="button"
@@ -250,7 +264,12 @@ function Lightbox({
             </div>
           </motion.div>
 
-          <div className="flex items-center justify-center gap-3 pb-[calc(env(safe-area-inset-bottom)+1.25rem)]">
+          <div
+            className={cn(
+              "flex items-center justify-center gap-3 pb-[calc(env(safe-area-inset-bottom)+1.25rem)]",
+              shots.length === 1 && "invisible",
+            )}
+          >
             <button
               type="button"
               onClick={() => setIndex(Math.max(0, index - 1))}

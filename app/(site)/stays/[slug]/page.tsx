@@ -18,8 +18,8 @@ import { Plate } from "@/components/primitives/Plate";
 import { Reveal } from "@/components/motion/Reveal";
 import { getProperty, properties, similarTo } from "@/lib/content";
 import { breadcrumbSchema, lodgingSchema, pageMeta } from "@/lib/seo";
-import { settings, waMessage } from "@/lib/site";
-import { inr, plural } from "@/lib/utils";
+import { settings, waMessage, whatsappLink } from "@/lib/site";
+import { clockTime, inr, plural } from "@/lib/utils";
 import type { PlateMood, PlateScene } from "@/lib/plate";
 import type { PropertyView } from "@/lib/types";
 
@@ -92,20 +92,16 @@ export default async function PropertyPage({
       </section>
 
       {/* 2 · Header block */}
-      <header className="shell mt-10">
-        <div className="flex flex-wrap items-start justify-between gap-x-8 gap-y-5">
+      <header className="shell mt-8 lg:mt-10">
+        <div className="flex items-start justify-between gap-x-6">
           <div className="min-w-0 max-w-3xl">
             <div className="flex flex-wrap items-center gap-2">
               <Chip icon={iconFor(p.category.iconKey)}>{p.category.name}</Chip>
-              {p.isRiderFriendly && (
-                <Chip icon="motorcycle" tone="gold">
-                  Rider favourite
-                </Chip>
-              )}
+              {p.isRiderFriendly && <Chip icon="motorcycle">Rider-friendly</Chip>}
               {p.availability === "ON_REQUEST" && <Chip>On request</Chip>}
             </div>
 
-            <h1 className="t-display-l mt-5 text-balance">{p.name}</h1>
+            <h1 className="t-display-l mt-5">{p.name}</h1>
 
             <p className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-text-low">
               <span className="flex items-center gap-1.5 text-[0.9375rem]">
@@ -126,12 +122,12 @@ export default async function PropertyPage({
             </p>
           </div>
 
-          <SaveControl slug={p.slug} name={p.name} className="shrink-0" />
+          <SaveControl slug={p.slug} name={p.name} className="mt-1 shrink-0" />
         </div>
       </header>
 
       {/* 3 · Two-column body. Bottom padding clears the mobile CTA bar. */}
-      <div className="shell mt-12 grid gap-x-16 gap-y-14 pb-32 lg:mt-16 lg:grid-cols-[minmax(0,1fr)_22rem] lg:pb-32">
+      <div className="shell mt-12 grid gap-x-16 gap-y-14 pb-20 lg:mt-16 lg:grid-cols-[minmax(0,1fr)_22rem] lg:pb-28">
         <div className="min-w-0">
           <QuickFacts property={p} />
 
@@ -143,10 +139,11 @@ export default async function PropertyPage({
           */}
           <section
             id="availability"
+            data-wa-hide=""
             className="mt-12 scroll-mt-28 rounded-surface border border-[color:var(--hairline-str)] bg-ink-800/70 p-6 lg:hidden"
           >
             <h2
-              className="font-display text-lg uppercase leading-tight tracking-[-0.01em] text-text-hi"
+              className="font-display text-lg leading-tight tracking-[-0.01em] text-text-hi"
               style={{ fontWeight: 800 }}
             >
               Check availability
@@ -298,7 +295,7 @@ export default async function PropertyPage({
                   >
                     <div className="min-w-0">
                       <h3
-                        className="font-display text-base uppercase leading-tight tracking-tight text-text-hi"
+                        className="font-display text-base leading-tight tracking-tight text-text-hi"
                         style={{ fontWeight: 700 }}
                       >
                         {route.title}
@@ -328,13 +325,13 @@ export default async function PropertyPage({
                   <li className="py-4 pr-4">
                     <p className="t-caption uppercase tracking-[0.14em]">Check-in</p>
                     <p className="t-num mt-1.5 text-lg text-text-hi">
-                      {p.checkInTime ?? "Flexible"}
+                      {p.checkInTime ? clockTime(p.checkInTime) : "Flexible"}
                     </p>
                   </li>
                   <li className="border-l border-[color:var(--hairline)] py-4 pl-4">
                     <p className="t-caption uppercase tracking-[0.14em]">Check-out</p>
                     <p className="t-num mt-1.5 text-lg text-text-hi">
-                      {p.checkOutTime ?? "Flexible"}
+                      {p.checkOutTime ? clockTime(p.checkOutTime) : "Flexible"}
                     </p>
                   </li>
                 </ul>
@@ -416,16 +413,46 @@ export default async function PropertyPage({
             </Block>
           ) : null}
 
-          {/* 14 · Inline enquiry, in addition to the sticky card. */}
-          <Block title="Ask about this stay" id="enquire">
-            <div className="max-w-xl">
-              <EnquiryForm source="PROPERTY" propertySlug={p.slug} waMessage={wa} withDates />
-            </div>
-          </Block>
         </div>
 
         <StickyEnquire property={p} waMessage={wa} />
       </div>
+
+      {/*
+        14 · The long-form enquiry, after the two-column body rather than inside
+        it. Inside, it sat directly beside the sticky card asking for the same
+        dates and the same head count — two forms for one question.
+      */}
+      <section
+        id="enquire"
+        data-wa-hide=""
+        aria-labelledby="enquire-title"
+        className="scroll-mt-28 border-t border-[color:var(--hairline)]"
+      >
+        <div className="shell grid gap-12 py-20 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-20 lg:py-28">
+          <div>
+            <h2 id="enquire-title" className="t-display-m max-w-[14ch]">
+              Ask about {p.name}
+            </h2>
+            <p className="mt-5 max-w-[42ch] text-[0.9375rem] leading-relaxed text-text-mid">
+              Dates, group size, when you expect to roll in. We check with the host and reply
+              on WhatsApp the same day, or by email if you would rather.
+            </p>
+            <a
+              href={whatsappLink(wa)}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="press-sm mt-8 inline-flex min-h-11 items-center gap-2 text-[0.9375rem] font-medium text-text-hi underline decoration-[color:var(--hairline-str)] underline-offset-4 transition-colors hover:text-gold-400"
+            >
+              <Icon name="whatsapp" size={18} />
+              Or message us on WhatsApp
+            </a>
+          </div>
+          <div className="max-w-xl">
+            <EnquiryForm source="PROPERTY" propertySlug={p.slug} waMessage={wa} withDates />
+          </div>
+        </div>
+      </section>
 
       {/* 12 · Similar stays */}
       {similar.length > 0 && (
@@ -435,26 +462,23 @@ export default async function PropertyPage({
         >
           <div className="shell py-20 lg:py-28">
             <Reveal>
-              <Rule className="mb-5 max-w-24" />
-              <p className="t-overline">More like this</p>
-              <h2 id="similar-title" className="t-display-m mt-4">
-                Similar stays
+              <h2 id="similar-title" className="t-display-m">
+                You might also like
               </h2>
             </Reveal>
-            <Reveal className="mt-12 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+            <Reveal className="mt-10 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
               {similar.map((s) => (
                 <PropertyCard
                   key={s.slug}
                   property={s}
-                  scale="compact"
-                  sizes="(min-width:1024px) 24vw, 46vw"
+                  sizes="(min-width:1024px) 30vw, 46vw"
                 />
               ))}
             </Reveal>
             <p className="mt-12">
               <Link
                 href={`/destinations/${p.destination.slug}`}
-                className="press-sm inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-gold-500 transition-colors hover:text-gold-400"
+                className="press-sm inline-flex min-h-11 items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-text-mid transition-colors hover:text-gold-400"
               >
                 All stays in {p.destination.name}
                 <Icon name="arrowRight" size={16} />
@@ -464,7 +488,7 @@ export default async function PropertyPage({
         </section>
       )}
 
-      <WhatsAppFloat message={wa} source={`property:${p.slug}`} raised />
+      <WhatsAppFloat message={wa} source={`property:${p.slug}`} desktopOnly />
 
       <JsonLd data={[lodgingSchema(p), breadcrumbSchema(trail)]} />
     </>
@@ -485,7 +509,7 @@ function Block({
   return (
     <section id={id} className="mt-14 scroll-mt-28 lg:mt-20">
       <h2
-        className="font-display text-xl uppercase leading-tight tracking-[-0.01em] text-text-hi lg:text-2xl"
+        className="font-display text-xl leading-tight tracking-[-0.01em] text-text-hi lg:text-2xl"
         style={{ fontWeight: 800 }}
       >
         {title}
@@ -510,8 +534,8 @@ function QuickFacts({ property: p }: { property: PropertyView }) {
     { icon: "bed", label: p.bedrooms === 1 ? "Bedroom" : "Bedrooms", value: String(p.bedrooms) },
     { icon: "bath", label: p.bathrooms === 1 ? "Bathroom" : "Bathrooms", value: String(p.bathrooms) },
     { icon: "homestay", label: p.beds === 1 ? "Bed" : "Beds", value: String(p.beds) },
-    { icon: "clock", label: "Check-in", value: p.checkInTime ?? "Flexible" },
-    { icon: "clock", label: "Check-out", value: p.checkOutTime ?? "Flexible" },
+    { icon: "clock", label: "Check-in", value: p.checkInTime ? clockTime(p.checkInTime) : "Flexible" },
+    { icon: "clock", label: "Check-out", value: p.checkOutTime ? clockTime(p.checkOutTime) : "Flexible" },
   ];
 
   return (

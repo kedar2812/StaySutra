@@ -65,6 +65,9 @@ export default async function StoryPage({
     .filter((d): d is NonNullable<typeof d> => Boolean(d));
   const relatedStays = linkedDestinations.flatMap((d) => propertiesIn(d.slug)).slice(0, 3);
   const more = stories.filter((other) => other.slug !== s.slug).slice(0, 3);
+  const toc = (blocks ?? []).flatMap((b) =>
+    b.kind === "h2" && b.id ? [{ id: b.id, text: b.text }] : [],
+  );
 
   const trail = [
     { name: "Home", path: "/" },
@@ -106,7 +109,13 @@ export default async function StoryPage({
           </Parallax>
         </div>
 
-        <div className="shell mt-14 lg:mt-20">
+        {/*
+          The body keeps its 68-character measure. On a desktop the column
+          beside it was empty for the whole length of the article; it now holds
+          the contents, which follow you down the page.
+        */}
+        <div className="shell mt-14 grid gap-16 lg:mt-20 lg:grid-cols-[minmax(0,68ch)_minmax(0,1fr)] lg:gap-24">
+          <div className="min-w-0">
           {blocks ? (
             <Prose blocks={blocks} />
           ) : (
@@ -127,7 +136,7 @@ export default async function StoryPage({
                 target="_blank"
                 rel="noreferrer noopener"
                 aria-label="Share on WhatsApp"
-                className="press grid size-10 place-items-center rounded-pill border border-[color:var(--hairline)] text-text-low transition-colors hover:text-text-hi"
+                className="press grid size-11 place-items-center rounded-pill border border-[color:var(--hairline)] text-text-low transition-colors hover:text-text-hi"
               >
                 <Icon name="whatsapp" size={17} />
               </a>
@@ -136,12 +145,35 @@ export default async function StoryPage({
                   canonical(`/stories/${s.slug}`),
                 )}`}
                 aria-label="Share by email"
-                className="press grid size-10 place-items-center rounded-pill border border-[color:var(--hairline)] text-text-low transition-colors hover:text-text-hi"
+                className="press grid size-11 place-items-center rounded-pill border border-[color:var(--hairline)] text-text-low transition-colors hover:text-text-hi"
               >
                 <Icon name="mail" size={17} />
               </a>
             </div>
           </div>
+          </div>
+
+          {toc.length > 1 && (
+            <aside aria-labelledby="toc-title" className="hidden lg:block">
+              <nav className="sticky top-[calc(var(--header-h)+2.5rem)] border-l border-[color:var(--hairline)] pl-6">
+                <h2 id="toc-title" className="t-caption uppercase tracking-[0.16em] text-text-mid">
+                  In this story
+                </h2>
+                <ol className="mt-4 space-y-1">
+                  {toc.map((h) => (
+                    <li key={h.id}>
+                      <a
+                        href={`#${h.id}`}
+                        className="press-sm inline-flex min-h-10 items-center text-[0.9375rem] text-text-low transition-colors hover:text-text-hi"
+                      >
+                        {h.text}
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              </nav>
+            </aside>
+          )}
         </div>
       </article>
 
@@ -153,9 +185,7 @@ export default async function StoryPage({
         >
           <div className="shell py-20 lg:py-28">
             <Reveal>
-              <Rule className="mb-5 max-w-24" />
-              <p className="t-overline">Ride it yourself</p>
-              <h2 id="story-related" className="t-display-m mt-4">
+              <h2 id="story-related" className="t-display-m">
                 Where to stay
               </h2>
             </Reveal>
@@ -207,7 +237,7 @@ export default async function StoryPage({
                 >
                   <div className="min-w-0">
                     <h3
-                      className="font-display text-lg uppercase leading-tight tracking-tight text-text-hi lg:text-xl"
+                      className="font-display text-lg leading-tight tracking-tight text-text-hi lg:text-xl"
                       style={{ fontWeight: 700 }}
                     >
                       {other.title}

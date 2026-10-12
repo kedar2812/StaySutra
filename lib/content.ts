@@ -3,6 +3,7 @@ import destinationsRaw from "@/content/destinations.json";
 import propertiesRaw from "@/content/properties.json";
 import storiesRaw from "@/content/stories.json";
 import site from "@/content/site.json";
+import { demoGalleryCount } from "./demo-images";
 import type {
   Category,
   Destination,
@@ -84,6 +85,7 @@ function hydrate(seed: PropertySeed): PropertyView {
     amenities: pick(amenityMap, seed.amenitySlugs),
     facilities: pick(facilityMap, seed.facilitySlugs),
     experiences: pick(experienceMap, seed.experienceSlugs),
+    imageCount: demoGalleryCount(seed.slug) ?? seed.imageCount,
     // No rating is seeded anywhere. The UI must handle null, and does. DPR §4.6
     ratingValue: null,
     ratingCount: null,
@@ -131,17 +133,32 @@ export const featuredProperties = properties
 export const riderFriendly = properties.filter((p) => p.isRiderFriendly);
 
 /** Same destination first, then same category, excluding the current property. */
-export function similarTo(property: PropertyView, limit = 4): PropertyView[] {
-  const sameDestination = properties.filter(
-    (p) => p.slug !== property.slug && p.destination.slug === property.destination.slug,
+/**
+ * Same destination first, then same category, then whatever is closest in
+ * price — so the row is always full. A "similar stays" grid holding one card
+ * and three empty columns reads as a broken page, not as an honest one.
+ */
+export function similarTo(property: PropertyView, limit = 3): PropertyView[] {
+  const others = properties.filter((p) => p.slug !== property.slug);
+  const sameDestination = others.filter(
+    (p) => p.destination.slug === property.destination.slug,
   );
-  const sameCategory = properties.filter(
+  const sameCategory = others.filter(
     (p) =>
-      p.slug !== property.slug &&
       p.destination.slug !== property.destination.slug &&
       p.category.slug === property.category.slug,
   );
-  return [...sameDestination, ...sameCategory].slice(0, limit);
+  const price = property.startingPrice ?? 0;
+  const byPrice = [...others].sort(
+    (a, b) =>
+      Math.abs((a.startingPrice ?? price) - price) - Math.abs((b.startingPrice ?? price) - price),
+  );
+  const picked = new Map<string, PropertyView>();
+  for (const p of [...sameDestination, ...sameCategory, ...byPrice]) {
+    if (picked.size >= limit) break;
+    picked.set(p.slug, p);
+  }
+  return [...picked.values()];
 }
 
 export function storiesFor(destinationSlug: string): Story[] {

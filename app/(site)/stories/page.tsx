@@ -119,7 +119,7 @@ export default async function StoriesPage({
                       {formatDate(s.publishedAt)} · {s.readMinutes} min read
                     </p>
                     <h3
-                      className="mt-2 font-display text-lg uppercase leading-tight tracking-tight text-text-hi"
+                      className="mt-2 font-display text-lg leading-tight tracking-tight text-text-hi"
                       style={{ fontWeight: 700 }}
                     >
                       {s.title}

@@ -5,7 +5,6 @@ import { FilterBar } from "@/components/site/FilterBar";
 import { PropertyResults } from "@/components/site/PropertyResults";
 import { JsonLd } from "@/components/site/JsonLd";
 import { Icon, iconFor } from "@/components/primitives/Icon";
-import { Rule } from "@/components/primitives/Rule";
 import { Reveal } from "@/components/motion/Reveal";
 import { facilities, riderFriendly, siteContent } from "@/lib/content";
 import { applyFilters, parseFilters, type SearchParams } from "@/lib/filters";
@@ -36,7 +35,6 @@ export default async function RiderFriendlyPage({
   return (
     <>
       <PageHero
-        overline={copy.overline}
         title={copy.title}
         lede={copy.lede}
         seed="rider-friendly"
@@ -51,9 +49,7 @@ export default async function RiderFriendlyPage({
       <section className="shell py-20 lg:py-28">
         <Reveal className="grid gap-14 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-20">
           <div>
-            <Rule className="mb-5 max-w-24" />
-            <p className="t-overline">The checklist</p>
-            <h2 className="t-display-m mt-4 max-w-[14ch] text-balance">
+            <h2 className="t-display-m max-w-[16ch]">
               Eight questions we ask before a property goes up
             </h2>
             <p className="mt-6 max-w-[46ch] text-[0.9375rem] leading-relaxed text-text-mid">
@@ -85,9 +81,9 @@ export default async function RiderFriendlyPage({
       </section>
 
       <div className="shell pb-24 lg:pb-32">
-        <h2 className="t-display-l">The stays that qualify</h2>
+        <h2 className="t-display-m mb-4">The stays that qualify</h2>
         <Suspense fallback={null}>
-          <FilterBar resultCount={count} />
+          <FilterBar resultCount={count} riderToggle={false} />
         </Suspense>
         <PropertyResults
           filters={filters}

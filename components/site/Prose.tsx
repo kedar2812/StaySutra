@@ -16,7 +16,7 @@ export function Prose({ blocks }: { blocks: Block[] }) {
               <h2
                 key={i}
                 id={block.id}
-                className="mt-14 scroll-mt-28 font-display text-2xl uppercase leading-tight tracking-[-0.015em] text-text-hi first:mt-0"
+                className="mt-14 scroll-mt-28 font-display text-2xl leading-tight tracking-[-0.015em] text-text-hi first:mt-0"
                 style={{ fontWeight: 800 }}
               >
                 {block.text}
@@ -28,7 +28,7 @@ export function Prose({ blocks }: { blocks: Block[] }) {
               <h3
                 key={i}
                 id={block.id}
-                className="mt-10 scroll-mt-28 font-display text-lg uppercase leading-tight tracking-[-0.01em] text-text-hi"
+                className="mt-10 scroll-mt-28 font-display text-lg leading-tight tracking-[-0.01em] text-text-hi"
                 style={{ fontWeight: 700 }}
               >
                 {block.text}

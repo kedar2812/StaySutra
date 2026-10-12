@@ -5,6 +5,7 @@ import { JsonLd } from "@/components/site/JsonLd";
 import { Reveal } from "@/components/motion/Reveal";
 import { destinations } from "@/lib/content";
 import { breadcrumbSchema, pageMeta } from "@/lib/seo";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = pageMeta({
   title: "Destinations",
@@ -24,7 +25,6 @@ export default function DestinationsPage() {
   return (
     <>
       <PageHero
-        overline="Destinations"
         title="Places worth riding to."
         lede="Six regions across Maharashtra and Goa, chosen because the roads to them are worth the journey and the hosts there understand who is arriving."
         seed="destinations-index"
@@ -39,31 +39,29 @@ export default function DestinationsPage() {
           All destinations
         </h2>
         {lead && (
+          /*
+            Six columns. The lead takes four and two rows; two tiles stack
+            beside it; the rest run three across underneath. The lead used to
+            span one row only, which pushed the second side tile down a row and
+            left a hole the width of a tile at the right of the grid.
+          */
           <Reveal className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
             <DestinationTile
               destination={lead}
               size="lg"
               sizes="(min-width:1024px) 66vw, 92vw"
-              className="min-h-[26rem] sm:col-span-2 lg:col-span-4 lg:min-h-[30rem]"
+              className="min-h-[26rem] sm:col-span-2 lg:col-span-4 lg:row-span-2 lg:min-h-[32rem]"
             />
-            {rest.slice(0, 2).map((d) => (
+            {rest.map((d, i) => (
               <DestinationTile
                 key={d.slug}
                 destination={d}
-                sizes="(min-width:1024px) 34vw, 45vw"
-                className="min-h-[15rem] lg:col-span-2 lg:min-h-[14.5rem]"
-              />
-            ))}
-            {rest.slice(2).map((d, i) => (
-              <DestinationTile
-                key={d.slug}
-                destination={d}
-                sizes="(min-width:1024px) 25vw, 45vw"
-                className={
-                  i === 0
-                    ? "min-h-[18rem] sm:col-span-2 lg:col-span-3 lg:min-h-[19rem]"
-                    : "min-h-[18rem] lg:col-span-3 lg:min-h-[19rem]"
-                }
+                sizes="(min-width:1024px) 33vw, 45vw"
+                className={cn(
+                  "min-h-[16rem] lg:col-span-2",
+                  // An odd tile out on the two-column layout takes the full row.
+                  i === rest.length - 1 && rest.length % 2 === 1 && "sm:col-span-2 lg:col-span-2",
+                )}
               />
             ))}
           </Reveal>
