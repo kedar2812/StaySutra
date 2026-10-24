@@ -12,7 +12,8 @@ export type AnalyticsEvent =
   | "owner_submission_start"
   | "owner_submission_complete"
   | "search_submit"
-  | "story_read";
+  | "story_read"
+  | "weekend_suggestion";
 
 declare global {
   interface Window {

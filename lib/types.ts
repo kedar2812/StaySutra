@@ -28,6 +28,9 @@ export interface Destination {
   placeholder: boolean;
   /** Scene hint for the branded plate until real photography lands. */
   scene?: string;
+  /** Tile and hero photography, resolved from the media library. */
+  tile?: MediaRef | null;
+  hero?: MediaRef | null;
   mood?: string;
 }
 
@@ -67,6 +70,10 @@ export interface PropertySeed {
   checkOutTime: string;
   minNights: number;
   startingPrice: number | null;
+  /** "From" unless the price is for something narrower, e.g. "Weekends". */
+  priceLabel?: string | null;
+  /** Group size the price covers — shown as an honest per-head figure. */
+  priceGroupSize?: number | null;
   priceNote: string | null;
   availability: AvailabilityStatus;
   isRiderFriendly: boolean;
@@ -85,6 +92,12 @@ export interface PropertySeed {
   experienceSlugs: string[];
   nearbyRoutes: { title: string; distanceKm: number | null; note: string }[];
   nearbyPlaces: { title: string; distanceKm: number | null; type: string }[];
+  /** Room-by-room beds, shown under the quick facts when present. */
+  sleeping?: { room: string; beds: string }[];
+  /** Gallery, in order, as storage keys from content/media.json. First is the cover. */
+  gallery?: string[];
+  latitude?: number | null;
+  longitude?: number | null;
   imageCount: number;
   /**
    * True until the client's own copy and photography replace this record.
@@ -96,6 +109,10 @@ export interface PropertySeed {
 
 export interface Story {
   slug: string;
+  status?: "DRAFT" | "PUBLISHED";
+  /** Rendered body. Seed stories read their markdown from content/stories. */
+  bodyHtml?: string;
+  cover?: MediaRef | null;
   title: string;
   excerpt: string;
   categorySlug: string;
@@ -107,7 +124,13 @@ export interface Story {
 }
 
 /** A property joined to its taxonomy — what every view actually consumes. */
-export interface PropertyView extends Omit<PropertySeed, "categorySlug" | "destinationSlug"> {
+export interface PropertyView
+  extends Omit<PropertySeed, "categorySlug" | "destinationSlug" | "gallery" | "sleeping"> {
+  /** Database id, or the slug when running from the JSON seed. */
+  id: string;
+  sleeping: { room: string; beds: string }[];
+  /** The gallery in order; the first image is the cover. Empty → generated plates. */
+  images: MediaRef[];
   category: Category;
   destination: Destination;
   amenities: ManagedItem[];
@@ -127,4 +150,22 @@ export interface MediaRef {
   alt: string;
   width?: number;
   height?: number;
+}
+
+/** One entry of content/media.json — the seed half of the media library. */
+export interface MediaSeed {
+  storageKey: string;
+  originalName: string;
+  mimeType: string;
+  width: number;
+  height: number;
+  sizeBytes: number;
+  alt: string;
+  folder: string;
+}
+
+/** A run of unavailable nights: [start, end) as ISO dates, end exclusive. */
+export interface BlockedRange {
+  start: string;
+  end: string;
 }

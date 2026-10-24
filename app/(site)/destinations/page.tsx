@@ -3,7 +3,7 @@ import { PageHero } from "@/components/site/PageHero";
 import { DestinationTile } from "@/components/site/DestinationTile";
 import { JsonLd } from "@/components/site/JsonLd";
 import { Reveal } from "@/components/motion/Reveal";
-import { destinations } from "@/lib/content";
+import { getContent } from "@/lib/content";
 import { breadcrumbSchema, pageMeta } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +19,9 @@ const trail = [
   { name: "Destinations", path: "/destinations" },
 ];
 
-export default function DestinationsPage() {
+export default async function DestinationsPage() {
+  const c = await getContent();
+  const { destinations } = c;
   const [lead, ...rest] = destinations;
 
   return (

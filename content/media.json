@@ -1,0 +1,902 @@
+[
+  {
+    "storageKey": "/media/kashele/cottage-string-lights.jpg",
+    "originalName": "025B6453-HDR-2.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 499778,
+    "alt": "The farmhouse cottage under a tree hung with string lights, with a lawn and stepping-stone path in front",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/pool-pergola.jpg",
+    "originalName": "025B6468-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 527772,
+    "alt": "The private pool with a white pergola, surrounded by garden and trees",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/pool-garden.jpg",
+    "originalName": "025B6328-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 501271,
+    "alt": "The private pool with the garden and trees behind it under a monsoon sky",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/living-room.jpg",
+    "originalName": "025B6361-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 229548,
+    "alt": "The living room with a tan leather sofa, macramé wall hanging and a dining nook",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/bedroom-one.jpg",
+    "originalName": "025B6238-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 255548,
+    "alt": "Bedroom one, a double bed with gold linen beside a window onto the garden",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/bedroom-two.jpg",
+    "originalName": "025B6265-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 240151,
+    "alt": "Bedroom two, with two double beds made up in gold and brown linen",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/dining-pavilion.jpg",
+    "originalName": "025B6418-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 317666,
+    "alt": "The covered dining pavilion with a long table, orange chairs and a blue brick wall",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/veranda.jpg",
+    "originalName": "025B6382-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 522780,
+    "alt": "The veranda with blue railings looking out over the lawn",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/stone-path.jpg",
+    "originalName": "025B6349-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 534692,
+    "alt": "A stepping-stone path across the lawn to the cottage, under string lights",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/pool-deck.jpg",
+    "originalName": "025B6471-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 476241,
+    "alt": "The pool deck with the garden and trees around it",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/lawn-path.jpg",
+    "originalName": "025B6459-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 518633,
+    "alt": "The lawn and garden path lit with string lights, with chairs set out on the grass",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/bedroom-two-window.jpg",
+    "originalName": "025B6280-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 226385,
+    "alt": "Bedroom two, its beds beside an open door onto the garden",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/bedroom-one-wide.jpg",
+    "originalName": "025B6229-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 257252,
+    "alt": "Bedroom one, with a timber feature wall, wall-mounted TV and patterned rug",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/pavilion-evening.jpg",
+    "originalName": "025B6483-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 483797,
+    "alt": "The dining pavilion at dusk, its lights on, with hanging plants along the beams",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/pavilion-table.jpg",
+    "originalName": "025B6421-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 362686,
+    "alt": "The long dining table in the pavilion, set for a group, with the garden beyond",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/pavilion-lawn.jpg",
+    "originalName": "025B6447-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 432197,
+    "alt": "The blue-walled dining pavilion seen from across the lawn",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/pool-cottage.jpg",
+    "originalName": "025B6331-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 525087,
+    "alt": "The pool in the foreground with the cottage behind the hedges",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/living-room-tv.jpg",
+    "originalName": "025B6355-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 200332,
+    "alt": "The living room with a large wall-mounted TV and a leather sofa",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/veranda-side.jpg",
+    "originalName": "025B6385-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 404845,
+    "alt": "The side veranda with a bench and blue railings beside the garden",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/cottage-exterior.jpg",
+    "originalName": "025B6477-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 399269,
+    "alt": "The cottage seen from the garden, with its veranda and hedges",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/bathroom-one.jpg",
+    "originalName": "025B6250-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 186559,
+    "alt": "A bathroom with grey stone tiles, a vessel basin and a mirror",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/bathroom-two.jpg",
+    "originalName": "025B6292-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 159862,
+    "alt": "A tiled bathroom with a western toilet and a shower",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/bathroom-shower.jpg",
+    "originalName": "025B6262-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 135923,
+    "alt": "A tiled bathroom with a frosted glass door and a water heater",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/pool-steps.jpg",
+    "originalName": "025B6462-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 484129,
+    "alt": "The pool steps and handrail, with the lawn and string lights beyond",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/cottage-garden.jpg",
+    "originalName": "025B6352-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 447059,
+    "alt": "The cottage beside a garden of hedges and palms",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/pool-wide.jpg",
+    "originalName": "025B6334-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 476969,
+    "alt": "A wide view of the pool and the trees around the property",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/cottage-lawn.jpg",
+    "originalName": "025B6453-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 435360,
+    "alt": "The cottage and lawn under string lights at dusk",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/bedroom-one-bed.jpg",
+    "originalName": "025B6232-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 260566,
+    "alt": "Bedroom one, the bed seen from the foot with the timber wall alongside",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/bedroom-one-tv.jpg",
+    "originalName": "025B6235-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 243031,
+    "alt": "Bedroom one, with niches holding plants around the TV wall",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/bedroom-one-door.jpg",
+    "originalName": "025B6244-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 187752,
+    "alt": "Bedroom one, with a door open onto the garden",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/bedroom-two-beds.jpg",
+    "originalName": "025B6271-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 211629,
+    "alt": "Bedroom two, two double beds beneath a macramé hanging",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/bedroom-two-wardrobe.jpg",
+    "originalName": "025B6283-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 251046,
+    "alt": "Bedroom two, with a mirrored wardrobe beside the beds",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/bathroom-basin.jpg",
+    "originalName": "025B6247-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 196064,
+    "alt": "A bathroom basin on a timber shelf with a frosted window above",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/bathroom-shower-two.jpg",
+    "originalName": "025B6253-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 175665,
+    "alt": "A shower and toilet in a grey-tiled bathroom",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/bathroom-vanity.jpg",
+    "originalName": "025B6256-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 124792,
+    "alt": "A bathroom with a vessel basin and a wall mirror",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/bathroom-three.jpg",
+    "originalName": "025B6289-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 159083,
+    "alt": "The third bathroom, with a vessel basin on a timber shelf",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/bathroom-three-wc.jpg",
+    "originalName": "025B6295-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 149249,
+    "alt": "The third bathroom, with a western toilet and mirror",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/living-room-nook.jpg",
+    "originalName": "025B6379-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 248620,
+    "alt": "The living room's corner with a small table and chairs",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/pavilion-wide.jpg",
+    "originalName": "025B6415-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 357439,
+    "alt": "The open-sided dining pavilion with fans and a long table",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/pavilion-view.jpg",
+    "originalName": "025B6424-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 452328,
+    "alt": "The pavilion table looking out across the lawn to the cottage",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/pavilion-approach.jpg",
+    "originalName": "025B6441-HDR.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 491830,
+    "alt": "The dining pavilion from the driveway, with hills behind",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/kashele/stone-path-lights.jpg",
+    "originalName": "025B6349-HDR-2.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1280,
+    "sizeBytes": 532797,
+    "alt": "The stone path to the cottage beneath a tree strung with lights",
+    "folder": "Kashele Farmhouse"
+  },
+  {
+    "storageKey": "/media/lifestyle/sunset-lake-hills.jpg",
+    "originalName": "B81A207E-7423-429F-A777-49E79599B30E.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1080,
+    "sizeBytes": 186065,
+    "alt": "The sun setting behind hills above a lake, with forest in the foreground",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/rider-and-motorcycle.jpg",
+    "originalName": "IMG_7164.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1440,
+    "sizeBytes": 200364,
+    "alt": "A rider leaning on her motorcycle on a hillside above a misty valley",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/pine-road.jpg",
+    "originalName": "IMG_4571.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1440,
+    "sizeBytes": 526292,
+    "alt": "A road curving through pine forest under a clear blue sky",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/pine-road-portrait.jpg",
+    "originalName": "IMG_4524.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1440,
+    "height": 1920,
+    "sizeBytes": 621708,
+    "alt": "A narrow road winding uphill through pine trees",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/pine-road-climb.jpg",
+    "originalName": "95933CA6-F9D7-4AC8-B0BD-FEE3519C0DD4.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1080,
+    "height": 1350,
+    "sizeBytes": 353501,
+    "alt": "A road climbing through tall pines",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/motorcycle-high-pass.jpg",
+    "originalName": "IMG_6216.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1179,
+    "height": 1771,
+    "sizeBytes": 260401,
+    "alt": "A loaded touring motorcycle parked on a high mountain road",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/low-tide-sunset.jpg",
+    "originalName": "IMG_5534.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1440,
+    "sizeBytes": 297516,
+    "alt": "A wide beach at low tide, the sunset reflected in pools on the sand",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/beach-dusk.jpg",
+    "originalName": "IMG_5580.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1440,
+    "height": 1920,
+    "sizeBytes": 138839,
+    "alt": "A beach at dusk, the last light on wet sand",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/sea-sunset.jpg",
+    "originalName": "IMG_4862.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1440,
+    "height": 1920,
+    "sizeBytes": 372622,
+    "alt": "The sun setting over the sea",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/rocky-shore-dusk.jpg",
+    "originalName": "IMG_4882.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1440,
+    "height": 1920,
+    "sizeBytes": 180162,
+    "alt": "A rocky shore and calm sea at dusk",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/beach-rocks-sunset.jpg",
+    "originalName": "B21B00F1-62F8-4E35-9CA4-9480E9FDC285.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1440,
+    "height": 1796,
+    "sizeBytes": 192392,
+    "alt": "Rocks on a beach at sunset",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/beach-boat.jpg",
+    "originalName": "IMG_2766.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1440,
+    "sizeBytes": 277942,
+    "alt": "A painted fishing boat drawn up on a quiet beach",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/sea-turquoise.jpg",
+    "originalName": "IMG_2547.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1440,
+    "sizeBytes": 247150,
+    "alt": "Turquoise sea under a pale sky",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/sea-surf.jpg",
+    "originalName": "IMG_2556.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1440,
+    "sizeBytes": 297230,
+    "alt": "Surf breaking on a green headland",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/cliff-bay.jpg",
+    "originalName": "IMG_2689.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1440,
+    "sizeBytes": 337882,
+    "alt": "Waves breaking in a bay beneath cliffs",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/cliff-sea.jpg",
+    "originalName": "IMG_2616.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1440,
+    "height": 1920,
+    "sizeBytes": 418787,
+    "alt": "A green cliff edge above a deep blue sea",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/headland.jpg",
+    "originalName": "IMG_3186.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1440,
+    "height": 1920,
+    "sizeBytes": 375981,
+    "alt": "A steep green headland over a curved beach",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/cove.jpg",
+    "originalName": "IMG_2902.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1440,
+    "height": 1920,
+    "sizeBytes": 241468,
+    "alt": "A small cove with clear blue water",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/viewpoint-steps.jpg",
+    "originalName": "IMG_3437.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1440,
+    "height": 1920,
+    "sizeBytes": 317352,
+    "alt": "Timber steps down to a viewpoint above the sea",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/lakeside-tent.jpg",
+    "originalName": "IMG_2480.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1440,
+    "height": 1920,
+    "sizeBytes": 432773,
+    "alt": "A tent pitched on a grassy rise above a lake",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/valley-cloud.jpg",
+    "originalName": "IMG_7406.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1440,
+    "sizeBytes": 317704,
+    "alt": "A wide green valley under low cloud",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/valley-river.jpg",
+    "originalName": "IMG_7409.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1440,
+    "height": 1920,
+    "sizeBytes": 387830,
+    "alt": "A river valley seen from a forested hillside",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/river-valley.jpg",
+    "originalName": "IMG_7433.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1440,
+    "sizeBytes": 360137,
+    "alt": "A river winding through a broad green valley",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/valley-town.jpg",
+    "originalName": "IMG_7469.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1440,
+    "sizeBytes": 214472,
+    "alt": "A valley town beside a river, hills rising behind",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/hillside-green.jpg",
+    "originalName": "IMG_7478.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1440,
+    "height": 1920,
+    "sizeBytes": 289023,
+    "alt": "A green hillside under a cloudy sky",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/ridge-view.jpg",
+    "originalName": "IMG_7489.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1440,
+    "sizeBytes": 279290,
+    "alt": "Ridges fading into cloud above a valley",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/valley-portrait.jpg",
+    "originalName": "IMG_7490.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1440,
+    "height": 1920,
+    "sizeBytes": 284078,
+    "alt": "A valley seen through the trees on a ridge",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/gorge.jpg",
+    "originalName": "IMG_7226.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1440,
+    "height": 1920,
+    "sizeBytes": 423795,
+    "alt": "A river gorge between forested hills",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/lake-kayaks.jpg",
+    "originalName": "IMG_7509.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1440,
+    "sizeBytes": 278837,
+    "alt": "Kayaks pulled up beside a lake ringed by hills",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/lake-clouds.jpg",
+    "originalName": "IMG_7510.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1440,
+    "sizeBytes": 251349,
+    "alt": "A lake beneath heavy cloud, boats on the water",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/lake-boats.jpg",
+    "originalName": "IMG_7518.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1440,
+    "sizeBytes": 232981,
+    "alt": "Rows of boats on a lakeshore under storm clouds",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/plateau-dusk.jpg",
+    "originalName": "IMG_9063.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1440,
+    "height": 1920,
+    "sizeBytes": 167895,
+    "alt": "Green plateau and forest at dusk",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/viewpoint-traveller.jpg",
+    "originalName": "IMG_9092.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1440,
+    "height": 1920,
+    "sizeBytes": 342192,
+    "alt": "A traveller at a viewpoint looking out over green country",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/hilltop-traveller.jpg",
+    "originalName": "IMG_7003.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1440,
+    "sizeBytes": 378354,
+    "alt": "A traveller filming from a hilltop above a valley",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/open-arms.jpg",
+    "originalName": "IMG_7194.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1440,
+    "height": 1920,
+    "sizeBytes": 323443,
+    "alt": "A traveller with arms outstretched facing the mountains",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/misty-hillside.jpg",
+    "originalName": "IMG_4528.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1440,
+    "sizeBytes": 309398,
+    "alt": "Terraced hillside and a village in mist",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/cloud-ridge.jpg",
+    "originalName": "IMG_4529.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1440,
+    "sizeBytes": 291460,
+    "alt": "Cloud settling over a forested ridge",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/pine-sunset.jpg",
+    "originalName": "IMG_4549.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1440,
+    "sizeBytes": 82965,
+    "alt": "Pine trees silhouetted against an orange sunset",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/bonfire-lodge.jpg",
+    "originalName": "IMG_4550.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1440,
+    "sizeBytes": 155083,
+    "alt": "A bonfire outside a lit lodge among pines at night",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/coffee-notebook.jpg",
+    "originalName": "IMG_7281.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1440,
+    "height": 1920,
+    "sizeBytes": 313342,
+    "alt": "A coffee, sunglasses and a notebook on a café table",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/chai-view.jpg",
+    "originalName": "IMG_7270.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1440,
+    "height": 1920,
+    "sizeBytes": 103740,
+    "alt": "A steel cup of tea held up against a hill view",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/breakfast-table.jpg",
+    "originalName": "IMG_7298.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1440,
+    "height": 1920,
+    "sizeBytes": 278869,
+    "alt": "Breakfast of toast, eggs and fried potatoes on an outdoor table",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/cafe-breakfast.jpg",
+    "originalName": "IMG_3521.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1440,
+    "sizeBytes": 244650,
+    "alt": "Breakfast and a cold drink on a café table",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/cap-and-coffee.jpg",
+    "originalName": "IMG_2996.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1440,
+    "height": 1920,
+    "sizeBytes": 129572,
+    "alt": "A cap, sunglasses and a coffee on a table by the sea",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/river-stones.jpg",
+    "originalName": "IMG_6835.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1280,
+    "height": 1920,
+    "sizeBytes": 416308,
+    "alt": "A mountain stream running over stones, seen from above",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/monastery.jpg",
+    "originalName": "IMG_7236.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1440,
+    "sizeBytes": 331702,
+    "alt": "A brightly painted monastery behind a garden",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/monastery-cloister.jpg",
+    "originalName": "IMG_7233.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1440,
+    "sizeBytes": 360139,
+    "alt": "A long red-pillared cloister with a blue ceiling",
+    "folder": "Lifestyle"
+  },
+  {
+    "storageKey": "/media/lifestyle/shrine-sky.jpg",
+    "originalName": "D6843EFF-C9C4-437B-BB58-0A6BAA6CE886.jpg",
+    "mimeType": "image/jpeg",
+    "width": 1440,
+    "height": 1800,
+    "sizeBytes": 296118,
+    "alt": "A small shrine and prayer flags against a blue sky",
+    "folder": "Lifestyle"
+  }
+]

@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Wordmark } from "./Wordmark";
 import { Icon } from "@/components/primitives/Icon";
 import { Rule } from "@/components/primitives/Rule";
-import { destinations, siteContent } from "@/lib/content";
-import { settings, brand } from "@/lib/site";
+import { getContent } from "@/lib/content";
+import { brand } from "@/lib/site";
 
 /**
  * Brand, then the link groups (now four — Ride was split out when the Rider
@@ -13,8 +13,11 @@ import { settings, brand } from "@/lib/site";
  * Owner Login, Resources and Partner Program are omitted rather than faked.
  * DPR §7.1 (flagged in docs/CONTENT-GAPS.md).
  */
-export function Footer() {
-  const columns = siteContent.footer.columns;
+export async function Footer() {
+  const c = await getContent();
+  const { settings } = c.site;
+  const destinations = c.destinations;
+  const columns = c.site.footer.columns;
 
   return (
     <footer className="relative border-t border-[color:var(--hairline)] bg-ink-900">
@@ -102,7 +105,7 @@ export function Footer() {
             © {new Date().getFullYear()} {brand.name}. {settings.officeLocality}.
           </p>
           <ul className="-my-3 flex items-center gap-6">
-            {siteContent.footer.legal.map((l) => (
+            {c.site.footer.legal.map((l) => (
               <li key={l.href}>
                 <Link
                   href={l.href}

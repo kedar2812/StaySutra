@@ -1,15 +1,14 @@
 import { ButtonLink } from "@/components/primitives/Button";
 import { Reveal } from "@/components/motion/Reveal";
-import { siteContent } from "@/lib/content";
+import { getContent } from "@/lib/content";
 import { whatsappLink, waMessage } from "@/lib/site";
-
-const copy = siteContent.home.finalCta;
 
 /**
  * ⑩ The page's deliberate breathing room. One idea, maximum whitespace, and the
  * only section on the homepage that does far less than it could. DPR §4.6, §7.2 ⑩
  */
-export function FinalCta() {
+export async function FinalCta() {
+  const copy = (await getContent()).site.home.finalCta;
   return (
     <section aria-labelledby="final-cta-title" data-wa-hide="" className="relative overflow-hidden">
       <div className="shell py-32 lg:py-48">

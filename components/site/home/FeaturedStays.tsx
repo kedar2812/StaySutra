@@ -3,17 +3,22 @@ import { SnapRail } from "@/components/site/SnapRail";
 import { Reveal } from "@/components/motion/Reveal";
 import { SectionHead } from "@/components/primitives/Rule";
 import { TextLink } from "@/components/primitives/Button";
-import { featuredProperties, siteContent } from "@/lib/content";
+import { getContent } from "@/lib/content";
 import { EmptyState } from "@/components/site/EmptyState";
-
-const copy = siteContent.home.featured;
+import { StaySpotlight } from "./StaySpotlight";
+import { nextFreeWeekend } from "@/lib/calendar/dates";
+import { getBlockedRanges, getCalendarStatus } from "@/lib/server/calendar";
+import { hasDatabase } from "@/lib/server/db";
 
 /**
  * ④ A lead card at 2× with the others stepping down — an editorial grid, not
  * four identical tiles. On mobile it becomes a snap rail with edge peek.
  * DPR §4.6, §7.2 ④
  */
-export function FeaturedStays() {
+export async function FeaturedStays() {
+  const c = await getContent();
+  const copy = c.site.home.featured;
+  const featuredProperties = c.featuredProperties;
   const [lead, ...rest] = featuredProperties;
 
   return (
@@ -27,7 +32,26 @@ export function FeaturedStays() {
           />
         </Reveal>
 
-        {!lead ? (
+        {featuredProperties.length > 0 && featuredProperties.length < 3 ? (
+          <div className="mt-12 space-y-24 lg:mt-16">
+            {await Promise.all(
+              featuredProperties.map(async (p, i) => (
+                <Reveal key={p.slug}>
+                  <StaySpotlight
+                    property={p}
+                    priority={i === 0}
+                    weekend={
+                      // Only from a calendar that is really in step — never a guess.
+                      hasDatabase() && (await getCalendarStatus(p.id)).channels.length
+                        ? nextFreeWeekend(await getBlockedRanges(p.id))
+                        : null
+                    }
+                  />
+                </Reveal>
+              )),
+            )}
+          </div>
+        ) : !lead ? (
           <EmptyState
             className="mt-12"
             title="Stays are being onboarded"

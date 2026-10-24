@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { enquirySchema, refCode } from "@/lib/validation";
 import { appendEnquiry } from "@/lib/server/enquiry-log";
 import { clientIp, rateLimit } from "@/lib/server/rate-limit";
+import { db, hasDatabase } from "@/lib/server/db";
+import { getBlockedRangesFresh } from "@/lib/server/calendar";
+import { isRangeFree } from "@/lib/calendar/dates";
 
 export const runtime = "nodejs";
 
@@ -9,11 +12,16 @@ export const runtime = "nodejs";
  * Enquiry intake. Re-validates with the same schema the client used, checks the
  * honeypot and the fill time, rate limits by IP and by phone, then persists.
  *
- * Still to wire in P1-11, once the VPS and the mail domain exist:
- *   - Cloudflare Turnstile verification (TURNSTILE_SECRET_KEY)
- *   - Prisma write to Enquiry with UTM capture
- *   - Resend notification to ENQUIRY_NOTIFY_EMAIL, async with three retries
- * DPR §6.1
+ * With a database, the enquiry lands in the dashboard's inbox (Enquiry table,
+ * UTM captured from the page URL). Without one — or if Postgres is briefly
+ * down — it is appended to the write-ahead log instead, because losing an
+ * enquiry is the one outcome that is not acceptable.
+ *
+ * Dates that clash with a booked night on any connected platform are refused
+ * with a 409, so a guest cannot ask for a night Airbnb has already sold.
+ *
+ * Still to wire once the mail domain exists: Turnstile verification and the
+ * Resend notification to ENQUIRY_NOTIFY_EMAIL. DPR §6.1
  */
 export async function POST(request: Request) {
   const ip = clientIp(request.headers);
@@ -52,6 +60,54 @@ export async function POST(request: Request) {
 
   const code = refCode();
 
+  const property =
+    hasDatabase() && data.propertySlug
+      ? await db.property
+          .findUnique({ where: { slug: data.propertySlug }, select: { id: true, destinationId: true } })
+          .catch(() => null)
+      : null;
+
+  if (property && data.checkIn && data.checkOut) {
+    const blocked = await getBlockedRangesFresh(property.id).catch(() => []);
+    if (!isRangeFree(data.checkIn, data.checkOut, blocked)) {
+      return NextResponse.json({ error: "dates_unavailable" }, { status: 409 });
+    }
+  }
+
+  if (hasDatabase()) {
+    try {
+      const destination =
+        !property && data.destinationSlug
+          ? await db.destination.findUnique({ where: { slug: data.destinationSlug }, select: { id: true } })
+          : null;
+      const utm = utmFrom(data.pageUrl);
+      await db.enquiry.create({
+        data: {
+          refCode: code,
+          source: data.source,
+          propertyId: property?.id ?? null,
+          destinationId: property?.destinationId ?? destination?.id ?? null,
+          name: data.name,
+          phone: data.phone,
+          email: data.email || null,
+          checkIn: data.checkIn ? new Date(`${data.checkIn}T00:00:00Z`) : null,
+          checkOut: data.checkOut ? new Date(`${data.checkOut}T00:00:00Z`) : null,
+          guests: data.guests ?? null,
+          message: data.message ?? null,
+          pageUrl: data.pageUrl?.slice(0, 500) ?? null,
+          utmSource: utm.source,
+          utmMedium: utm.medium,
+          utmCampaign: utm.campaign,
+          userAgent: request.headers.get("user-agent")?.slice(0, 300) ?? null,
+          ipAddress: ip,
+        },
+      });
+      return NextResponse.json({ refCode: code });
+    } catch (error) {
+      console.error("[enquiry] database write failed, falling back to the log", { refCode: code, error });
+    }
+  }
+
   try {
     await appendEnquiry({
       refCode: code,
@@ -76,4 +132,17 @@ export async function POST(request: Request) {
   }
 
   return NextResponse.json({ refCode: code });
+}
+
+function utmFrom(pageUrl: string | undefined) {
+  try {
+    const p = new URL(pageUrl ?? "").searchParams;
+    return {
+      source: p.get("utm_source")?.slice(0, 100) ?? null,
+      medium: p.get("utm_medium")?.slice(0, 100) ?? null,
+      campaign: p.get("utm_campaign")?.slice(0, 100) ?? null,
+    };
+  } catch {
+    return { source: null, medium: null, campaign: null };
+  }
 }

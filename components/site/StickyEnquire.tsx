@@ -7,8 +7,9 @@ import { Icon } from "@/components/primitives/Icon";
 import { CheckAvailability } from "./CheckAvailability";
 import { spring } from "@/lib/motion";
 import { whatsappLink } from "@/lib/site";
-import { cn, inr } from "@/lib/utils";
-import type { PropertyView } from "@/lib/types";
+import { priceLine } from "@/lib/pricing";
+import { cn } from "@/lib/utils";
+import type { BlockedRange, PropertyView } from "@/lib/types";
 
 /**
  * Desktop: a sticky glass card that leads with the price and then with the one
@@ -26,9 +27,13 @@ import type { PropertyView } from "@/lib/types";
  */
 export function StickyEnquire({
   property: p,
+  blocked,
+  suggestWeekend,
   waMessage,
 }: {
   property: PropertyView;
+  blocked: BlockedRange[];
+  suggestWeekend: boolean;
   waMessage: string;
 }) {
   const reduced = useReducedMotion();
@@ -89,7 +94,7 @@ export function StickyEnquire({
 
         <div className="my-5 h-px bg-[var(--hairline)]" />
 
-        <CheckAvailability property={p} variant="panel" />
+        <CheckAvailability property={p} blocked={blocked} suggestWeekend={suggestWeekend} variant="panel" />
 
         <p className="mt-5 border-t border-[color:var(--hairline)] pt-4 text-[0.8125rem] text-text-low">
           Prefer email?{" "}
@@ -154,7 +159,8 @@ export function StickyEnquire({
 }
 
 function Price({ property: p, compact = false }: { property: PropertyView; compact?: boolean }) {
-  if (p.startingPrice === null) {
+  const price = priceLine(p);
+  if (!price) {
     return (
       <div>
         <p className="on-glass text-[0.9375rem]">Price on request</p>
@@ -166,19 +172,25 @@ function Price({ property: p, compact = false }: { property: PropertyView; compa
   }
   return (
     <div>
-      <p className="flex items-baseline gap-2">
-        <span className="t-caption shrink-0 uppercase tracking-[0.14em]">From</span>
+      {compact && <p className="text-[0.625rem] font-semibold uppercase tracking-[0.16em] text-text-low">{price.label}</p>}
+      <p className="flex items-baseline gap-2 whitespace-nowrap">
+        {!compact && <span className="t-caption shrink-0 uppercase tracking-[0.14em]">{price.label}</span>}
         <span
           className={cn("t-num text-text-hi", compact ? "text-lg" : "text-2xl")}
           style={{ fontWeight: 800 }}
         >
-          {inr(p.startingPrice)}
+          {price.amount}
         </span>
+        <span className="t-caption">/ night</span>
       </p>
-      <p className={compact ? "t-caption mt-0.5" : "t-caption mt-1.5 max-w-[26ch]"}>
-        {compact ? "per night" : (p.priceNote ?? "per night")}
-        {!compact && " · final rate confirmed on enquiry"}
-      </p>
+      {price.perHead && (
+        <p className={cn("whitespace-nowrap font-medium text-gold-400", compact ? "text-[0.75rem]" : "mt-1.5 text-[0.8125rem]")}>
+          {compact ? price.perHeadShort : price.perHead}
+        </p>
+      )}
+      {!compact && (
+        <p className="t-caption mt-1.5 max-w-[30ch]">Final rate confirmed with you before anything is paid.</p>
+      )}
     </div>
   );
 }

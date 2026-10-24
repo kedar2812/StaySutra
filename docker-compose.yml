@@ -22,8 +22,6 @@ services:
       PORT: "3000"
       HOSTNAME: "0.0.0.0"
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
-      NEXTAUTH_URL: ${NEXTAUTH_URL}
       UPLOAD_DIR: /var/staysutra/uploads
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
       NEXT_PUBLIC_WHATSAPP_NUMBER: ${NEXT_PUBLIC_WHATSAPP_NUMBER}
@@ -32,6 +30,12 @@ services:
       TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY}
       TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY}
       NEXT_PUBLIC_GA4_ID: ${NEXT_PUBLIC_GA4_ID}
+      # iCal sync runs inside the app every CALENDAR_SYNC_MINUTES (default 15).
+      # CRON_SECRET guards /api/cron/calendar-sync for a manual or external nudge.
+      # The dashboard exists only on the client's server. The Vercel demo strips it.
+      DASHBOARD_ENABLED: "true"
+      CALENDAR_SYNC_MINUTES: ${CALENDAR_SYNC_MINUTES:-15}
+      CRON_SECRET: ${CRON_SECRET}
     volumes:
       # Originals live on a host bind mount so they survive a rebuild and are
       # picked up by the nightly backup.
@@ -44,6 +48,28 @@ services:
       timeout: 5s
       retries: 5
       start_period: 40s
+
+  # One-off: load /content into a fresh database and create the first owner.
+  #   docker compose run --rm seed
+  # Built from the builder stage, which has the dev tools the runtime image
+  # deliberately leaves out. Never starts on `up`.
+  seed:
+    profiles: ["tools"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    command: sh -c "npx prisma migrate deploy && npx tsx prisma/seed.ts"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+      SEED_OWNER_EMAIL: ${SEED_OWNER_EMAIL}
+      SEED_OWNER_NAME: ${SEED_OWNER_NAME}
+      SEED_OWNER_PASSWORD: ${SEED_OWNER_PASSWORD}
+    networks:
+      - internal
 
   db:
     image: postgres:16-alpine

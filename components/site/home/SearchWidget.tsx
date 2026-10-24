@@ -1,12 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useId, useState } from "react";
+import { createContext, useContext, useId, useState } from "react";
 import { Button } from "@/components/primitives/Button";
 import { DateInput } from "@/components/primitives/DateInput";
 import { Icon } from "@/components/primitives/Icon";
 import { Sheet } from "@/components/primitives/Sheet";
-import { categories, countInCategory, destinations, properties } from "@/lib/content";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 
@@ -20,7 +19,23 @@ import { cn } from "@/lib/utils";
  * — the microcopy under the rail says so in as many words, and the CTA is
  * "Search stays", never "Book". DPR §7.2 ②
  */
-export function SearchWidget() {
+export interface SearchOptions {
+  destinations: { slug: string; name: string; state: string; count: number }[];
+  categories: { slug: string; plural: string; count: number }[];
+}
+
+const Options = createContext<SearchOptions>({ destinations: [], categories: [] });
+
+export function SearchWidget(options: SearchOptions) {
+  return (
+    <Options.Provider value={options}>
+      <Search />
+    </Options.Provider>
+  );
+}
+
+function Search() {
+  const { categories, destinations } = useContext(Options);
   const router = useRouter();
   const [where, setWhere] = useState("");
   const [checkIn, setCheckIn] = useState("");
@@ -126,6 +141,7 @@ function DestinationField({
   onChange: (v: string) => void;
 }) {
   const id = useId();
+  const { destinations } = useContext(Options);
   return (
     <div className={cn(fieldShell, "lg:border-r lg:border-[color:var(--hairline)]")}>
       <label htmlFor={id} className={labelClass}>
@@ -140,7 +156,7 @@ function DestinationField({
         <option value="">Anywhere</option>
         {destinations.map((d) => (
           <option key={d.slug} value={d.slug} className="bg-ink-800">
-            {d.name}, {d.state} ({properties.filter((p) => p.destination.slug === d.slug).length})
+            {d.name}, {d.state} ({d.count})
           </option>
         ))}
       </select>
@@ -228,6 +244,7 @@ function StayTypeField({
   onChange: (v: string) => void;
 }) {
   const id = useId();
+  const { categories } = useContext(Options);
   return (
     <div className={cn(fieldShell, "lg:border-l lg:border-[color:var(--hairline)]")}>
       <label htmlFor={id} className={labelClass}>
@@ -243,7 +260,7 @@ function StayTypeField({
         {/* Only types that have a stay behind them — a choice that returns an
             empty grid is a dead end, not an option. */}
         {categories
-          .filter((c) => countInCategory(c.slug) > 0)
+          .filter((c) => c.count > 0)
           .map((c) => (
             <option key={c.slug} value={c.slug} className="bg-ink-800">
               {c.plural}

@@ -5,12 +5,9 @@ import { InterestCapture } from "@/components/site/InterestCapture";
 import { ButtonLink } from "@/components/primitives/Button";
 import { Icon, iconFor } from "@/components/primitives/Icon";
 import { Reveal } from "@/components/motion/Reveal";
-import { siteContent } from "@/lib/content";
+import { getContent } from "@/lib/content";
 import { breadcrumbSchema, pageMeta } from "@/lib/seo";
 import { brand, waMessage, whatsappLink } from "@/lib/site";
-
-const copy = siteContent.riderPassport;
-const stamps = siteContent.riderPassport.stamps;
 
 export const metadata: Metadata = pageMeta({
   title: "Rider Passport",
@@ -35,7 +32,10 @@ const trail = [
  * interest is a real, countable list on day one instead of a promise nobody
  * recorded. DPR §7.7, §12
  */
-export default function RiderPassportPage() {
+export default async function RiderPassportPage() {
+  const c = await getContent();
+  const copy = c.site.riderPassport;
+  const stamps = c.site.riderPassport.stamps;
   const [lineOne, lineTwo, lineThree] = copy.titleLines;
 
   return (

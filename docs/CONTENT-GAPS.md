@@ -6,97 +6,42 @@ the empty state ships and the gap is logged here rather than invented.
 
 Nothing in this file blocks the build. Several items block **launch**.
 
-Last updated: 7 September 2026 · Kedar Gurav
+Last updated: 24 October 2026 · Kedar Gurav
 
 ---
 
 ## Blocks launch
 
-### 1. Property photography — all 9 listings
+### 1. Photography — closed (24 October 2026)
 
-**Status:** no client photography received.
+The demo stock photography and the nine placeholder listings are gone. The site
+now runs on the client's own photographs from the two Drive folders: 42
+professional shots of the Kashele farmhouse (`public/media/kashele/`) and 48
+travel and ride photographs (`public/media/lifestyle/`), resized and stripped of
+EXIF/GPS. Excluded on purpose: the AI-rendered "StaySutra room" mock-ups, social
+graphics with baked-in text, the logo file, and photos of other people's resorts
+— each would misrepresent what StaySutra offers.
 
-> **DEMO PHOTOGRAPHY IS LIVE AND MUST NOT SHIP.** 28 stock photographs under the
-> Unsplash License (free for commercial use, no attribution required) now stand in
-> for every image slot, so the site can be shown to the client as it is meant to
-> look. They are in `public/img/` and mapped in `lib/demo-images.ts`.
->
-> **None of them is a photograph of a client property.** The Alibaug villa is not
-> their villa; the Lonavala ridge is not their ridge. Nothing here may reach
-> production.
->
-> **To remove:** delete `lib/demo-images.ts` and `public/img/`. `Frame` falls back
-> to the generated plate automatically — no other file changes. Do this the day
-> the client's own shoot lands, or the day before launch, whichever comes first.
+**Still to confirm with the client:** the destination tiles for Lonavala, Pune,
+Mumbai, Alibaug and Goa use mood photography from the lifestyle folder that was
+not necessarily shot at those places (alt text describes only what is visible).
+Every slot is swappable from Dashboard → Website → Page photos.
 
-**Currently rendering:** demo photography (above), falling back to a generated
-brand plate (`lib/plate.ts`) for any slot with no mapping — a deterministic
-duotone navy/gold landscape drawn as inline SVG. It is honest (nothing pretends
-to be a photograph of a real property), consistent across mixed sources, costs no
-network request, and is replaced automatically the moment a real `Media` row
-exists — `components/primitives/Frame.tsx` prefers real media whenever it is
-present.
-**Needed:** per DPR §4.7 — hero 2400×1350 (16:9), cards 1200×900 (4:3), gallery
-2000×1333, destination tiles 1200×1600 (3:4), story covers 1600×900. Alt text is
-mandatory at upload.
-**Why it blocks launch:** the properties are meant to be the loudest thing on the
-page. Generated plates are a correct placeholder, not a substitute.
+### 2. Kashele Farmhouse — details from the Airbnb listing
 
-### 2. Property details — all 9 listings are developer-drafted
+Imported from airbnb.co.uk/rooms/1755648454354415608 (the client's own listing).
+**Needs the client's word on:**
 
-**Status:** every record in `content/properties.json` carries `"placeholder": true`.
-**Currently rendering:** plausible, internally consistent listings written to
-exercise every field and every edge case — including one property with no rider
-facilities (`sea-line-resort-alibaug`), one with the shortest viable description,
-and a spread of image counts from 4 to 9.
-**Needed:** real property names, real addresses, real capacity, real rates, real
-rider facilities, and confirmation of what each host actually offers. The eight
-rider-facility answers in particular must come from the host, not from us — a
-wrong "yes" on covered parking is the one failure this brand cannot absorb.
-**Note:** `startingPrice` values currently in the seed are illustrative. Do not
-publish them.
-
-### 2b. Curator notes — "Why StaySutra picked it" — all 9 listings
-
-**Status:** written by us, on every property, in `content/properties.json` →
-`curatorNote`.
-**Currently rendering:** one or two sentences per property naming the single
-concrete reason that property is on the network — the walled courtyard, the
-freshwater tap, the sky. It appears on every property card and again, at
-editorial size, on the property page.
-**Needed:** the client's own line, in the client's voice, for each property.
-**Why it matters more than it looks:** this is the only field on the site a
-listing marketplace has no equivalent for, and the whole "curated, not listed"
-positioning rests on it. A generic line here ("a lovely property in a great
-location") undoes the argument the rest of the page is making. It should read
-like a person who has been there wrote it, because that is the claim.
-
-### 2c. House rules — all 9 listings
-
-**Status:** written by us, in `content/properties.json` → `houseRules`.
-**Currently rendering:** three to four rules per property, inferred from data we
-already hold — quiet hours, whether pets are accepted, gate and bonfire times,
-capacity limits.
-**Needed:** confirmation from each host. These are inferences, not statements
-from the property, and a guest who is refused at the gate over a rule we made up
-is a complaint the client has to answer.
-
-### 2d. Cancellation policy — site-wide default, unsigned
-
-**Status:** one default in `content/site.json` → `settings.policies.cancellation`,
-flagged in that object with a `_placeholder` key. Every property carries
-`cancellationPolicy: null`, which falls back to it.
-**Currently rendering:** the honest description of how the flow works today —
-nothing is charged on the site, and the host's terms are sent in writing with the
-quote before any money moves. It states no percentages and no deadlines, so there
-is nothing here the client can be held to that is not already true.
-**Needed:** the client's own commercial policy, signed off. Set it site-wide in
-`settings.policies.cancellation`, and set `cancellationPolicy` on any individual
-property whose host insists on different terms — the property value overrides
-the default with no code change.
-**Why it blocks launch:** a stay page that takes a booking enquiry and says
-nothing enforceable about cancellation is a consumer-law exposure, not a design
-gap.
+- **Capacity.** Airbnb's header and house rules say 15 overnight guests; the
+  listing text says "comfortably up to 20". The site shows 20.
+- **Check-in / check-out times** — not on the listing; hidden until set.
+- **Weekday price** — only the Friday–Sunday rate (₹34,999 for 10) is
+  published, so the site labels it "Weekends".
+- **Curator note** ("Why StaySutra recommends it") — left empty rather than
+  written for them.
+- **Cancellation terms** — the site-wide default (unsigned, developer-drafted) applies until the client edits it in Dashboard → Website → Contact & announcement, or sets terms on the property.
+- **Airbnb iCal export link** — paste it in Dashboard → Calendar (see
+  docs/CALENDAR-SYNC.md); without it the site cannot see Airbnb bookings.
 
 ### 3. Ratings and review counts — deliberately absent everywhere
 
@@ -189,7 +134,11 @@ for Lonavala, Karjat, Alibaug, Pune, Mumbai and Goa. The facts are accurate; the
 voice is ours.
 **Needed:** the client's review, and their own imagery per DPR §16.
 
-### 10. Stories — five articles, developer-written
+### 10. Stories — five articles, developer-written (now drafts)
+
+Moved to **drafts** in the dashboard: the public site shows none until the client
+reads, edits and publishes them.
+
 
 **Status:** all five in `content/stories.json` carry `"placeholder": true`;
 bodies live in `content/stories/*.md`.

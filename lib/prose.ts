@@ -1,6 +1,3 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
-
 /**
  * A deliberately small Markdown subset — headings, paragraphs, lists, quotes,
  * rules, links, bold and italic. Phase 2 replaces this with Tiptap's sanitised
@@ -93,18 +90,6 @@ export function parseProse(source: string): Block[] {
   }
 
   return blocks;
-}
-
-export async function loadStoryBody(slug: string): Promise<Block[] | null> {
-  try {
-    const source = await readFile(
-      join(process.cwd(), "content", "stories", `${slug}.md`),
-      "utf8",
-    );
-    return parseProse(source);
-  } catch {
-    return null;
-  }
 }
 
 /** Plain text for excerpts, search and the Phase 2 `bodyText` column. */

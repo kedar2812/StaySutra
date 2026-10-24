@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Plate } from "./Plate";
-import { demoImage } from "@/lib/demo-images";
 import type { PlateMood, PlateScene } from "@/lib/plate";
 import type { MediaRef } from "@/lib/types";
 
@@ -74,12 +73,8 @@ export function Frame({
    */
   const anchor = anchorProp ?? (ratio === "3/4" && !fill ? "bottom" : "center");
 
-  /*
-   * Real media always wins. Failing that, the demo photography stands in — see
-   * lib/demo-images.ts, which is deleted at launch — and only then does the
-   * generated plate render.
-   */
-  const shown = media ?? demoImage(seed);
+  // Real media always wins; with none assigned, the generated plate renders.
+  const shown = media ?? null;
 
   return (
     <div

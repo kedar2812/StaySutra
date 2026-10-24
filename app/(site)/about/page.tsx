@@ -7,11 +7,9 @@ import { ButtonLink } from "@/components/primitives/Button";
 import { Icon } from "@/components/primitives/Icon";
 import { Reveal } from "@/components/motion/Reveal";
 import { Parallax } from "@/components/motion/Parallax";
-import { destinations, properties, siteContent } from "@/lib/content";
+import { getContent } from "@/lib/content";
 import { breadcrumbSchema, pageMeta } from "@/lib/seo";
-import { brand, settings } from "@/lib/site";
-
-const copy = siteContent.about;
+import { brand } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta({
   title: "About",
@@ -30,7 +28,11 @@ const trail = [
  * story here is drafted from StaySutra's own positioning and is flagged in
  * docs/CONTENT-GAPS.md pending the client's own copy. DPR §7.10, §16
  */
-export default function AboutPage() {
+export default async function AboutPage() {
+  const c = await getContent();
+  const copy = c.site.about;
+  const settings = c.site.settings;
+  const { destinations, properties } = c;
   return (
     <>
       <PageHero
@@ -94,7 +96,7 @@ export default function AboutPage() {
       {/* One strong full-bleed image, given room. */}
       <div className="relative">
         <Parallax className="h-[22rem] overflow-hidden lg:h-[34rem]">
-          <Frame seed="about-band" scene="coast" mood="dusk" fill sizes="100vw" />
+          <Frame seed="about-band" media={c.slot("about-band")} scene="coast" mood="dusk" fill sizes="100vw" />
         </Parallax>
         <div className="pointer-events-none absolute inset-0 scrim-b opacity-70" />
       </div>

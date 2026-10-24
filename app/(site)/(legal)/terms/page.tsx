@@ -3,7 +3,8 @@ import { PageHero } from "@/components/site/PageHero";
 import { Prose } from "@/components/site/Prose";
 import { parseProse } from "@/lib/prose";
 import { pageMeta } from "@/lib/seo";
-import { brand, settings } from "@/lib/site";
+import { brand } from "@/lib/site";
+import { getContent, type SiteCopy } from "@/lib/content";
 
 export const metadata: Metadata = pageMeta({
   title: "Terms of use",
@@ -19,7 +20,7 @@ export const metadata: Metadata = pageMeta({
  * it — so nothing on the page overstates what a visitor is agreeing to.
  * Flagged in docs/CONTENT-GAPS.md.
  */
-const body = `
+const body = (settings: SiteCopy["settings"]) => `
 These terms apply to your use of this website. By using it, submitting an
 enquiry, or submitting a property, you accept them.
 
@@ -126,7 +127,9 @@ Email: [${settings.email}](mailto:${settings.email})
 Phone: ${settings.phone}
 `;
 
-export default function TermsPage() {
+export default async function TermsPage() {
+  const c = await getContent();
+  const settings = c.site.settings;
   return (
     <>
       <PageHero
@@ -142,7 +145,7 @@ export default function TermsPage() {
         ]}
       />
       <div className="shell pb-24 lg:pb-32">
-        <Prose blocks={parseProse(body)} />
+        <Prose blocks={parseProse(body(settings))} />
         <p className="t-caption mt-16 max-w-[68ch] border-t border-[color:var(--hairline)] pt-6">
           Last updated 3 September 2026.
         </p>

@@ -5,11 +5,8 @@ import { InterestCapture } from "@/components/site/InterestCapture";
 import { Icon, iconFor } from "@/components/primitives/Icon";
 import { ButtonLink } from "@/components/primitives/Button";
 import { Reveal } from "@/components/motion/Reveal";
-import { siteContent } from "@/lib/content";
+import { getContent } from "@/lib/content";
 import { breadcrumbSchema, pageMeta } from "@/lib/seo";
-
-const copy = siteContent.forRiders;
-const items = siteContent.home.riders.items;
 
 export const metadata: Metadata = pageMeta({
   title: "For riders",
@@ -29,7 +26,10 @@ const trail = [
  * writes an Enquiry with source = GENERAL. Routes get a reserved URL structure
  * (/routes/[slug]) but no pages. DPR §7.7
  */
-export default function ForRidersPage() {
+export default async function ForRidersPage() {
+  const c = await getContent();
+  const copy = c.site.forRiders;
+  const items = c.site.home.riders.items;
   return (
     <>
       <PageHero

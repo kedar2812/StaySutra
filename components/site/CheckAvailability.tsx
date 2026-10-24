@@ -1,12 +1,15 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
-import { DateInput } from "@/components/primitives/DateInput";
+import { useMemo, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AvailabilityCalendar } from "./AvailabilityCalendar";
+import { nextFreeWeekend, nightsBetween, shortDay } from "@/lib/calendar/dates";
+import { spring } from "@/lib/motion";
 import { Icon } from "@/components/primitives/Icon";
 import { track } from "@/lib/analytics";
 import { waMessage, whatsappLink } from "@/lib/site";
 import { cn } from "@/lib/utils";
-import type { PropertyView } from "@/lib/types";
+import type { BlockedRange, PropertyView } from "@/lib/types";
 
 /**
  * The booking flow, for as long as confirmation is a person rather than an
@@ -24,22 +27,36 @@ import type { PropertyView } from "@/lib/types";
  */
 export function CheckAvailability({
   property: p,
+  blocked,
+  suggestWeekend = false,
   variant = "panel",
   className,
 }: {
   property: PropertyView;
+  /** Nights already taken on any platform. Those dates cannot be picked. */
+  blocked: BlockedRange[];
+  /** Only when a real calendar is synced — otherwise "free" would be a guess. */
+  suggestWeekend?: boolean;
   variant?: "panel" | "inline";
   className?: string;
 }) {
-  const ids = useId();
-  const today = new Date().toISOString().slice(0, 10);
-
+  const reduced = useReducedMotion();
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(Math.min(2, p.maxGuests));
+  const [open, setOpen] = useState(false);
 
-  // The only invalid state the inputs can reach — `min` handles the rest.
-  const datesReversed = Boolean(checkIn && checkOut && checkOut <= checkIn);
+  // The calendar cannot produce a reversed or clashing range.
+  const datesReversed = false;
+  const nights = checkIn && checkOut ? nightsBetween(checkIn, checkOut) : 0;
+
+  /*
+   * "Is it free this weekend?" is the question a group arrives with, so it is
+   * answered before it is asked — from the real calendar, never invented — and
+   * one tap makes it the selection. A good default is the easiest first step.
+   */
+  const weekend = useMemo(() => (suggestWeekend ? nextFreeWeekend(blocked) : null), [blocked, suggestWeekend]);
+  const onWeekend = weekend && checkIn === weekend.checkIn && checkOut === weekend.checkOut;
 
   const href = useMemo(
     () =>
@@ -59,6 +76,41 @@ export function CheckAvailability({
 
   return (
     <div className={className}>
+      {weekend && (
+        <button
+          type="button"
+          onClick={() => {
+            setCheckIn(weekend.checkIn);
+            setCheckOut(weekend.checkOut);
+            setOpen(false);
+            track("weekend_suggestion", { property_slug: p.slug });
+          }}
+          aria-pressed={Boolean(onWeekend)}
+          className={cn(
+            "press-sm mb-3 flex w-full items-center gap-3 rounded-card border px-3.5 py-3 text-left transition-colors",
+            onWeekend
+              ? "border-gold-500/60 bg-gold-500/10"
+              : "border-[color:var(--hairline)] hover:border-[color:var(--hairline-str)] hover:bg-white/[0.03]",
+          )}
+        >
+          <span className="relative grid size-8 shrink-0 place-items-center rounded-full bg-ok/15 text-ok">
+            <Icon name="calendar" size={15} />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block whitespace-nowrap text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-ok">
+              Next free weekend
+            </span>
+            <span className="mt-0.5 block whitespace-nowrap text-[0.875rem] font-medium text-text-hi">
+              {shortDay(weekend.checkIn)} → {shortDay(weekend.checkOut)}
+            </span>
+          </span>
+          <Icon
+            name={onWeekend ? "check" : "plus"}
+            size={16}
+            className={cn("shrink-0", onWeekend ? "text-gold-400" : "text-text-low")}
+          />
+        </button>
+      )}
       <div
         className={cn(
           "grid gap-px overflow-hidden rounded-card border border-[color:var(--hairline)]",
@@ -66,22 +118,19 @@ export function CheckAvailability({
         )}
       >
         <DateCell
-          id={`${ids}-in`}
           label="Check-in"
           value={checkIn}
-          min={today}
-          onChange={(v) => {
-            setCheckIn(v);
-            if (checkOut && v && checkOut <= v) setCheckOut("");
-          }}
+          active={open && !checkIn}
+          expanded={open}
+          onClick={() => setOpen((o) => !o)}
           className="border-r border-[color:var(--hairline)]"
         />
         <DateCell
-          id={`${ids}-out`}
           label="Check-out"
           value={checkOut}
-          min={checkIn || today}
-          onChange={setCheckOut}
+          active={open && Boolean(checkIn) && !checkOut}
+          expanded={open}
+          onClick={() => setOpen((o) => !o)}
         />
         <div
           className={cn(
@@ -109,6 +158,50 @@ export function CheckAvailability({
           </div>
         </div>
       </div>
+
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            key="calendar"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={reduced ? { duration: 0 } : spring.ui}
+            className="overflow-hidden"
+          >
+            <div className="mt-3 rounded-card border border-[color:var(--hairline)] bg-ink-900/60 p-4">
+              <p className="mb-4 text-center text-[0.8125rem] text-text-mid">
+                {!checkIn
+                  ? "Choose a check-in date"
+                  : !checkOut
+                    ? "Now the check-out date"
+                    : `${nights} ${nights === 1 ? "night" : "nights"} · ${shortDay(checkIn)} → ${shortDay(checkOut)}`}
+              </p>
+              <AvailabilityCalendar
+                blocked={blocked}
+                value={{ checkIn, checkOut }}
+                onChange={(next) => {
+                  setCheckIn(next.checkIn);
+                  setCheckOut(next.checkOut);
+                  if (next.checkOut) setTimeout(() => setOpen(false), reduced ? 0 : 260);
+                }}
+              />
+              {(checkIn || checkOut) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCheckIn("");
+                    setCheckOut("");
+                  }}
+                  className="press-sm mt-3 text-[0.8125rem] font-medium text-text-mid underline underline-offset-4 hover:text-text-hi"
+                >
+                  Clear dates
+                </button>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <a
         href={href}
@@ -168,36 +261,36 @@ function Note({
 }
 
 function DateCell({
-  id,
   label,
   value,
-  min,
-  onChange,
+  active,
+  expanded,
+  onClick,
   className,
 }: {
-  id: string;
   label: string;
   value: string;
-  min: string;
-  onChange: (v: string) => void;
+  active: boolean;
+  expanded: boolean;
+  onClick: () => void;
   className?: string;
 }) {
   return (
-    <div className={cn("flex flex-col justify-center gap-1 px-3 py-3 sm:px-4", className)}>
-      <label
-        htmlFor={id}
-        className="text-xs font-semibold uppercase tracking-[0.14em] text-text-low"
-      >
-        {label}
-      </label>
-      <DateInput
-        id={id}
-        value={value}
-        min={min}
-        onChange={(e) => onChange(e.target.value)}
-        textClassName="text-[0.9375rem] font-medium text-text-hi"
-      />
-    </div>
+    <button
+      type="button"
+      onClick={onClick}
+      aria-expanded={expanded}
+      className={cn(
+        "press-sm flex flex-col items-start justify-center gap-1 px-3 py-3 text-left transition-colors sm:px-4",
+        active ? "bg-gold-500/10" : "hover:bg-white/[0.03]",
+        className,
+      )}
+    >
+      <span className="text-xs font-semibold uppercase tracking-[0.14em] text-text-low">{label}</span>
+      <span className={cn("text-[0.9375rem] font-medium", value ? "text-text-hi" : "text-text-low")}>
+        {value ? shortDay(value) : "Add date"}
+      </span>
+    </button>
   );
 }
 

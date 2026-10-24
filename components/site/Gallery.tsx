@@ -8,6 +8,7 @@ import { nearestSnap, project, spring, VelocityTracker } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { lockScroll } from "@/lib/scroll-lock";
 import type { PlateMood, PlateScene } from "@/lib/plate";
+import type { MediaRef } from "@/lib/types";
 
 /**
  * Property gallery + full-screen lightbox.
@@ -19,12 +20,15 @@ import type { PlateMood, PlateScene } from "@/lib/plate";
  */
 export function Gallery({
   slug,
+  images,
   count,
   name,
   scene,
   mood,
 }: {
   slug: string;
+  /** The real photographs, cover first. Empty falls back to generated plates. */
+  images: MediaRef[];
   count: number;
   name: string;
   scene?: PlateScene;
@@ -39,8 +43,9 @@ export function Gallery({
    * read as different times of day rather than the same photograph repeated.
    */
   const moods: PlateMood[] = ["dusk", "dawn", "night"];
-  const shots = Array.from({ length: Math.max(1, count) }, (_, i) => ({
+  const shots = Array.from({ length: Math.max(1, images.length || count) }, (_, i) => ({
     seed: `${slug}-${i}`,
+    media: images[i] ?? null,
     mood: i === 0 ? (mood ?? "dusk") : (moods[i % moods.length] as PlateMood),
   }));
   const single = shots.length === 1;
@@ -78,6 +83,7 @@ export function Gallery({
         >
           <Frame
             seed={shots[0]!.seed}
+            media={shots[0]!.media}
             scene={scene}
             mood={shots[0]!.mood}
             ratio="4/3"
@@ -106,6 +112,7 @@ export function Gallery({
               >
                 <Frame
                   seed={s.seed}
+                  media={s.media}
                   scene={scene}
                   mood={s.mood}
                   fill
@@ -155,7 +162,7 @@ function Lightbox({
   onClose: () => void;
   index: number;
   setIndex: (i: number) => void;
-  shots: { seed: string; mood: PlateMood }[];
+  shots: { seed: string; media: MediaRef | null; mood: PlateMood }[];
   name: string;
   scene?: PlateScene;
 }) {
@@ -251,13 +258,16 @@ function Lightbox({
             >
               {shots.map((s) => (
                 <div key={s.seed} className="w-full shrink-0 snap-center px-1">
+                  {/* Contained, not cropped: in the lightbox the whole photograph is the point. */}
                   <Frame
                     seed={s.seed}
+                    media={s.media}
                     scene={scene}
                     mood={s.mood}
                     ratio="16/9"
                     sizes="100vw"
-                    className="rounded-card"
+                    className="rounded-card bg-transparent"
+                    imgClassName={s.media ? "!object-contain" : undefined}
                   />
                 </div>
               ))}

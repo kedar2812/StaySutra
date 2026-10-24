@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
-import { destinations, properties, stories } from "@/lib/content";
+import { getContent } from "@/lib/content";
+
+export const dynamic = "force-dynamic";
 import { canonical } from "@/lib/site";
 
 type Freq = MetadataRoute.Sitemap[number]["changeFrequency"];
@@ -9,7 +11,8 @@ type Freq = MetadataRoute.Sitemap[number]["changeFrequency"];
  * code change. Drafts and unpublished records are excluded upstream in
  * lib/content — nothing unpublished can reach this list. DPR §8.2
  */
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const { destinations, properties, stories } = await getContent();
   const now = new Date();
 
   const staticRoutes: { path: string; priority: number; freq: Freq }[] = [

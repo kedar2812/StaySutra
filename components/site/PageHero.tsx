@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Frame } from "@/components/primitives/Frame";
+import { getContent } from "@/lib/content";
+import type { MediaRef } from "@/lib/types";
 import type { ReactNode } from "react";
 import { Icon } from "@/components/primitives/Icon";
 import { Rule } from "@/components/primitives/Rule";
@@ -47,7 +49,8 @@ export function Breadcrumbs({ trail }: { trail: Crumb[] }) {
  * The standard page opening: a plate band, breadcrumbs, overline and title.
  * Deliberately shorter than the homepage hero — one cinematic moment per site.
  */
-export function PageHero({
+export async function PageHero({
+  media,
   overline,
   title,
   lede,
@@ -60,6 +63,8 @@ export function PageHero({
   size = "md",
   tone = "muted",
 }: {
+  /** Overrides the photograph assigned to the slot (destination heroes). */
+  media?: MediaRef | null;
   overline?: string;
   title: ReactNode;
   lede?: ReactNode;
@@ -78,6 +83,8 @@ export function PageHero({
    */
   tone?: "muted" | "photo";
 }) {
+  // Every page hero is a named image slot the client can change in the dashboard.
+  const shown = media ?? (await getContent()).slot(seed);
   const pad = {
     sm: "pb-12 lg:pb-16",
     md: "pb-16 lg:pb-24",
@@ -100,6 +107,7 @@ export function PageHero({
       <div className="absolute inset-0 -z-10">
         <Frame
           seed={seed}
+          media={shown}
           scene={scene}
           mood={mood}
           muted={tone === "muted"}

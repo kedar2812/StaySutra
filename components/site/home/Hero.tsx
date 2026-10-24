@@ -6,10 +6,10 @@ import { motion, useReducedMotion, useScroll, useTransform } from "motion/react"
 import { MaskLines } from "@/components/motion/MaskLines";
 import { ButtonLink } from "@/components/primitives/Button";
 import { Icon, iconFor } from "@/components/primitives/Icon";
-import { siteContent } from "@/lib/content";
 import { Unbroken } from "@/components/primitives/Unbroken";
-
-const hero = siteContent.home.hero;
+import Link from "next/link";
+import type { MediaRef } from "@/lib/types";
+import type { SiteCopy } from "@/lib/content";
 
 /**
  * ① The one cinematic moment on the site.
@@ -19,7 +19,24 @@ const hero = siteContent.home.hero;
  * four floating chips. Background scales 1.06 → 1.0 while the lines mask in.
  * DPR §7.2 ①
  */
-export function Hero() {
+export interface HeroStay {
+  name: string;
+  place: string;
+  href: string;
+  image: MediaRef | null;
+  price: string | null;
+}
+
+export function Hero({
+  copy: hero,
+  media,
+  stay,
+}: {
+  copy: SiteCopy["home"]["hero"];
+  media: MediaRef | null;
+  /** The newest live stay, floated over the photograph on wide screens. */
+  stay?: HeroStay | null;
+}) {
   const ref = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
@@ -51,6 +68,7 @@ export function Hero() {
           */}
           <Frame
             seed="staysutra-hero"
+            media={media}
             scene="ghat"
             mood="dusk"
             fill
@@ -99,36 +117,86 @@ export function Hero() {
           />
         </h1>
 
-        <motion.p
-          data-motion=""
-          className="t-lede mt-7 max-w-[52ch]"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-        >
-          {hero.lede}
-        </motion.p>
-
-        <motion.div
-          data-motion=""
-          className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center [&>a]:w-full sm:[&>a]:w-auto"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-        >
-          <ButtonLink href={hero.primaryCta.href} size="lg" icon="arrowRight">
-            {hero.primaryCta.label}
-          </ButtonLink>
-          <ButtonLink
-            href={hero.secondaryCta.href}
-            variant="outline"
-            size="lg"
-            icon="motorcycle"
-            iconAfter={false}
+        <div className="xl:flex xl:items-end xl:justify-between xl:gap-12">
+          <div className="min-w-0">
+          <motion.p
+            data-motion=""
+            className="t-lede mt-7 max-w-[52ch]"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
           >
-            {hero.secondaryCta.label}
-          </ButtonLink>
-        </motion.div>
+            {hero.lede}
+          </motion.p>
+
+          <motion.div
+            data-motion=""
+            className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center [&>a]:w-full sm:[&>a]:w-auto"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            <ButtonLink href={hero.primaryCta.href} size="lg" icon="arrowRight">
+              {hero.primaryCta.label}
+            </ButtonLink>
+            <ButtonLink
+              href={hero.secondaryCta.href}
+              variant="outline"
+              size="lg"
+              icon="motorcycle"
+              iconAfter={false}
+            >
+              {hero.secondaryCta.label}
+            </ButtonLink>
+          </motion.div>
+          </div>
+          {stay && (
+            /*
+              A way straight to the product for the visitor who came for a place,
+              not a manifesto. It materialises — blur and scale together — after
+              the headline has landed, and only where the photograph has room.
+            */
+            <motion.div
+              data-motion=""
+              className="hidden w-[19rem] shrink-0 xl:block"
+              initial={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.96, filter: "blur(10px)" }}
+              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+              transition={reduced ? { duration: 0.3, delay: 0.6 } : { type: "spring", bounce: 0, duration: 0.7, delay: 0.95 }}
+              style={{ transformOrigin: "bottom right" }}
+            >
+              <Link href={stay.href} className="glass press group block overflow-hidden rounded-surface p-2.5">
+                <Frame
+                  seed="hero-stay"
+                  media={stay.image}
+                  ratio="16/9"
+                  sizes="19rem"
+                  className="rounded-card"
+                  imgClassName="transition-transform duration-[600ms] ease-out-quint group-hover:scale-[1.04]"
+                />
+                <div className="flex items-end justify-between gap-3 px-2 pb-1.5 pt-3.5">
+                  <div className="min-w-0">
+                    <p className="flex items-center gap-2 text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-ok">
+                      <span className="size-1.5 rounded-full bg-ok" />
+                      Now open
+                    </p>
+                    <p className="on-glass mt-1.5 truncate text-[1.0625rem] font-semibold leading-tight">
+                      {stay.name}
+                    </p>
+                    <p className="t-caption mt-1 truncate">
+                      {stay.place}
+                      {stay.price ? ` · ${stay.price}` : ""}
+                    </p>
+                  </div>
+                  <Icon
+                    name="arrowUpRight"
+                    size={18}
+                    className="mb-0.5 shrink-0 text-text-mid transition-transform duration-300 ease-out-quint group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                  />
+                </div>
+              </Link>
+            </motion.div>
+          )}
+        </div>
 
         {/* Trust strip — one hairline-separated row. Not four boxed cards. */}
         <motion.ul

@@ -3,9 +3,7 @@ import { Frame } from "@/components/primitives/Frame";
 import { Icon } from "@/components/primitives/Icon";
 import { Rule } from "@/components/primitives/Rule";
 import { Reveal } from "@/components/motion/Reveal";
-import { siteContent, destinations } from "@/lib/content";
-
-const copy = siteContent.home.owners;
+import { getContent } from "@/lib/content";
 
 /**
  * ⑨ Owner acquisition — the second revenue line, so it argues rather than
@@ -22,7 +20,10 @@ const copy = siteContent.home.owners;
  * have to defend. One verifiable number, computed from content, stands in its
  * place. DPR §7.2 ⑧ option (b), §4.6
  */
-export function ListYourProperty() {
+export async function ListYourProperty() {
+  const c = await getContent();
+  const copy = c.site.home.owners;
+  const destinations = c.destinations;
   return (
     <section aria-labelledby="owners-title" className="section">
       <div className="shell">
@@ -38,6 +39,7 @@ export function ListYourProperty() {
             <div className="relative mt-10">
               <Frame
                 seed="list-your-property"
+                media={c.slot("list-your-property")}
                 scene="plateau"
                 mood="dawn"
                 ratio="4/3"

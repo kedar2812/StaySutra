@@ -5,7 +5,7 @@ import { Footer } from "@/components/site/Footer";
 import { ButtonLink } from "@/components/primitives/Button";
 import { Icon } from "@/components/primitives/Icon";
 import { Rule } from "@/components/primitives/Rule";
-import { destinations } from "@/lib/content";
+import { getContent } from "@/lib/content";
 import { waMessage, whatsappLink } from "@/lib/site";
 
 /**
@@ -13,14 +13,16 @@ import { waMessage, whatsappLink } from "@/lib/site";
  * Stays, Destinations and WhatsApp, plus the live destination list. It is also
  * what a deleted property resolves to. DPR §6.4, §7.12, §8.1
  */
-export default function NotFound() {
+export default async function NotFound() {
+  const c = await getContent();
+  const destinations = c.destinations;
   return (
     <>
       <Header />
       <main id="main">
         <section className="grain relative isolate flex min-h-[80svh] items-center overflow-hidden pt-[calc(var(--header-h)+3rem)] pb-20">
           <div className="absolute inset-0 -z-10">
-            <Frame seed="not-found" scene="highway" mood="night" muted fill sizes="100vw" />
+            <Frame seed="not-found" media={c.slot("not-found")} scene="highway" mood="night" muted fill sizes="100vw" />
             <div className="absolute inset-0 scrim-l" />
             <div className="absolute inset-0 bg-ink-900/55" />
           </div>

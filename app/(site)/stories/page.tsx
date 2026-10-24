@@ -6,7 +6,7 @@ import { JsonLd } from "@/components/site/JsonLd";
 import { Frame } from "@/components/primitives/Frame";
 import { ChipLink } from "@/components/primitives/Chip";
 import { Reveal } from "@/components/motion/Reveal";
-import { activeStoryCategories, stories } from "@/lib/content";
+import { getContent } from "@/lib/content";
 import { breadcrumbSchema, pageMeta } from "@/lib/seo";
 import { formatDate } from "@/lib/utils";
 import type { SearchParams } from "@/lib/filters";
@@ -28,6 +28,8 @@ export default async function StoriesPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
+  const c = await getContent();
+  const { activeStoryCategories, stories } = c;
   const params = await searchParams;
   const raw = params.category;
   const category = (Array.isArray(raw) ? raw[0] : raw) || undefined;
@@ -79,6 +81,7 @@ export default async function StoriesPage({
                 <div className="grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-center">
                   <Frame
                     seed={`story-${lead.slug}`}
+                    media={lead.cover}
                     ratio="16/9"
                     sizes="(min-width:1024px) 58vw, 92vw"
                     priority
@@ -109,6 +112,7 @@ export default async function StoriesPage({
                   <Link key={s.slug} href={`/stories/${s.slug}`} className="press group block">
                     <Frame
                       seed={`story-${s.slug}`}
+                      media={s.cover}
                       ratio="4/3"
                       muted
                       sizes="(min-width:1024px) 30vw, 45vw"

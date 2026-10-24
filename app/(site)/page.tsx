@@ -9,6 +9,8 @@ import { ForTheRiders } from "@/components/site/home/ForTheRiders";
 import { ListYourProperty } from "@/components/site/home/ListYourProperty";
 import { FinalCta } from "@/components/site/home/FinalCta";
 import { pageMeta } from "@/lib/seo";
+import { getContent } from "@/lib/content";
+import { priceLine } from "@/lib/pricing";
 
 export const metadata: Metadata = pageMeta({
   title: "Curated stays across Maharashtra and Goa",
@@ -30,13 +32,48 @@ export const metadata: Metadata = pageMeta({
  * does the same job without seven tiles reading "1 stay"), and the
  * five-column "Why book with us" strip went with them. DPR §7.2, §4.6
  */
-export default function HomePage() {
+export default async function HomePage() {
+  const c = await getContent();
+  const lead = c.featuredProperties[0] ?? c.properties[0];
   return (
     <>
-      <Hero />
-      <SearchWidget />
+      <Hero
+        copy={c.site.home.hero}
+        media={c.slot("staysutra-hero")}
+        stay={
+          lead
+            ? {
+                name: lead.name,
+                place: `${lead.locality ? `${lead.locality}, ` : ""}${lead.city}`,
+                href: `/stays/${lead.slug}`,
+                image: lead.images[1] ?? lead.images[0] ?? null,
+                price: lead.startingPrice ? `${priceLine(lead)!.amount}/night` : null,
+              }
+            : null
+        }
+      />
+      {/*
+        Search earns its place once there is something to narrow down. With one
+        or two stays it offers six destinations and seven types that mostly
+        lead to an empty grid — choice without a payoff — so it waits.
+      */}
+      {c.properties.length >= 3 && (
+        <SearchWidget
+          destinations={c.destinations.map((d) => ({
+            slug: d.slug,
+            name: d.name,
+            state: d.state,
+            count: c.countIn(d.slug),
+          }))}
+          categories={c.categories.map((k) => ({
+            slug: k.slug,
+            plural: k.plural,
+            count: c.countInCategory(k.slug),
+          }))}
+        />
+      )}
       <FeaturedStays />
-      <MadeForTheRoad />
+      <MadeForTheRoad copy={c.site.home.road} media={c.slot("made-for-the-road")} />
       <Destinations />
       <StoriesBand />
       <ForTheRiders />

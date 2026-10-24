@@ -6,7 +6,6 @@ import { Button } from "@/components/primitives/Button";
 import { Chip, FilterChip } from "@/components/primitives/Chip";
 import { Icon, iconFor } from "@/components/primitives/Icon";
 import { Sheet } from "@/components/primitives/Sheet";
-import { amenities, categories, countInCategory, destinations, facilities } from "@/lib/content";
 import { parseFilters, toQuery, countActive, type Filters, type SortKey } from "@/lib/filters";
 import { track } from "@/lib/analytics";
 import { inr, plural } from "@/lib/utils";
@@ -30,14 +29,24 @@ const PRICE_BANDS = [
  * drag-dismissible sheet on mobile. Changes are written to the URL with
  * `replace`, so Back does not walk through every toggle. DPR §6.3, §7.3
  */
+export interface FilterOptions {
+  destinations: { slug: string; name: string }[];
+  categories: { slug: string; plural: string; count: number }[];
+  amenities: { slug: string; name: string; iconKey: string }[];
+  facilities: { slug: string; name: string; iconKey: string }[];
+}
+
 export function FilterBar({
   resultCount,
+  options,
   riderToggle = true,
 }: {
   resultCount: number;
+  options: FilterOptions;
   /** Off where the list is already rider-friendly only — the toggle would do nothing. */
   riderToggle?: boolean;
 }) {
+  const { destinations, categories, amenities, facilities } = options;
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -97,7 +106,7 @@ export function FilterBar({
         options={[
           { value: "", label: "Any type" },
           ...categories
-            .filter((c) => countInCategory(c.slug) > 0 || c.slug === filters.category)
+            .filter((c) => c.count > 0 || c.slug === filters.category)
             .map((c) => ({ value: c.slug, label: c.plural })),
         ]}
       />

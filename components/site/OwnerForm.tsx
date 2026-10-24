@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Button } from "@/components/primitives/Button";
 import { Checkbox, Field, Honeypot, Select, TextArea } from "@/components/primitives/Field";
 import { Chip } from "@/components/primitives/Chip";
 import { Icon, iconFor } from "@/components/primitives/Icon";
-import { amenities, categories, facilities } from "@/lib/content";
+import type { Category, ManagedItem } from "@/lib/types";
 import { ownerStep1, ownerStep2, ownerStep4 } from "@/lib/validation";
 import { spring } from "@/lib/motion";
 import { track } from "@/lib/analytics";
@@ -83,7 +83,23 @@ type Errors = Partial<Record<keyof Draft | "files", string>>;
  * uploaded on submit — the upload endpoint, sharp re-encode and authenticated
  * document route land with the database in P1-12. DPR §7.8
  */
-export function OwnerForm() {
+export interface OwnerFormTaxonomy {
+  categories: Category[];
+  amenities: ManagedItem[];
+  facilities: ManagedItem[];
+}
+
+const Taxonomy = createContext<OwnerFormTaxonomy>({ categories: [], amenities: [], facilities: [] });
+
+export function OwnerForm({ taxonomy }: { taxonomy: OwnerFormTaxonomy }) {
+  return (
+    <Taxonomy.Provider value={taxonomy}>
+      <OwnerFormSteps />
+    </Taxonomy.Provider>
+  );
+}
+
+function OwnerFormSteps() {
   const reduced = useReducedMotion();
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState<Draft>(EMPTY);
@@ -392,6 +408,7 @@ export function OwnerForm() {
 type SetFn = <K extends keyof Draft>(key: K, value: Draft[K]) => void;
 
 function StepOne({ draft, set, errors }: { draft: Draft; set: SetFn; errors: Errors }) {
+  const { categories } = useContext(Taxonomy);
   return (
     <Fieldset
       legend="Tell us about the property"
@@ -492,6 +509,7 @@ function StepTwo({
   toggle: (key: "amenityKeys" | "facilityKeys", slug: string) => void;
   errors: Errors;
 }) {
+  const { amenities, facilities } = useContext(Taxonomy);
   return (
     <Fieldset
       legend="What it offers"
@@ -695,6 +713,7 @@ function StepFour({
   docCount: number;
   onEdit: (step: number) => void;
 }) {
+  const { categories } = useContext(Taxonomy);
   const type = categories.find((c) => c.slug === draft.propertyType);
 
   return (

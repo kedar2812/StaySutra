@@ -19,7 +19,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/* ─── Enums ────────────────────────────────────────────────────────────── */
+/**
+ * ─── Enums ──────────────────────────────────────────────────────────────
+ */
 
 enum PropertyStatus {
   DRAFT
@@ -72,17 +74,19 @@ enum Role {
   EDITOR
 }
 
-/* ─── Property ─────────────────────────────────────────────────────────── */
+/**
+ * ─── Property ───────────────────────────────────────────────────────────
+ */
 
 model Property {
-  id       String @id @default(cuid())
+  id          String  @id @default(cuid())
   // SEO-safe and editable, but immutable after publish without a redirect —
   // the dashboard writes a SlugRedirect row on every change.
-  slug     String @unique
-  name     String
-  tagline  String?
+  slug        String  @unique
+  name        String
+  tagline     String?
   /// Rich text.
-  description String @db.Text
+  description String  @db.Text
 
   status       PropertyStatus @default(DRAFT)
   featured     Boolean        @default(false)
@@ -111,12 +115,23 @@ model Property {
 
   // Pricing — display only. There are no transactions in this contract.
   startingPrice Int?
+  /// What the price is: "From", "Weekends", "Weeknights". Defaults to "From".
+  priceLabel     String?
+  /// The group the price is quoted for, so the page can show the honest per-head figure.
+  priceGroupSize Int?
   priceNote     String?
   availability  AvailabilityStatus @default(ON_REQUEST)
 
   // Rider positioning
   isRiderFriendly Boolean @default(false)
   riderNote       String?
+
+  /// Room-by-room beds, e.g. [{ "room": "Bedroom 1", "beds": "1 double bed" }].
+  sleeping Json?
+
+  /// Every external platform's calendar for this property. DPR addendum — iCal sync.
+  /// The token signs this property's combined StaySutra calendar export.
+  icalToken String @unique @default(cuid())
 
   // Curation. The line an editor writes about why this property is on the
   // network at all — rendered on the card and on the property page, and the
@@ -126,7 +141,7 @@ model Property {
   // Stay policy. houseRules is per-property; a null cancellationPolicy falls
   // back to the site-wide policy rather than rendering an empty heading.
   houseRules         String[]
-  cancellationPolicy String? @db.Text
+  cancellationPolicy String?  @db.Text
 
   // Ratings — render only when present. NEVER seed a fake value. DPR §4.6
   ratingValue Decimal? @db.Decimal(2, 1)
@@ -153,6 +168,9 @@ model Property {
   nearbyRoutes NearbyRoute[]
   nearbyPlaces NearbyPlace[]
   enquiries    Enquiry[]
+
+  calendarFeeds  CalendarFeed[]
+  calendarBlocks CalendarBlock[]
 
   // Reserved — Future Phase
   roomTypes        RoomType[]
@@ -186,12 +204,12 @@ model PropertyImage {
 
 /// Text only in this contract; links to the route directory in the Future Phase.
 model NearbyRoute {
-  id         String @id @default(cuid())
+  id         String  @id @default(cuid())
   propertyId String
   title      String
   distanceKm Float?
   note       String?
-  sortOrder  Int    @default(0)
+  sortOrder  Int     @default(0)
 
   property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
@@ -222,7 +240,9 @@ model SlugRedirect {
   @@unique([entity, fromSlug])
 }
 
-/* ─── Taxonomies ───────────────────────────────────────────────────────── */
+/**
+ * ─── Taxonomies ─────────────────────────────────────────────────────────
+ */
 
 model Category {
   id          String  @id @default(cuid())
@@ -362,10 +382,12 @@ model PropertyExperience {
   @@index([experienceId])
 }
 
-/* ─── Enquiry — the CRM core ───────────────────────────────────────────── */
+/**
+ * ─── Enquiry — the CRM core ─────────────────────────────────────────────
+ */
 
 model Enquiry {
-  id String @id @default(cuid())
+  id      String @id @default(cuid())
   /// "SS-0926-0143" — short enough to read out, unique enough to quote.
   refCode String @unique
 
@@ -379,7 +401,7 @@ model Enquiry {
   checkIn  DateTime?
   checkOut DateTime?
   guests   Int?
-  message  String?  @db.Text
+  message  String?   @db.Text
 
   /// Strict four-state machine: NEW → CONTACTED → CONVERTED | CLOSED_LOST,
   /// with reopen allowed from either terminal state back to CONTACTED. Every
@@ -398,10 +420,12 @@ model Enquiry {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  property    Property?    @relation(fields: [propertyId], references: [id])
-  destination Destination?  @relation(fields: [destinationId], references: [id])
-  assignedTo  User?        @relation("EnquiryAssignee", fields: [assignedToId], references: [id])
-  notes       EnquiryNote[]
+  property      Property?      @relation(fields: [propertyId], references: [id])
+  destination   Destination?   @relation(fields: [destinationId], references: [id])
+  assignedTo    User?          @relation("EnquiryAssignee", fields: [assignedToId], references: [id])
+  notes         EnquiryNote[]
+  /// Set when a converted enquiry holds dates on the calendar.
+  calendarBlock CalendarBlock?
 
   @@index([status, createdAt])
   @@index([propertyId])
@@ -422,7 +446,9 @@ model EnquiryNote {
   @@index([enquiryId, createdAt])
 }
 
-/* ─── Owner submission ─────────────────────────────────────────────────── */
+/**
+ * ─── Owner submission ───────────────────────────────────────────────────
+ */
 
 model OwnerSubmission {
   id      String @id @default(cuid())
@@ -452,10 +478,10 @@ model OwnerSubmission {
   notes     String?  @db.Text
   consentAt DateTime
 
-  status       SubmissionStatus @default(PENDING)
-  reviewNote   String?          @db.Text
-  reviewedById String?
-  reviewedAt   DateTime?
+  status              SubmissionStatus @default(PENDING)
+  reviewNote          String?          @db.Text
+  reviewedById        String?
+  reviewedAt          DateTime?
   /// Set when approved — an APPROVED submission creates a DRAFT Property.
   convertedPropertyId String?
 
@@ -491,7 +517,9 @@ model SubmissionAsset {
   @@index([submissionId, kind])
 }
 
-/* ─── Story / Journal ──────────────────────────────────────────────────── */
+/**
+ * ─── Story / Journal ────────────────────────────────────────────────────
+ */
 
 model Story {
   id           String  @id @default(cuid())
@@ -504,10 +532,10 @@ model Story {
   bodyHtml String @db.Text
   bodyText String @db.Text
 
-  categoryId      String?
-  destinationIds  String[]
-  authorName      String
-  readMinutes     Int      @default(1)
+  categoryId     String?
+  destinationIds String[]
+  authorName     String
+  readMinutes    Int      @default(1)
 
   status      StoryStatus @default(DRAFT)
   publishedAt DateTime?
@@ -519,8 +547,8 @@ model Story {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  category    StoryCategory? @relation(fields: [categoryId], references: [id])
-  coverMedia  Media?         @relation("StoryCover", fields: [coverMediaId], references: [id])
+  category   StoryCategory? @relation(fields: [categoryId], references: [id])
+  coverMedia Media?         @relation("StoryCover", fields: [coverMediaId], references: [id])
 
   @@index([status, publishedAt])
   @@index([categoryId])
@@ -539,15 +567,17 @@ model StoryCategory {
   stories Story[]
 }
 
-/* ─── Site content ─────────────────────────────────────────────────────── */
+/**
+ * ─── Site content ───────────────────────────────────────────────────────
+ */
 
 /// `fields` is a typed JSON blob per section, validated by a Zod schema keyed on
 /// `key`. That schema is what stops a 400-character headline breaking the
 /// layout — every text field has a documented max length enforced in the
 /// dashboard. DPR §5.6
 model SiteSection {
-  id          String @id @default(cuid())
-  key         String @unique
+  id          String  @id @default(cuid())
+  key         String  @unique
   label       String
   fields      Json
   updatedById String?
@@ -569,7 +599,9 @@ model SiteSetting {
   updatedAt DateTime @updatedAt
 }
 
-/* ─── Media ────────────────────────────────────────────────────────────── */
+/**
+ * ─── Media ──────────────────────────────────────────────────────────────
+ */
 
 model Media {
   id           String @id @default(cuid())
@@ -594,38 +626,42 @@ model Media {
 
   uploadedBy User? @relation(fields: [uploadedById], references: [id])
 
-  propertyImages     PropertyImage[]
-  propertyOgImages   Property[]        @relation("PropertyOgImage")
-  destinationHeroes  Destination[]     @relation("DestinationHero")
-  destinationTiles   Destination[]     @relation("DestinationTile")
-  storyCovers        Story[]           @relation("StoryCover")
-  submissionAssets   SubmissionAsset[]
+  propertyImages    PropertyImage[]
+  propertyOgImages  Property[]        @relation("PropertyOgImage")
+  destinationHeroes Destination[]     @relation("DestinationHero")
+  destinationTiles  Destination[]     @relation("DestinationTile")
+  storyCovers       Story[]           @relation("StoryCover")
+  submissionAssets  SubmissionAsset[]
 
   @@index([folder])
 }
 
-/* ─── Accounts and audit ───────────────────────────────────────────────── */
+/**
+ * ─── Accounts and audit ─────────────────────────────────────────────────
+ */
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
+  id           String    @id @default(cuid())
+  email        String    @unique
   name         String
   /// Argon2id. DPR §11
   passwordHash String
-  role         Role     @default(EDITOR)
-  isActive     Boolean  @default(true)
+  role         Role      @default(EDITOR)
+  isActive     Boolean   @default(true)
   lastLoginAt  DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   sessions            Session[]
+  tokens              UserToken[]
   activity            ActivityLog[]
   enquiryNotes        EnquiryNote[]
   assignedEnquiries   Enquiry[]         @relation("EnquiryAssignee")
   reviewedSubmissions OwnerSubmission[] @relation("SubmissionReviewer")
   uploadedMedia       Media[]
   editedSections      SiteSection[]
+  calendarBlocks      CalendarBlock[]   @relation("CalendarBlockAuthor")
 }
 
 model Session {
@@ -640,6 +676,21 @@ model Session {
 
   @@index([userId])
   @@index([expiresAt])
+}
+
+/// Single-use links for "set your password" invites and resets. Only the
+/// SHA-256 of the token is stored; the token itself exists only in the link.
+model UserToken {
+  id        String    @id
+  userId    String
+  kind      String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model ActivityLog {
@@ -669,7 +720,93 @@ model RateLimit {
   @@index([resetAt])
 }
 
-/* ─── Reserved for the Future Phase ────────────────────────────────────── */
+/**
+ * ─── Calendar sync (iCal) ───────────────────────────────────────────────
+ */
+
+/// Airbnb, Booking.com, Agoda, MakeMyTrip, Vrbo and the rest each publish an
+/// .ics link per listing and read one back. iCal carries dates only — never
+/// prices, guests or listing details. See docs/CALENDAR-SYNC.md.
+enum CalendarChannel {
+  AIRBNB
+  BOOKING_COM
+  AGODA
+  MAKEMYTRIP
+  GOIBIBO
+  VRBO
+  OTHER
+}
+
+enum CalendarBlockSource {
+  /// Imported from an external platform's feed. Rewritten on every sync.
+  FEED
+  /// Blocked by hand in the dashboard (owner use, maintenance, a phone booking).
+  MANUAL
+  /// Held by a converted enquiry.
+  ENQUIRY
+}
+
+model CalendarFeed {
+  id          String          @id @default(cuid())
+  propertyId  String
+  channel     CalendarChannel
+  label       String
+  /// The platform's export link we pull from. Null for export-only channels.
+  importUrl   String?
+  /// The listing on that platform, for the dashboard's "open listing" link.
+  listingUrl  String?
+  /// Signs the export this channel pulls from us. That export leaves out this
+  /// channel's own events, so a booking never echoes back to where it came from.
+  exportToken String          @unique @default(cuid())
+  isActive    Boolean         @default(true)
+
+  lastSyncedAt   DateTime?
+  lastStatus     String?
+  lastError      String?
+  lastEventCount Int?
+  /// When the platform last fetched our export — proof the link is wired up.
+  lastExportedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  property Property        @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  blocks   CalendarBlock[]
+
+  @@index([propertyId])
+}
+
+/// A run of unavailable nights. `endDate` is exclusive — the checkout day —
+/// exactly as iCal's all-day DTEND, so a stay of 12–14 March blocks two nights.
+model CalendarBlock {
+  id          String              @id @default(cuid())
+  propertyId  String
+  source      CalendarBlockSource
+  feedId      String?
+  /// The event UID from the platform's feed.
+  uid         String?
+  startDate   DateTime            @db.Date
+  endDate     DateTime            @db.Date
+  summary     String?
+  note        String?
+  enquiryId   String?             @unique
+  createdById String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  property  Property      @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  feed      CalendarFeed? @relation(fields: [feedId], references: [id], onDelete: Cascade)
+  enquiry   Enquiry?      @relation(fields: [enquiryId], references: [id], onDelete: SetNull)
+  createdBy User?         @relation("CalendarBlockAuthor", fields: [createdById], references: [id])
+
+  @@unique([feedId, uid])
+  @@index([propertyId, startDate, endDate])
+}
+
+/**
+ * ─── Reserved for the Future Phase ──────────────────────────────────────
+ */
 //
 // Migrated now with correct relations and indexes, and deliberately left with
 // no admin UI. The dashboard must not surface these in Phase 2 — an empty
@@ -735,33 +872,33 @@ model AvailabilityDay {
 }
 
 model Booking {
-  id         String @id @default(cuid())
-  refCode    String @unique
+  id         String  @id @default(cuid())
+  refCode    String  @unique
   propertyId String
   roomTypeId String?
   ratePlanId String?
 
-  checkIn   DateTime @db.Date
-  checkOut  DateTime @db.Date
-  guests    Int
-  nights    Int
-  subtotal  Int
-  taxes     Int      @default(0)
-  total     Int
-  currency  String   @default("INR")
-  status    String   @default("PENDING")
-  couponId  String?
-  notes     String?  @db.Text
+  checkIn  DateTime @db.Date
+  checkOut DateTime @db.Date
+  guests   Int
+  nights   Int
+  subtotal Int
+  taxes    Int      @default(0)
+  total    Int
+  currency String   @default("INR")
+  status   String   @default("PENDING")
+  couponId String?
+  notes    String?  @db.Text
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  property Property       @relation(fields: [propertyId], references: [id])
-  roomType RoomType?      @relation(fields: [roomTypeId], references: [id])
-  ratePlan RatePlan?      @relation(fields: [ratePlanId], references: [id])
-  coupon   Coupon?        @relation(fields: [couponId], references: [id])
+  property  Property       @relation(fields: [propertyId], references: [id])
+  roomType  RoomType?      @relation(fields: [roomTypeId], references: [id])
+  ratePlan  RatePlan?      @relation(fields: [ratePlanId], references: [id])
+  coupon    Coupon?        @relation(fields: [couponId], references: [id])
   guestList BookingGuest[]
-  payments Payment[]
+  payments  Payment[]
 
   @@index([propertyId, checkIn])
   @@index([status, createdAt])
@@ -781,17 +918,17 @@ model BookingGuest {
 }
 
 model Payment {
-  id        String   @id @default(cuid())
-  bookingId String
-  provider  String
+  id          String   @id @default(cuid())
+  bookingId   String
+  provider    String
   providerRef String?
-  amount    Int
-  currency  String   @default("INR")
-  status    String   @default("PENDING")
-  method    String?
-  meta      Json?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  amount      Int
+  currency    String   @default("INR")
+  status      String   @default("PENDING")
+  method      String?
+  meta        Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 
@@ -800,16 +937,16 @@ model Payment {
 }
 
 model Coupon {
-  id           String    @id @default(cuid())
-  code         String    @unique
-  description  String?
-  percentOff   Int?
-  amountOff    Int?
+  id             String    @id @default(cuid())
+  code           String    @unique
+  description    String?
+  percentOff     Int?
+  amountOff      Int?
   maxRedemptions Int?
-  redemptions  Int       @default(0)
-  validFrom    DateTime?
-  validUntil   DateTime?
-  isActive     Boolean   @default(true)
+  redemptions    Int       @default(0)
+  validFrom      DateTime?
+  validUntil     DateTime?
+  isActive       Boolean   @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -857,16 +994,16 @@ model Route {
 }
 
 model Trip {
-  id          String    @id @default(cuid())
-  slug        String    @unique
-  title       String
-  routeId     String?
-  startsAt    DateTime?
-  endsAt      DateTime?
-  capacity    Int?
+  id           String    @id @default(cuid())
+  slug         String    @unique
+  title        String
+  routeId      String?
+  startsAt     DateTime?
+  endsAt       DateTime?
+  capacity     Int?
   pricePerHead Int?
-  description String?   @db.Text
-  isPublished Boolean   @default(false)
+  description  String?   @db.Text
+  isPublished  Boolean   @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

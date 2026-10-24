@@ -4,7 +4,8 @@ import Link from "next/link";
 import { Frame } from "@/components/primitives/Frame";
 import { Icon, iconFor } from "@/components/primitives/Icon";
 import { SaveControl } from "./SaveControl";
-import { cn, inr } from "@/lib/utils";
+import { priceLine } from "@/lib/pricing";
+import { cn } from "@/lib/utils";
 import type { PropertyView } from "@/lib/types";
 import type { PlateScene, PlateMood } from "@/lib/plate";
 
@@ -38,6 +39,7 @@ export function PropertyCard({
   className?: string;
 }) {
   const lead = scale === "lead";
+  const price = priceLine(p);
 
   // Rider facilities are the differentiator, so they get the row. Amenities
   // only fill in when a property has no facilities to show.
@@ -46,6 +48,7 @@ export function PropertyCard({
   const frame = (
     <Frame
       seed={p.slug}
+      media={p.images[0] ?? null}
       scene={p.destination.scene as PlateScene | undefined}
       mood={p.destination.mood as PlateMood | undefined}
       ratio={scale === "compact" ? "16/9" : "4/3"}
@@ -126,11 +129,11 @@ export function PropertyCard({
             </span>
           </p>
 
-          {p.startingPrice !== null ? (
+          {price ? (
             <p className="flex shrink-0 items-baseline gap-1.5">
-              <span className="text-xs text-text-low">from</span>
+              <span className="text-xs text-text-low">{price.label.toLowerCase()}</span>
               <span className="t-num text-base text-text-hi" style={{ fontWeight: 700 }}>
-                {inr(p.startingPrice)}
+                {price.amount}
               </span>
               <span className="text-xs text-text-low">/ night</span>
             </p>

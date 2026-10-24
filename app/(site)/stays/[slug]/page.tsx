@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { Gallery } from "@/components/site/Gallery";
 import { StickyEnquire } from "@/components/site/StickyEnquire";
 import { CheckAvailability } from "@/components/site/CheckAvailability";
@@ -16,16 +16,17 @@ import { Icon, iconFor } from "@/components/primitives/Icon";
 import { Rule } from "@/components/primitives/Rule";
 import { Plate } from "@/components/primitives/Plate";
 import { Reveal } from "@/components/motion/Reveal";
-import { getProperty, properties, similarTo } from "@/lib/content";
+import { AvailabilityCalendar } from "@/components/site/AvailabilityCalendar";
+import { getBlockedRanges, getCalendarStatus } from "@/lib/server/calendar";
+import { db, hasDatabase } from "@/lib/server/db";
+import { getContent } from "@/lib/content";
 import { breadcrumbSchema, lodgingSchema, pageMeta } from "@/lib/seo";
-import { settings, waMessage, whatsappLink } from "@/lib/site";
-import { clockTime, inr, plural } from "@/lib/utils";
+import { waMessage, whatsappLink } from "@/lib/site";
+import { clockTime, plural } from "@/lib/utils";
+import { priceLine } from "@/lib/pricing";
+import { nextFreeWeekend, shortDay } from "@/lib/calendar/dates";
 import type { PlateMood, PlateScene } from "@/lib/plate";
 import type { PropertyView } from "@/lib/types";
-
-export function generateStaticParams() {
-  return properties.map((p) => ({ slug: p.slug }));
-}
 
 export async function generateMetadata({
   params,
@@ -33,7 +34,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const p = getProperty(slug);
+  const p = (await getContent()).getProperty(slug);
   if (!p) return {};
 
   return pageMeta({
@@ -65,14 +66,33 @@ export default async function PropertyPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  const c = await getContent();
+  const settings = c.site.settings;
+  const { getProperty, similarTo } = c;
   const { slug } = await params;
   const p = getProperty(slug);
-  if (!p) notFound();
+  if (!p) {
+    // A renamed live page leaves its old address behind as a permanent redirect.
+    if (hasDatabase()) {
+      const moved = await db.slugRedirect.findUnique({ where: { entity_fromSlug: { entity: "property", fromSlug: slug } } });
+      if (moved) permanentRedirect(`/stays/${moved.toSlug}`);
+    }
+    notFound();
+  }
 
   const scene = p.destination.scene as PlateScene | undefined;
   const mood = p.destination.mood as PlateMood | undefined;
   const wa = waMessage.property(p.name, p.destination.name, p.slug);
   const similar = similarTo(p);
+  const price = priceLine(p);
+  const [blocked, calendar] = hasDatabase()
+    ? await Promise.all([getBlockedRanges(p.id), getCalendarStatus(p.id)])
+    : [[], { channels: [] as string[], lastSyncedAt: null, listings: [] as { label: string; url: string }[] }];
+  // Availability is only claimed when a platform's calendar is actually in
+  // step. With none synced (the Vercel demo, or before Airbnb is connected)
+  // the site cannot know which nights are free, so it says nothing.
+  const synced = calendar.channels.length > 0;
+  const weekend = synced ? nextFreeWeekend(blocked) : null;
 
   const trail = [
     { name: "Home", path: "/" },
@@ -88,7 +108,14 @@ export default async function PropertyPage({
         <div className="mb-6">
           <Breadcrumbs trail={trail} />
         </div>
-        <Gallery slug={p.slug} count={p.imageCount} name={p.name} scene={scene} mood={mood} />
+        <Gallery
+          slug={p.slug}
+          images={p.images}
+          count={p.imageCount}
+          name={p.name}
+          scene={scene}
+          mood={mood}
+        />
       </section>
 
       {/* 2 · Header block */}
@@ -98,7 +125,6 @@ export default async function PropertyPage({
             <div className="flex flex-wrap items-center gap-2">
               <Chip icon={iconFor(p.category.iconKey)}>{p.category.name}</Chip>
               {p.isRiderFriendly && <Chip icon="motorcycle">Rider-friendly</Chip>}
-              {p.availability === "ON_REQUEST" && <Chip>On request</Chip>}
             </div>
 
             <h1 className="t-display-l mt-5">{p.name}</h1>
@@ -124,6 +150,46 @@ export default async function PropertyPage({
 
           <SaveControl slug={p.slug} name={p.name} className="mt-1 shrink-0" />
         </div>
+
+        {/*
+          Trust, from facts only. A brand-new listing has no reviews yet and
+          none are invented; what it does have is a live listing on a platform
+          guests already trust, a calendar kept in step with it, and a person
+          on the other end. DPR §4.6
+        */}
+        <ul className="mt-7 flex flex-wrap gap-x-6 gap-y-3 border-t border-[color:var(--hairline)] pt-5 text-[0.875rem] text-text-mid">
+          {weekend && (
+            <li className="flex items-center gap-2">
+              <span className="size-2 rounded-full bg-ok shadow-[0_0_0_4px_rgba(63,191,135,0.15)]" />
+              Next free weekend{" "}
+              <a href="#calendar" className="font-medium text-text-hi underline-offset-4 hover:underline">
+                {shortDay(weekend.checkIn)} → {shortDay(weekend.checkOut)}
+              </a>
+            </li>
+          )}
+          {calendar.listings.map((l) => (
+            <li key={l.url}>
+              <a
+                href={l.url}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="press-sm flex items-center gap-2 transition-colors hover:text-text-hi"
+              >
+                <Icon name="check" size={15} className="text-ok" />
+                Also listed on {l.label}
+                <Icon name="arrowUpRight" size={13} className="text-text-low" />
+              </a>
+            </li>
+          ))}
+          <li className="flex items-center gap-2">
+            <Icon name="whatsapp" size={15} className="text-text-low" />
+            Confirmed by a person, same day
+          </li>
+          <li className="flex items-center gap-2">
+            <Icon name="shield" size={15} className="text-text-low" />
+            Nothing paid on this site
+          </li>
+        </ul>
       </header>
 
       {/* 3 · Two-column body. Bottom padding clears the mobile CTA bar. */}
@@ -151,7 +217,7 @@ export default async function PropertyPage({
             <p className="t-caption mt-2">
               Confirmed by a person, not by a checkout page.
             </p>
-            <CheckAvailability property={p} variant="inline" className="mt-5" />
+            <CheckAvailability property={p} blocked={blocked} suggestWeekend={synced} variant="inline" className="mt-5" />
           </section>
 
           <Block title="About this stay">
@@ -161,6 +227,41 @@ export default async function PropertyPage({
               ))}
             </div>
           </Block>
+
+          {p.sleeping.length > 0 && (
+            <Block title="Where you will sleep">
+              <ul className="grid gap-3 sm:grid-cols-3">
+                {p.sleeping.map((room) => (
+                  <li
+                    key={room.room}
+                    className="rounded-card border border-[color:var(--hairline)] bg-ink-800/60 px-5 py-5"
+                  >
+                    <Icon name="bed" size={22} className="text-text-low" />
+                    <p className="mt-4 text-[0.9375rem] font-medium text-text-hi">{room.room}</p>
+                    <p className="t-caption mt-1">{room.beds}</p>
+                  </li>
+                ))}
+              </ul>
+            </Block>
+          )}
+
+          {synced && (
+          <Block title="Availability" id="calendar">
+            <div className="rounded-surface border border-[color:var(--hairline)] bg-ink-800/50 p-5 sm:p-7">
+              <AvailabilityCalendar blocked={blocked} months={2} readOnly />
+            </div>
+            <p className="t-caption mt-4 flex items-start gap-2">
+              <Icon name="calendar" size={15} className="mt-0.5 shrink-0" />
+              <span>
+                {calendar.channels.length
+                  ? `Kept in step with ${calendar.channels.join(", ")}${
+                      calendar.lastSyncedAt ? ` — checked ${relativeTime(calendar.lastSyncedAt)}` : ""
+                    }. Struck-through nights are taken.`
+                  : "Struck-through nights are taken. We confirm every date with a person before anything is paid."}
+              </span>
+            </p>
+          </Block>
+          )}
 
           {p.curatorNote && (
             <Block title="Why StaySutra recommends it">
@@ -250,7 +351,9 @@ export default async function PropertyPage({
                 </p>
                 <a
                   href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                    `${p.name}, ${p.locality || ""} ${p.city} ${p.state}`,
+                    p.latitude != null && p.longitude != null
+                      ? `${p.latitude},${p.longitude}`
+                      : `${p.name}, ${p.locality || ""} ${p.city} ${p.state}`,
                   )}`}
                   target="_blank"
                   rel="noreferrer noopener"
@@ -325,13 +428,13 @@ export default async function PropertyPage({
                   <li className="py-4 pr-4">
                     <p className="t-caption uppercase tracking-[0.14em]">Check-in</p>
                     <p className="t-num mt-1.5 text-lg text-text-hi">
-                      {p.checkInTime ? clockTime(p.checkInTime) : "Flexible"}
+                      {p.checkInTime ? clockTime(p.checkInTime) : "Ask us"}
                     </p>
                   </li>
                   <li className="border-l border-[color:var(--hairline)] py-4 pl-4">
                     <p className="t-caption uppercase tracking-[0.14em]">Check-out</p>
                     <p className="t-num mt-1.5 text-lg text-text-hi">
-                      {p.checkOutTime ? clockTime(p.checkOutTime) : "Flexible"}
+                      {p.checkOutTime ? clockTime(p.checkOutTime) : "Ask us"}
                     </p>
                   </li>
                 </ul>
@@ -376,13 +479,17 @@ export default async function PropertyPage({
           {/* 9 · Pricing, with honest microcopy about what is confirmed when. */}
           <Block title="What it costs">
             <div className="flex flex-wrap items-end justify-between gap-6 rounded-surface border border-[color:var(--hairline)] bg-ink-800/60 px-6 py-6">
-              <div>
-                {p.startingPrice !== null ? (
+              <div className="max-w-[34ch]">
+                {price ? (
                   <>
                     <p className="flex items-baseline gap-2">
-                      <span className="t-caption uppercase tracking-[0.14em]">From</span>
-                      <span className="t-num text-3xl text-text-hi">{inr(p.startingPrice)}</span>
+                      <span className="t-caption uppercase tracking-[0.14em]">{price.label}</span>
+                      <span className="t-num text-3xl text-text-hi">{price.amount}</span>
+                      <span className="t-caption">/ night</span>
                     </p>
+                    {price.perHead && (
+                      <p className="mt-2 text-[0.9375rem] font-medium text-gold-400">{price.perHead}</p>
+                    )}
                     <p className="t-caption mt-2">{p.priceNote ?? "per night"}</p>
                   </>
                 ) : (
@@ -415,7 +522,7 @@ export default async function PropertyPage({
 
         </div>
 
-        <StickyEnquire property={p} waMessage={wa} />
+        <StickyEnquire property={p} blocked={blocked} suggestWeekend={synced} waMessage={wa} />
       </div>
 
       {/*
@@ -449,7 +556,7 @@ export default async function PropertyPage({
             </a>
           </div>
           <div className="max-w-xl">
-            <EnquiryForm source="PROPERTY" propertySlug={p.slug} waMessage={wa} withDates />
+            <EnquiryForm source="PROPERTY" propertySlug={p.slug} waMessage={wa} withDates blocked={blocked} />
           </div>
         </div>
       </section>
@@ -497,6 +604,16 @@ export default async function PropertyPage({
 
 /* — Blocks ————————————————————————————————————————————————— */
 
+/** "12 minutes ago" — the age of the last calendar sync. */
+function relativeTime(iso: string): string {
+  const minutes = Math.max(0, Math.round((Date.now() - Date.parse(iso)) / 60_000));
+  if (minutes < 1) return "just now";
+  if (minutes < 60) return `${minutes} min ago`;
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return `${hours} ${hours === 1 ? "hour" : "hours"} ago`;
+  return `${Math.round(hours / 24)} days ago`;
+}
+
 function Block({
   title,
   id,
@@ -534,24 +651,28 @@ function QuickFacts({ property: p }: { property: PropertyView }) {
     { icon: "bed", label: p.bedrooms === 1 ? "Bedroom" : "Bedrooms", value: String(p.bedrooms) },
     { icon: "bath", label: p.bathrooms === 1 ? "Bathroom" : "Bathrooms", value: String(p.bathrooms) },
     { icon: "homestay", label: p.beds === 1 ? "Bed" : "Beds", value: String(p.beds) },
-    { icon: "clock", label: "Check-in", value: p.checkInTime ? clockTime(p.checkInTime) : "Flexible" },
-    { icon: "clock", label: "Check-out", value: p.checkOutTime ? clockTime(p.checkOutTime) : "Flexible" },
+    // Times show only when the host has set them — a fact reading "Ask us"
+    // is a slot spent on saying nothing.
+    ...(p.checkInTime
+      ? [{ icon: "clock" as const, label: "Check-in", value: clockTime(p.checkInTime) }]
+      : []),
+    ...(p.checkOutTime
+      ? [{ icon: "clock" as const, label: "Check-out", value: clockTime(p.checkOutTime) }]
+      : []),
   ];
+  const cols =
+    facts.length === 6
+      ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6"
+      : facts.length === 5
+        ? "grid-cols-2 sm:grid-cols-5"
+        : "grid-cols-2 sm:grid-cols-4";
 
+  // Hairlines come from the 1px gap over a hairline background, so the
+  // dividers are right for any number of facts at any column count.
   return (
-    <ul className="grid grid-cols-2 border-y border-[color:var(--hairline)] sm:grid-cols-3 lg:grid-cols-6">
-      {facts.map((f, i) => (
-        <li
-          key={f.label}
-          className={[
-            "flex items-center gap-3 py-5",
-            i % 2 === 1 ? "border-l border-[color:var(--hairline)] pl-4" : "",
-            i >= 2 ? "border-t border-[color:var(--hairline)] sm:border-t-0" : "",
-            i % 3 === 0 ? "sm:border-l-0 sm:pl-0" : "sm:border-l sm:border-[color:var(--hairline)] sm:pl-4",
-            i >= 3 ? "sm:border-t sm:border-[color:var(--hairline)] lg:border-t-0" : "",
-            i === 0 ? "lg:border-l-0 lg:pl-0" : "lg:border-l lg:border-[color:var(--hairline)] lg:pl-4",
-          ].join(" ")}
-        >
+    <ul className={`grid gap-px border-y border-[color:var(--hairline)] bg-[var(--hairline)] ${cols}`}>
+      {facts.map((f) => (
+        <li key={f.label} className="flex items-center gap-3 bg-ink-900 px-1 py-5 sm:px-4 sm:first:pl-0">
           <Icon name={f.icon} size={21} className="shrink-0 text-text-low" />
           <span className="min-w-0">
             <span className="t-num block text-lg text-text-hi">{f.value}</span>

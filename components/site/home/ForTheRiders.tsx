@@ -2,9 +2,7 @@ import Link from "next/link";
 import { Icon, iconFor } from "@/components/primitives/Icon";
 import { TextLink } from "@/components/primitives/Button";
 import { Reveal } from "@/components/motion/Reveal";
-import { siteContent } from "@/lib/content";
-
-const copy = siteContent.home.riders;
+import { getContent } from "@/lib/content";
 
 /**
  * ⑧ An editorial preview of the ecosystem.
@@ -16,7 +14,8 @@ const copy = siteContent.home.riders;
  * SOON chip and no link at all: a dead link is what makes a section feel
  * unfinished, not the honest label. DPR §7.2 ⑦
  */
-export function ForTheRiders() {
+export async function ForTheRiders() {
+  const copy = (await getContent()).site.home.riders;
   return (
     <section aria-labelledby="riders-title" className="border-y border-[color:var(--hairline)] bg-ink-800">
       <div className="shell grid gap-12 py-24 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-20 lg:py-32">

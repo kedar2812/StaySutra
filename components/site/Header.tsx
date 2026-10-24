@@ -7,13 +7,14 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Wordmark } from "./Wordmark";
 import { ButtonLink } from "@/components/primitives/Button";
 import { Icon } from "@/components/primitives/Icon";
-import { siteContent } from "@/lib/content";
+import site from "@/content/site.json";
 import { spring } from "@/lib/motion";
 import { waMessage, whatsappLink, brand } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { lockScroll } from "@/lib/scroll-lock";
 
-const nav = siteContent.nav;
+// Navigation is structure, not copy — it changes with a deploy, not from the dashboard.
+const nav = site.nav;
 
 /**
  * The route bar.

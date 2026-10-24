@@ -10,7 +10,8 @@
     "authorName": "StaySutra",
     "readMinutes": 6,
     "publishedAt": "2026-08-14",
-    "placeholder": true
+    "placeholder": true,
+    "status": "DRAFT"
   },
   {
     "slug": "what-rider-friendly-actually-means",
@@ -21,7 +22,8 @@
     "authorName": "StaySutra",
     "readMinutes": 4,
     "publishedAt": "2026-08-02",
-    "placeholder": true
+    "placeholder": true,
+    "status": "DRAFT"
   },
   {
     "slug": "coast-road-to-kashid",
@@ -34,7 +36,8 @@
     "authorName": "StaySutra",
     "readMinutes": 5,
     "publishedAt": "2026-07-21",
-    "placeholder": true
+    "placeholder": true,
+    "status": "DRAFT"
   },
   {
     "slug": "riding-the-sahyadris-in-july",
@@ -48,7 +51,8 @@
     "authorName": "StaySutra",
     "readMinutes": 8,
     "publishedAt": "2026-07-04",
-    "placeholder": true
+    "placeholder": true,
+    "status": "DRAFT"
   },
   {
     "slug": "two-days-to-goa-the-slow-way",
@@ -61,6 +65,7 @@
     "authorName": "StaySutra",
     "readMinutes": 11,
     "publishedAt": "2026-06-18",
-    "placeholder": true
+    "placeholder": true,
+    "status": "DRAFT"
   }
 ]

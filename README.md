@@ -6,8 +6,10 @@ Built to the specification in [`docs/StaySutra_DPR.md`](docs/StaySutra_DPR.md).
 That document is the single source of truth: if something here and something
 there disagree, the DPR wins.
 
-**Phase 1 (this build):** public website + one-time technical SEO foundation.
-**Phase 2:** admin dashboard and enquiry CRM, built on the same schema.
+**Live:** public website, technical SEO, the dashboard/CMS at `/dashboard`
+(properties, calendar, enquiry CRM, media, website copy and photos,
+destinations, stories, team) and two-way iCal sync with Airbnb and the other
+platforms — see [`docs/CALENDAR-SYNC.md`](docs/CALENDAR-SYNC.md).
 
 ---
 
@@ -15,20 +17,25 @@ there disagree, the DPR wins.
 
 ```bash
 npm install
-cp .env.example .env      # every value can stay empty for the public site
-npm run dev               # http://localhost:3000
+npm run db:dev            # a real Postgres in .data/pg, nothing installed system-wide
+# .env / .env.local: DATABASE_URL=postgresql://staysutra:staysutra@localhost:5433/staysutra?schema=public
+npx prisma migrate deploy
+SEED_OWNER_EMAIL=you@example.com SEED_OWNER_PASSWORD=… npm run db:seed
+npm run dev               # site on :3000, dashboard on :3000/dashboard
 ```
 
-The site runs with **no database and no environment variables**. Content is read
-from `/content` through `lib/content.ts`, and enquiries are appended to
-`.data/enquiries.jsonl` until `DATABASE_URL` exists. That is deliberate: the
-public site has to be live and correct before a single admin screen is written.
+With `DATABASE_URL` set, Postgres is the source of truth and every dashboard
+save revalidates the public pages immediately. Without it the public site still
+runs, read-only, from the JSON seed in `/content` (the Vercel demo does this) —
+the dashboard then explains that it needs a database.
 
 ```bash
 npm run typecheck    # tsc --noEmit
 npm run lint
 npm run build
 npm run db:seed      # loads /content into Postgres (needs DATABASE_URL)
+npm test             # iCal parser, date ranges, next-free-weekend
+npm run user:create -- email "Name" OWNER   # add or reset a dashboard account
 ```
 
 ---
@@ -108,6 +115,18 @@ the row from `CONTENT-GAPS.md`. No code change is needed for any of it.
 ---
 
 ## Deploying
+
+**Two targets, on purpose.**
+
+- **VPS (the real host).** Full app from the Dockerfile: site, dashboard,
+  database, calendar sync. `docker-compose.yml` sets `DASHBOARD_ENABLED=true`.
+- **Vercel (client demo, public site only).** Pushes to `main` deploy there.
+  `vercel.json` runs `scripts/vercel-build.mjs`, which deletes the dashboard,
+  login, admin API and admin UI before `next build` — the dashboard is not in
+  that deployment at all. With no `DATABASE_URL` the site reads the JSON seed,
+  and availability ("next free weekend", the calendar) is only claimed where a
+  platform calendar is actually synced, so the demo never invents free dates.
+  Do not add `DATABASE_URL` or `DASHBOARD_ENABLED` to the Vercel project.
 
 See [`docs/HANDOVER.md`](docs/HANDOVER.md) for server setup, the deploy script,
 backups and restore, secret rotation, and troubleshooting.

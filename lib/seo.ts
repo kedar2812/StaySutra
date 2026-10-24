@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { canonical, brand, settings, SITE_URL } from "./site";
+import { canonical, brand, SITE_URL } from "./site";
+import type { SiteCopy } from "./content";
 import type { Destination, PropertyView, Story } from "./types";
 
 /**
@@ -47,7 +48,7 @@ export function pageMeta({
 
 type Json = Record<string, unknown>;
 
-export function organizationSchema(): Json {
+export function organizationSchema(settings: SiteCopy["settings"]): Json {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",

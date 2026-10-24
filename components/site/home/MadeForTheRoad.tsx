@@ -5,10 +5,9 @@ import { useMotionValueEvent, useScroll } from "motion/react";
 import { Frame } from "@/components/primitives/Frame";
 import { Icon, iconFor } from "@/components/primitives/Icon";
 import { Rule } from "@/components/primitives/Rule";
-import { siteContent } from "@/lib/content";
 import { cn } from "@/lib/utils";
-
-const road = siteContent.home.road;
+import type { MediaRef } from "@/lib/types";
+import type { SiteCopy } from "@/lib/content";
 
 /**
  * The one pinned moment on the homepage (the property gallery column is the
@@ -26,7 +25,13 @@ const road = siteContent.home.road;
  * `height: auto` under each row. Nothing below the active row moves, which is
  * the difference between a list that reads and a list that jumps. DPR §4.5, §7.2 ③
  */
-export function MadeForTheRoad() {
+export function MadeForTheRoad({
+  copy: road,
+  media,
+}: {
+  copy: SiteCopy["home"]["road"];
+  media: MediaRef | null;
+}) {
   const ref = useRef<HTMLElement>(null);
   const [active, setActive] = useState(0);
   const count = road.pillars.length;
@@ -52,6 +57,7 @@ export function MadeForTheRoad() {
         <div className="absolute inset-0 -z-10">
           <Frame
             seed="made-for-the-road"
+            media={media}
             scene="highway"
             mood="night"
             muted

@@ -3,7 +3,8 @@ import { PageHero } from "@/components/site/PageHero";
 import { Prose } from "@/components/site/Prose";
 import { parseProse } from "@/lib/prose";
 import { pageMeta } from "@/lib/seo";
-import { brand, settings } from "@/lib/site";
+import { brand } from "@/lib/site";
+import { getContent, type SiteCopy } from "@/lib/content";
 
 export const metadata: Metadata = pageMeta({
   title: "Privacy policy",
@@ -19,7 +20,7 @@ export const metadata: Metadata = pageMeta({
  * lawful from launch rather than a placeholder. Flagged in docs/CONTENT-GAPS.md
  * for the client's legal review.
  */
-const body = `
+const body = (settings: SiteCopy["settings"]) => `
 This policy explains what personal information ${brand.name} collects through
 this website, why we collect it, and what you can ask us to do with it. It is
 written to describe what the site actually does. If anything here does not match
@@ -123,7 +124,9 @@ Email: [${settings.email}](mailto:${settings.email})
 Phone: ${settings.phone}
 `;
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const c = await getContent();
+  const settings = c.site.settings;
   return (
     <>
       <PageHero
@@ -139,7 +142,7 @@ export default function PrivacyPage() {
         ]}
       />
       <div className="shell pb-24 lg:pb-32">
-        <Prose blocks={parseProse(body)} />
+        <Prose blocks={parseProse(body(settings))} />
         <p className="t-caption mt-16 max-w-[68ch] border-t border-[color:var(--hairline)] pt-6">
           Last updated 3 September 2026.
         </p>

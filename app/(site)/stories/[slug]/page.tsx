@@ -12,21 +12,11 @@ import { Rule } from "@/components/primitives/Rule";
 import { ButtonLink } from "@/components/primitives/Button";
 import { Reveal } from "@/components/motion/Reveal";
 import { Parallax } from "@/components/motion/Parallax";
-import {
-  getDestination,
-  getStory,
-  propertiesIn,
-  stories,
-  storyCategories,
-} from "@/lib/content";
-import { loadStoryBody } from "@/lib/prose";
+import { getContent } from "@/lib/content";
+import { parseProse } from "@/lib/prose";
 import { articleSchema, breadcrumbSchema, pageMeta } from "@/lib/seo";
 import { canonical } from "@/lib/site";
 import { formatDate } from "@/lib/utils";
-
-export function generateStaticParams() {
-  return stories.map((s) => ({ slug: s.slug }));
-}
 
 export async function generateMetadata({
   params,
@@ -34,7 +24,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const s = getStory(slug);
+  const s = (await getContent()).getStory(slug);
   if (!s) return {};
 
   return {
@@ -54,11 +44,13 @@ export default async function StoryPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  const c = await getContent();
+  const { getDestination, getStory, propertiesIn, stories, storyCategories } = c;
   const { slug } = await params;
   const s = getStory(slug);
   if (!s) notFound();
 
-  const blocks = await loadStoryBody(s.slug);
+  const blocks = s.body.trim() ? parseProse(s.body) : null;
   const category = storyCategories.find((c) => c.slug === s.categorySlug);
   const linkedDestinations = s.destinationSlugs
     .map((d) => getDestination(d))
@@ -101,6 +93,7 @@ export default async function StoryPage({
           <Parallax className="overflow-hidden rounded-card">
             <Frame
               seed={`story-${s.slug}`}
+              media={s.cover}
               ratio="21/9"
               sizes="100vw"
               priority

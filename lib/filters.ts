@@ -1,4 +1,3 @@
-import { properties } from "./content";
 import type { PropertyView } from "./types";
 
 /**
@@ -69,7 +68,7 @@ export function toQuery(f: Partial<Filters>): string {
   return p.toString();
 }
 
-export function applyFilters(f: Filters, pool: PropertyView[] = properties): PropertyView[] {
+export function applyFilters(f: Filters, pool: PropertyView[]): PropertyView[] {
   const matched = pool.filter((p) => {
     if (f.destination && p.destination.slug !== f.destination) return false;
     if (f.category && p.category.slug !== f.category) return false;

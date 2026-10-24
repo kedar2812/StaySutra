@@ -5,11 +5,9 @@ import { JsonLd } from "@/components/site/JsonLd";
 import { Icon } from "@/components/primitives/Icon";
 import { Frame } from "@/components/primitives/Frame";
 import { Reveal } from "@/components/motion/Reveal";
-import { siteContent } from "@/lib/content";
+import { getContent } from "@/lib/content";
 import { breadcrumbSchema, pageMeta } from "@/lib/seo";
 import { waMessage, whatsappLink } from "@/lib/site";
-
-const copy = siteContent.listProperty;
 
 export const metadata: Metadata = pageMeta({
   title: "List your property",
@@ -23,7 +21,9 @@ const trail = [
   { name: "List your property", path: "/list-your-property" },
 ];
 
-export default function ListYourPropertyPage() {
+export default async function ListYourPropertyPage() {
+  const c = await getContent();
+  const copy = c.site.listProperty;
   return (
     <>
       <PageHero
@@ -86,7 +86,7 @@ export default function ListYourPropertyPage() {
 
       {/* Image band — the deliberate breathing room before the form. */}
       <div className="relative h-[16rem] lg:h-[24rem]">
-        <Frame seed="owner-band" scene="coast" mood="dusk" fill sizes="100vw" />
+        <Frame seed="owner-band" media={c.slot("owner-band")} scene="coast" mood="dusk" fill sizes="100vw" />
         <div className="pointer-events-none absolute inset-0 scrim-b opacity-80" />
       </div>
 
@@ -108,7 +108,13 @@ export default function ListYourPropertyPage() {
             </p>
 
             <div className="mt-12">
-              <OwnerForm />
+              <OwnerForm
+                taxonomy={{
+                  categories: c.categories,
+                  amenities: c.amenities,
+                  facilities: c.facilities,
+                }}
+              />
             </div>
 
             <p className="t-caption mt-10 flex items-start gap-2">

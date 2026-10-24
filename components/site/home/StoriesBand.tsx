@@ -4,19 +4,19 @@ import { SectionHead } from "@/components/primitives/Rule";
 import { TextLink } from "@/components/primitives/Button";
 import { Reveal } from "@/components/motion/Reveal";
 import { SnapRail } from "@/components/site/SnapRail";
-import { stories, siteContent } from "@/lib/content";
-import { settings } from "@/lib/site";
+import { getContent, type Content } from "@/lib/content";
 import { formatDate } from "@/lib/utils";
 import { Icon } from "@/components/primitives/Icon";
-
-const copy = siteContent.home.stories;
 
 /**
  * ⑨ Pulls the latest published Stories. If nothing is published the band hides
  * entirely rather than rendering an empty heading. DPR §7.2 ⑨, §12
  */
-export function StoriesBand() {
-  const latest = stories.slice(0, 5);
+export async function StoriesBand() {
+  const c = await getContent();
+  const copy = c.site.home.stories;
+  const settings = c.site.settings;
+  const latest = c.stories.slice(0, 5);
   if (!latest.length) return null;
 
   return (
@@ -70,11 +70,12 @@ export function StoriesBand() {
   );
 }
 
-function StoryCard({ story: s }: { story: (typeof stories)[number] }) {
+function StoryCard({ story: s }: { story: Content["stories"][number] }) {
   return (
     <Link href={`/stories/${s.slug}`} className="press group block">
       <Frame
         seed={`story-${s.slug}`}
+        media={s.cover}
         ratio="4/3"
         sizes="(min-width:1024px) 24vw, (min-width:768px) 36vw, 72vw"
         className="rounded-card"

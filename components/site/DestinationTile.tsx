@@ -11,7 +11,10 @@ export function DestinationTile({
   parallax = true,
   className,
   sizes = "(min-width:1024px) 33vw, 88vw",
+  count,
 }: {
+  /** Live stays here. Zero says "Opening soon" rather than hiding the place. */
+  count?: number;
   destination: Destination;
   size?: "lg" | "sm";
   parallax?: boolean;
@@ -21,6 +24,7 @@ export function DestinationTile({
   const image = (
     <Frame
       seed={`destination-${d.slug}`}
+      media={d.tile}
       scene={d.scene as PlateScene | undefined}
       mood={d.mood as PlateMood | undefined}
       fill
@@ -48,7 +52,19 @@ export function DestinationTile({
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-ink-900/70 to-transparent" />
 
       <div className="relative flex h-full flex-col justify-end p-5 lg:p-7">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-mid">{d.state}</p>
+        <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-text-mid">
+          {d.state}
+          {count !== undefined && (
+            <span
+              className={cn(
+                "rounded-pill px-2 py-0.5 text-[0.625rem] tracking-[0.14em]",
+                count > 0 ? "bg-gold-500 text-gold-ink" : "border border-white/25 text-text-hi/80",
+              )}
+            >
+              {count > 0 ? `${count} ${count === 1 ? "stay" : "stays"}` : "Opening soon"}
+            </span>
+          )}
+        </p>
         <h3
           className={cn(
             "mt-2 font-display uppercase leading-[0.92] tracking-[-0.025em] text-text-hi",

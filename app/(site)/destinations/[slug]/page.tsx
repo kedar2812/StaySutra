@@ -14,21 +14,11 @@ import { Icon } from "@/components/primitives/Icon";
 import { Rule } from "@/components/primitives/Rule";
 import { ButtonLink, TextLink } from "@/components/primitives/Button";
 import { Reveal } from "@/components/motion/Reveal";
-import {
-  destinations,
-  getDestination,
-  nearbyDestinations,
-  propertiesIn,
-  storiesFor,
-} from "@/lib/content";
+import { getContent } from "@/lib/content";
 import { breadcrumbSchema, destinationSchema, pageMeta } from "@/lib/seo";
 import { waMessage } from "@/lib/site";
 import { formatDate } from "@/lib/utils";
 import type { PlateMood, PlateScene } from "@/lib/plate";
-
-export function generateStaticParams() {
-  return destinations.map((d) => ({ slug: d.slug }));
-}
 
 export async function generateMetadata({
   params,
@@ -36,7 +26,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const d = getDestination(slug);
+  const d = (await getContent()).getDestination(slug);
   if (!d) return {};
 
   return pageMeta({
@@ -56,6 +46,8 @@ export default async function DestinationPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  const c = await getContent();
+  const { getDestination, nearbyDestinations, propertiesIn, storiesFor } = c;
   const { slug } = await params;
   const d = getDestination(slug);
   if (!d) notFound();
@@ -78,6 +70,7 @@ export default async function DestinationPage({
         title={d.name}
         lede={d.shortIntro}
         seed={`destination-${d.slug}`}
+        media={d.hero ?? d.tile}
         scene={d.scene as PlateScene | undefined}
         mood={d.mood as PlateMood | undefined}
         size="lg"
@@ -178,6 +171,7 @@ export default async function DestinationPage({
               <Link key={s.slug} href={`/stories/${s.slug}`} className="press group block">
                 <Frame
                   seed={`story-${s.slug}`}
+                  media={s.cover}
                   ratio="16/9"
                   sizes="(min-width:1024px) 30vw, 45vw"
                   className="rounded-card"

@@ -5,7 +5,8 @@ import { JsonLd } from "@/components/site/JsonLd";
 import { Icon } from "@/components/primitives/Icon";
 import { ButtonLink } from "@/components/primitives/Button";
 import { breadcrumbSchema, pageMeta } from "@/lib/seo";
-import { settings, waMessage, whatsappLink } from "@/lib/site";
+import { waMessage, whatsappLink } from "@/lib/site";
+import { getContent } from "@/lib/content";
 
 export const metadata: Metadata = pageMeta({
   title: "Contact",
@@ -19,7 +20,9 @@ const trail = [
   { name: "Contact", path: "/contact" },
 ];
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const c = await getContent();
+  const settings = c.site.settings;
   return (
     <>
       <PageHero

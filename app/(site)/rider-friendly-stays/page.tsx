@@ -6,11 +6,9 @@ import { PropertyResults } from "@/components/site/PropertyResults";
 import { JsonLd } from "@/components/site/JsonLd";
 import { Icon, iconFor } from "@/components/primitives/Icon";
 import { Reveal } from "@/components/motion/Reveal";
-import { facilities, riderFriendly, siteContent } from "@/lib/content";
+import { filterOptions, getContent } from "@/lib/content";
 import { applyFilters, parseFilters, type SearchParams } from "@/lib/filters";
 import { breadcrumbSchema, pageMeta } from "@/lib/seo";
-
-const copy = siteContent.riderFriendly;
 
 export const metadata: Metadata = pageMeta({
   title: "Rider-friendly stays",
@@ -30,6 +28,9 @@ export default async function RiderFriendlyPage({
 }) {
   const params = await searchParams;
   const filters = parseFilters(params);
+  const c = await getContent();
+  const copy = c.site.riderFriendly;
+  const { facilities, riderFriendly } = c;
   const count = applyFilters(filters, riderFriendly).length;
 
   return (
@@ -83,7 +84,7 @@ export default async function RiderFriendlyPage({
       <div className="shell pb-24 lg:pb-32">
         <h2 className="t-display-m mb-4">The stays that qualify</h2>
         <Suspense fallback={null}>
-          <FilterBar resultCount={count} riderToggle={false} />
+          <FilterBar resultCount={count} options={filterOptions(c)} riderToggle={false} />
         </Suspense>
         <PropertyResults
           filters={filters}

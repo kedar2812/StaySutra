@@ -18,7 +18,7 @@ export function PropertyResults({
   heading = "Search results",
 }: {
   filters: Filters;
-  pool?: PropertyView[];
+  pool: PropertyView[];
   basePath?: string;
   /** Names the region for assistive tech and keeps the heading outline whole. */
   heading?: string;

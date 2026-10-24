@@ -155,9 +155,58 @@
       "iconKey": "headset",
       "group": "Policies",
       "sortOrder": 14
+    },
+    {
+      "slug": "parking",
+      "name": "Free parking on site",
+      "iconKey": "parking",
+      "group": "Essentials",
+      "sortOrder": 15
+    },
+    {
+      "slug": "tv",
+      "name": "TV",
+      "iconKey": "view",
+      "group": "Essentials",
+      "sortOrder": 16
+    },
+    {
+      "slug": "outdoor-dining",
+      "name": "Outdoor dining area",
+      "iconKey": "meals",
+      "group": "Outdoors",
+      "sortOrder": 17
+    },
+    {
+      "slug": "board-games",
+      "name": "Board games",
+      "iconKey": "community",
+      "group": "Essentials",
+      "sortOrder": 18
+    },
+    {
+      "slug": "self-check-in",
+      "name": "Self check-in",
+      "iconKey": "clock",
+      "group": "Policies",
+      "sortOrder": 19
+    },
+    {
+      "slug": "security-cameras",
+      "name": "Security cameras outside",
+      "iconKey": "shield",
+      "group": "Policies",
+      "sortOrder": 20
     }
   ],
   "facilities": [
+    {
+      "slug": "secure-parking",
+      "name": "Parking inside the gate",
+      "iconKey": "parking",
+      "description": "Off the road, within the property boundary.",
+      "sortOrder": 0
+    },
     {
       "slug": "covered-parking",
       "name": "Covered bike parking",

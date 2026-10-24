@@ -7,6 +7,7 @@ import { PropertyGridSkeleton } from "@/components/primitives/Skeleton";
 import { JsonLd } from "@/components/site/JsonLd";
 import { applyFilters, parseFilters, type SearchParams } from "@/lib/filters";
 import { breadcrumbSchema, pageMeta } from "@/lib/seo";
+import { getContent, filterOptions } from "@/lib/content";
 
 export const metadata: Metadata = pageMeta({
   title: "Explore stays",
@@ -26,7 +27,8 @@ export default async function StaysPage({
 }) {
   const params = await searchParams;
   const filters = parseFilters(params);
-  const count = applyFilters(filters).length;
+  const c = await getContent();
+  const count = applyFilters(filters, c.properties).length;
 
   return (
     <>
@@ -45,10 +47,10 @@ export default async function StaysPage({
 
       <div className="shell pb-24 lg:pb-32">
         <Suspense fallback={null}>
-          <FilterBar resultCount={count} />
+          <FilterBar resultCount={count} options={filterOptions(c)} />
         </Suspense>
         <Suspense fallback={<PropertyGridSkeleton />}>
-          <PropertyResults filters={filters} heading="Stays" />
+          <PropertyResults filters={filters} pool={c.properties} heading="Stays" />
         </Suspense>
       </div>
 

@@ -1,9 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { cinzel, inter, montserrat } from "./fonts";
-import { SmoothScroll } from "@/components/motion/SmoothScroll";
-import { JsonLd } from "@/components/site/JsonLd";
-import { organizationSchema, websiteSchema } from "@/lib/seo";
 import { brand, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -43,12 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <noscript>
           <style>{`[data-motion]{opacity:1!important;transform:none!important}`}</style>
         </noscript>
-        <SmoothScroll />
         {children}
-        {/* Film grain sits above everything and receives no pointer events. */}
-        <div className="grain-fixed" aria-hidden />
-
-        <JsonLd data={[organizationSchema(), websiteSchema()]} />
 
         {GA4 && (
           <>

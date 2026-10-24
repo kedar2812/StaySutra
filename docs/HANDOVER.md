@@ -192,9 +192,11 @@ cd /opt/staysutra
 cp .env.example .env && nano .env          # fill in every value
 docker compose run --rm caddy caddy hash-password   # for STAGING_PASSWORD_HASH
 docker compose up -d --build
-docker compose exec app npx prisma migrate deploy
-docker compose exec app npx tsx prisma/seed.ts
+docker compose run --rm seed     # migrations + content + first owner (SEED_OWNER_* in .env)
 ```
+
+Then sign in at `https://<domain>/dashboard`, open **Calendar** and connect
+Airbnb (docs/CALENDAR-SYNC.md). Invite the rest of the team from **Team**.
 
 ---
 

@@ -1,4 +1,4 @@
-import { siteContent } from "./content";
+import site from "@/content/site.json";
 import { env } from "./utils";
 
 export const SITE_URL = env(
@@ -6,20 +6,29 @@ export const SITE_URL = env(
   "https://staysutra.in",
 ).replace(/\/$/, "");
 
+/** Fallback only — the live number is a dashboard setting. */
 export const WHATSAPP_NUMBER = env(
   process.env.NEXT_PUBLIC_WHATSAPP_NUMBER,
-  siteContent.settings.whatsappNumber,
+  site.settings.whatsappNumber,
 );
 
-export const brand = siteContent.brand;
-export const settings = siteContent.settings;
+/** The brand is fixed in code; everything editable lives in the content snapshot. */
+export const brand = site.brand;
 
 /**
  * Every WhatsApp deep link carries context, so the conversation starts with the
  * property already named rather than "hi". DPR §6.2
+ *
+ * Links go through /go/whatsapp, which redirects to wa.me with whatever number
+ * is set in the dashboard today. That keeps the number out of every cached page
+ * and client bundle, so changing it in Settings takes effect everywhere at once.
  */
 export function whatsappLink(message: string): string {
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  return `/go/whatsapp?text=${encodeURIComponent(message)}`;
+}
+
+export function waMeUrl(number: string, message: string): string {
+  return `https://wa.me/${number.replace(/\D/g, "")}?text=${encodeURIComponent(message)}`;
 }
 
 /**

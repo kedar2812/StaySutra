@@ -2,10 +2,8 @@ import { DestinationTile } from "@/components/site/DestinationTile";
 import { SectionHead } from "@/components/primitives/Rule";
 import { TextLink } from "@/components/primitives/Button";
 import { Reveal } from "@/components/motion/Reveal";
-import { destinations, siteContent } from "@/lib/content";
+import { getContent } from "@/lib/content";
 import { cn } from "@/lib/utils";
-
-const copy = siteContent.home.destinations;
 
 /**
  * Asymmetric mosaic: one lead over two rows, two tiles stacked beside it, the
@@ -16,8 +14,12 @@ const copy = siteContent.home.destinations;
  * top of it. Every tile here is close enough to its photograph's own shape to
  * keep the subject. New destinations from the dashboard slot in by sortOrder.
  */
-export function Destinations() {
-  const [lead, ...rest] = destinations;
+export async function Destinations() {
+  const c = await getContent();
+  const copy = c.site.home.destinations;
+  // Lead with where the stays are; a destination still onboarding never takes the big tile.
+  const ordered = [...c.destinations].sort((a, b) => c.countIn(b.slug) - c.countIn(a.slug));
+  const [lead, ...rest] = ordered;
   if (!lead) return null;
 
   return (
@@ -34,6 +36,7 @@ export function Destinations() {
         <Reveal className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <DestinationTile
             destination={lead}
+            count={c.countIn(lead.slug)}
             size="lg"
             sizes="(min-width:1024px) 62vw, 92vw"
             className="min-h-[26rem] sm:col-span-2 lg:row-span-2 lg:min-h-[34rem]"
@@ -42,6 +45,7 @@ export function Destinations() {
             <DestinationTile
               key={d.slug}
               destination={d}
+              count={c.countIn(d.slug)}
               sizes="(min-width:1024px) 30vw, 45vw"
               className={cn(
                 "min-h-[15rem] lg:min-h-[16.5rem]",
