@@ -195,12 +195,27 @@ docker compose up -d --build
 docker compose run --rm seed     # migrations + content + first owner (SEED_OWNER_* in .env)
 ```
 
+Then turn on automatic deploys and the nightly backup (as root):
+
+```bash
+cp /opt/staysutra/scripts/systemd/staysutra-autodeploy.* /etc/systemd/system/
+systemctl daemon-reload && systemctl enable --now staysutra-autodeploy.timer
+echo '0 3 * * * /opt/staysutra/scripts/backup.sh >> /var/log/staysutra-backup.log 2>&1' | crontab -u deploy -
+```
+
 Then sign in at `https://<domain>/dashboard`, open **Calendar** and connect
 Airbnb (docs/CALENDAR-SYNC.md). Invite the rest of the team from **Team**.
 
 ---
 
 ## 6. Deploying a change
+
+**Push to `main`. That is the whole deploy.** A systemd timer on the server
+(`staysutra-autodeploy.timer`, every two minutes) runs `scripts/autodeploy.sh`,
+which does nothing unless `origin/main` has moved, and otherwise runs
+`deploy.sh`. Follow it with `journalctl -u staysutra-autodeploy -f`.
+
+To deploy by hand instead:
 
 ```bash
 cd /opt/staysutra && ./deploy.sh
@@ -215,9 +230,9 @@ Manual equivalent:
 
 ```bash
 git pull
-docker compose build app
+docker compose build app seed
+docker compose run --rm seed npx prisma migrate deploy
 docker compose up -d app
-docker compose exec app npx prisma migrate deploy
 curl -f https://<domain>/api/health
 ```
 

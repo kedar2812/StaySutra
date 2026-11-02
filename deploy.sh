@@ -66,15 +66,19 @@ log "Pulling"
 git pull --ff-only
 
 log "Building"
-docker compose build "$APP"
+docker compose build "$APP" seed
+
+log "Applying migrations"
+# Before the new app starts, so it never runs against an old schema. Uses the
+# builder image (the `seed` service), which has the pinned Prisma CLI; the
+# runtime image has no node_modules/.bin, so `npx prisma` there would fetch
+# whatever Prisma is newest. migrate deploy only applies committed migrations.
+# It never resets and never drops data — unlike `migrate dev`, which must not
+# touch production.
+docker compose run --rm -T seed npx prisma migrate deploy
 
 log "Starting"
 docker compose up -d "$APP"
-
-log "Applying migrations"
-# migrate deploy only applies committed migrations. It never resets, and never
-# drops data — unlike `migrate dev`, which must not touch production.
-docker compose exec -T "$APP" npx prisma migrate deploy
 
 log "Waiting for health"
 if ! wait_for_health; then

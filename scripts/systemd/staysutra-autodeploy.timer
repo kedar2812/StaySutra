@@ -1,0 +1,10 @@
+[Unit]
+Description=StaySutra: check origin/main for new commits every two minutes
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=2min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

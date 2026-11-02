@@ -10,9 +10,14 @@ name: staysutra
 
 services:
   app:
-    build:
+    build: &build
       context: .
       dockerfile: Dockerfile
+      # Inlined by `next build`; runtime env alone is too late for these.
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+        NEXT_PUBLIC_WHATSAPP_NUMBER: ${NEXT_PUBLIC_WHATSAPP_NUMBER}
+        NEXT_PUBLIC_GA4_ID: ${NEXT_PUBLIC_GA4_ID}
     restart: unless-stopped
     depends_on:
       db:
@@ -51,13 +56,14 @@ services:
 
   # One-off: load /content into a fresh database and create the first owner.
   #   docker compose run --rm seed
+  # Run it once only: the seed upserts, so a re-run overwrites dashboard edits
+  # with the JSON in /content. deploy.sh borrows this image for migrations.
   # Built from the builder stage, which has the dev tools the runtime image
   # deliberately leaves out. Never starts on `up`.
   seed:
     profiles: ["tools"]
     build:
-      context: .
-      dockerfile: Dockerfile
+      <<: *build
       target: builder
     command: sh -c "npx prisma migrate deploy && npx tsx prisma/seed.ts"
     depends_on:
@@ -105,6 +111,9 @@ services:
     environment:
       DOMAIN: ${DOMAIN}
       STAGING_DOMAIN: ${STAGING_DOMAIN}
+      STAGING_USER: ${STAGING_USER}
+      # bcrypt hash; single-quote it in .env or compose eats the $ signs.
+      STAGING_PASSWORD_HASH: ${STAGING_PASSWORD_HASH}
       ACME_EMAIL: ${ACME_EMAIL}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro

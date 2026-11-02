@@ -1,0 +1,18 @@
+# Deploys new commits on origin/main. Triggered by staysutra-autodeploy.timer.
+# Install:
+#   sudo cp scripts/systemd/staysutra-autodeploy.* /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now staysutra-autodeploy.timer
+[Unit]
+Description=StaySutra: deploy new commits from origin/main
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=deploy
+Group=deploy
+WorkingDirectory=/opt/staysutra
+ExecStart=/opt/staysutra/scripts/autodeploy.sh
+# A full rebuild on a KVM 2 takes a few minutes; give it room.
+TimeoutStartSec=30min

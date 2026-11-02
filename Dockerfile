@@ -15,6 +15,14 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
+# Next inlines NEXT_PUBLIC_* at build time, so they must exist here, not only
+# at runtime. Without NEXT_PUBLIC_SITE_URL, robots.txt disallows the whole site.
+ARG NEXT_PUBLIC_SITE_URL=""
+ARG NEXT_PUBLIC_WHATSAPP_NUMBER=""
+ARG NEXT_PUBLIC_GA4_ID=""
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL \
+    NEXT_PUBLIC_WHATSAPP_NUMBER=$NEXT_PUBLIC_WHATSAPP_NUMBER \
+    NEXT_PUBLIC_GA4_ID=$NEXT_PUBLIC_GA4_ID
 RUN npx prisma generate
 RUN npm run build
 

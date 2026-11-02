@@ -1,0 +1,18 @@
+# The build context. Secrets stay out of it: a server .env reaching `next build`
+# would hand the build a DATABASE_URL it cannot reach (the `db` host only exists
+# at runtime) and bake credentials into an image layer. Public build-time values
+# arrive as build args instead — see docker-compose.yml.
+.env
+.env.*
+!.env.example
+
+.git
+node_modules
+.next
+.data
+.vercel
+reference
+design-reference
+uploads
+*.tsbuildinfo
+npm-debug.log*
