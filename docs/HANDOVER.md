@@ -332,6 +332,33 @@ Phase 2, from Site Settings. It is off by default.
 `docs/CONTENT-GAPS.md`. Every developer-drafted record is listed with what is
 needed to close it.
 
+### The dashboard's look, light and dark
+
+The dashboard has its own design language, separate from the website's. Every
+colour is a token in `app/admin.css` (imported by `globals.css`), with a light
+block and two identical dark blocks — one for "Dark", one for "Auto" while the
+device is dark. Change a colour in all three. The appearance each person picks
+lives in the `ss_theme` cookie, so the server renders the right one first and
+nothing flashes. Components use only the semantic utilities (`bg-panel`,
+`text-fg-2`, `ring-line` …), never a raw colour.
+
+Named type sizes (`text-callout`, `text-subhead` …) are registered with
+tailwind-merge in `lib/utils.ts`. Add any new one there too, or `cn()` will
+silently drop the text colour sitting next to it.
+
+### Analytics (Dashboard → Analytics)
+
+First-party and cookieless: the website sends a small beacon per page view to
+`/api/collect` (`components/site/SiteAnalytics.tsx`), and WhatsApp taps and
+enquiries are recorded on the server. Rows live in the `SiteHit` table
+(migration `site_analytics`, applied by `deploy.sh` like any other). No IP is
+stored — a visitor is a daily-rotating hash — so no consent banner is needed.
+Bots, the dashboard itself and signed-in team members are not counted. Rows
+older than about 25 months are pruned automatically.
+
+Counting starts on the day this ships; there is no history before it. Owners
+and managers see the page; editors do not (`analytics.view`).
+
 ---
 
 ## 10. Design and motion rules that are load-bearing

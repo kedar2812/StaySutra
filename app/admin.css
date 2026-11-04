@@ -1,0 +1,620 @@
+/* ==========================================================================
+   Dashboard
+
+   Its own design language, separate from the public site's: the site sells,
+   the dashboard is worked in. Apple's system neutrals and status colours,
+   one accent (StaySutra gold), and a real light and dark appearance.
+
+   Every colour is a variable on `.dash`, switched by its data-theme
+   attribute ("light" | "dark" | "system"). The server renders the attribute
+   from a cookie, so the first paint is already the right theme — no flash.
+   Components only ever use the semantic utilities below (bg-panel, text-fg,
+   ring-line …), never a raw colour, so both themes stay correct by
+   construction.
+
+   Imported by globals.css so it shares one Tailwind compilation. It lives
+   outside app/dashboard on purpose: the Vercel demo strips that directory,
+   and this file must still resolve there.
+   ========================================================================== */
+
+/*
+ * `dark:` follows the dashboard's own appearance, not the operating system's:
+ * an explicit "dark", or "system" while the system is dark. The public site
+ * never uses it.
+ */
+@custom-variant dark {
+  &:where(.dash[data-theme="dark"], .dash[data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(.dash[data-theme="system"], .dash[data-theme="system"] *) {
+      @slot;
+    }
+  }
+}
+
+@theme inline {
+  --color-desk: var(--d-desk);
+  --color-pane: var(--d-pane);
+  --color-panel: var(--d-panel);
+  --color-raised: var(--d-raised);
+  --color-field: var(--d-field);
+  --color-thumb: var(--d-thumb);
+  --color-fill: var(--d-fill);
+  --color-fill-2: var(--d-fill-2);
+  --color-fill-3: var(--d-fill-3);
+  --color-line: var(--d-line);
+  --color-line-2: var(--d-line-2);
+  --color-fg: var(--d-fg);
+  --color-fg-2: var(--d-fg-2);
+  --color-fg-3: var(--d-fg-3);
+  --color-fg-4: var(--d-fg-4);
+  --color-accent: var(--d-accent);
+  --color-accent-fg: var(--d-accent-fg);
+  --color-accent-text: var(--d-accent-text);
+  --color-pos: var(--d-pos);
+  --color-pos-text: var(--d-pos-text);
+  --color-neg: var(--d-neg);
+  --color-neg-text: var(--d-neg-text);
+  --color-caution: var(--d-caution);
+  --color-caution-text: var(--d-caution-text);
+  --color-note: var(--d-note);
+  --color-note-text: var(--d-note-text);
+
+  --shadow-tile: var(--d-shadow-tile);
+  --shadow-pop: var(--d-shadow-pop);
+  --shadow-pane: var(--d-shadow-pane);
+  --shadow-lift: var(--d-shadow-lift);
+
+  --font-ui: -apple-system, BlinkMacSystemFont, var(--font-inter), "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+/*
+ * Apple's type ramp, sized for a web dashboard. Tracking tightens as size
+ * grows and loosens as it shrinks — never one letter-spacing for all sizes.
+ */
+@theme {
+  --text-large: 2.125rem;
+  --text-large--line-height: 1.12;
+  --text-large--letter-spacing: -0.026em;
+  --text-large--font-weight: 700;
+  --text-title: 1.5rem;
+  --text-title--line-height: 1.2;
+  --text-title--letter-spacing: -0.021em;
+  --text-title--font-weight: 700;
+  --text-title2: 1.1875rem;
+  --text-title2--line-height: 1.26;
+  --text-title2--letter-spacing: -0.017em;
+  --text-title2--font-weight: 600;
+  --text-headline: 1rem;
+  --text-headline--line-height: 1.35;
+  --text-headline--letter-spacing: -0.011em;
+  --text-headline--font-weight: 600;
+  --text-body: 0.9375rem;
+  --text-body--line-height: 1.47;
+  --text-body--letter-spacing: -0.006em;
+  --text-callout: 0.875rem;
+  --text-callout--line-height: 1.43;
+  --text-callout--letter-spacing: -0.003em;
+  --text-subhead: 0.8125rem;
+  --text-subhead--line-height: 1.38;
+  --text-footnote: 0.75rem;
+  --text-footnote--line-height: 1.34;
+  --text-footnote--letter-spacing: 0.002em;
+  --text-caption: 0.6875rem;
+  --text-caption--line-height: 1.27;
+  --text-caption--letter-spacing: 0.012em;
+
+  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-emph: cubic-bezier(0.2, 0.9, 0.1, 1);
+}
+
+/* Light — the default appearance. */
+.dash {
+  color-scheme: light;
+  --d-desk: #e6e6eb;
+  --d-pane: #f5f5f7;
+  --d-panel: #ffffff;
+  --d-raised: #ffffff;
+  --d-field: #ffffff;
+  --d-thumb: #ffffff;
+  --d-fill: rgb(118 118 128 / 0.09);
+  --d-fill-2: rgb(118 118 128 / 0.15);
+  --d-fill-3: rgb(118 118 128 / 0.24);
+  --d-line: rgb(60 60 67 / 0.11);
+  --d-line-2: rgb(60 60 67 / 0.2);
+  --d-fg: #1d1d1f;
+  --d-fg-2: #4b4b50;
+  --d-fg-3: #6e6e73;
+  --d-fg-4: #a1a1a6;
+  --d-accent: #e9b43c;
+  --d-accent-fg: #231700;
+  --d-accent-text: #8a5b00;
+  --d-pos: #34c759;
+  --d-pos-text: #1d7a35;
+  --d-neg: #ff3b30;
+  --d-neg-text: #c4211a;
+  --d-caution: #ff9500;
+  --d-caution-text: #a3570a;
+  --d-note: #007aff;
+  --d-note-text: #0060c7;
+  --d-glass: rgb(250 250 252 / 0.72);
+  --d-glass-edge: rgb(255 255 255 / 0.7);
+  --d-scrim: rgb(0 0 0 / 0.28);
+  --d-skel: rgb(118 118 128 / 0.11);
+  --d-skel-hi: rgb(255 255 255 / 0.75);
+  --d-shadow-tile: 0 0.5px 1px rgb(0 0 0 / 0.05), 0 2px 10px -4px rgb(0 0 0 / 0.07);
+  --d-shadow-pop: 0 0 0 0.5px rgb(0 0 0 / 0.07), 0 12px 32px -8px rgb(0 0 0 / 0.2), 0 2px 6px rgb(0 0 0 / 0.04);
+  --d-shadow-pane: 0 0 0 0.5px rgb(0 0 0 / 0.06), 0 1px 3px rgb(0 0 0 / 0.04), 0 10px 30px -14px rgb(0 0 0 / 0.12);
+  --d-shadow-lift: 0 24px 48px -16px rgb(0 0 0 / 0.28), 0 0 0 0.5px rgb(0 0 0 / 0.06);
+  --d-focus: #8a5b00;
+
+  /* Booking platforms, for the calendar and the timeline. Validated as a
+     categorical set on each surface (dataviz validator, all pairs). */
+  --ch-airbnb: #e34948;
+  --ch-booking: #2a78d6;
+  --ch-agoda: #6250d6;
+  --ch-mmt: #eb6834;
+  --ch-goibibo: #1baf7a;
+  --ch-vrbo: #e87ba4;
+  --ch-other: #008300;
+  --ch-staysutra: #eda100;
+  --ch-manual: #8e8e93;
+
+  /* Chart series, in fixed order: visitors, page views, enquiries. */
+  --viz-1: #2a78d6;
+  --viz-2: #1baf7a;
+  --viz-3: #eb6834;
+}
+
+/*
+ * Dark — written twice on purpose: once for an explicit choice, once for
+ * "match the system". CSS has no way to share one block between a selector
+ * and a media query, and light-dark() inside custom properties is still too
+ * easy for a minifier to mangle. Keep the two blocks identical.
+ */
+.dash[data-theme="dark"] {
+  color-scheme: dark;
+  --d-desk: #000000;
+  --d-pane: #0e0e10;
+  --d-panel: #1c1c1e;
+  --d-raised: #242426;
+  --d-field: rgb(255 255 255 / 0.045);
+  --d-thumb: #636366;
+  --d-fill: rgb(118 118 128 / 0.18);
+  --d-fill-2: rgb(118 118 128 / 0.26);
+  --d-fill-3: rgb(118 118 128 / 0.36);
+  --d-line: rgb(255 255 255 / 0.075);
+  --d-line-2: rgb(255 255 255 / 0.14);
+  --d-fg: #f5f5f7;
+  --d-fg-2: #c2c2c7;
+  --d-fg-3: #8e8e93;
+  --d-fg-4: #5a5a5f;
+  --d-accent: #e9b93c;
+  --d-accent-fg: #231700;
+  --d-accent-text: #f2c75c;
+  --d-pos: #30d158;
+  --d-pos-text: #4fdc76;
+  --d-neg: #ff453a;
+  --d-neg-text: #ff6b62;
+  --d-caution: #ff9f0a;
+  --d-caution-text: #ffb340;
+  --d-note: #0a84ff;
+  --d-note-text: #5aafff;
+  --d-glass: rgb(30 30 32 / 0.68);
+  --d-glass-edge: rgb(255 255 255 / 0.09);
+  --d-scrim: rgb(0 0 0 / 0.55);
+  --d-skel: rgb(118 118 128 / 0.2);
+  --d-skel-hi: rgb(255 255 255 / 0.07);
+  --d-shadow-tile: 0 0 0 0.5px rgb(255 255 255 / 0.04);
+  --d-shadow-pop: 0 0 0 0.5px rgb(255 255 255 / 0.1), 0 20px 50px -12px rgb(0 0 0 / 0.75);
+  --d-shadow-pane: 0 0 0 0.5px rgb(255 255 255 / 0.07);
+  --d-shadow-lift: 0 28px 60px -16px rgb(0 0 0 / 0.85), 0 0 0 0.5px rgb(255 255 255 / 0.1);
+  --d-focus: #f2c75c;
+  --ch-airbnb: #e66767;
+  --ch-booking: #3987e5;
+  --ch-agoda: #9085e9;
+  --ch-mmt: #d95926;
+  --ch-goibibo: #199e70;
+  --ch-vrbo: #d55181;
+  --ch-other: #2f9e44;
+  --ch-staysutra: #d69a12;
+  --ch-manual: #8e8e93;
+
+  /* Chart series, in fixed order: visitors, page views, enquiries. */
+  --viz-1: #3987e5;
+  --viz-2: #199e70;
+  --viz-3: #d95926;
+}
+@media (prefers-color-scheme: dark) {
+  .dash[data-theme="system"] {
+    color-scheme: dark;
+    --d-desk: #000000;
+    --d-pane: #0e0e10;
+    --d-panel: #1c1c1e;
+    --d-raised: #242426;
+    --d-field: rgb(255 255 255 / 0.045);
+    --d-thumb: #636366;
+    --d-fill: rgb(118 118 128 / 0.18);
+    --d-fill-2: rgb(118 118 128 / 0.26);
+    --d-fill-3: rgb(118 118 128 / 0.36);
+    --d-line: rgb(255 255 255 / 0.075);
+    --d-line-2: rgb(255 255 255 / 0.14);
+    --d-fg: #f5f5f7;
+    --d-fg-2: #c2c2c7;
+    --d-fg-3: #8e8e93;
+    --d-fg-4: #5a5a5f;
+    --d-accent: #e9b93c;
+    --d-accent-fg: #231700;
+    --d-accent-text: #f2c75c;
+    --d-pos: #30d158;
+    --d-pos-text: #4fdc76;
+    --d-neg: #ff453a;
+    --d-neg-text: #ff6b62;
+    --d-caution: #ff9f0a;
+    --d-caution-text: #ffb340;
+    --d-note: #0a84ff;
+    --d-note-text: #5aafff;
+    --d-glass: rgb(30 30 32 / 0.68);
+    --d-glass-edge: rgb(255 255 255 / 0.09);
+    --d-scrim: rgb(0 0 0 / 0.55);
+    --d-skel: rgb(118 118 128 / 0.2);
+    --d-skel-hi: rgb(255 255 255 / 0.07);
+    --d-shadow-tile: 0 0 0 0.5px rgb(255 255 255 / 0.04);
+    --d-shadow-pop: 0 0 0 0.5px rgb(255 255 255 / 0.1), 0 20px 50px -12px rgb(0 0 0 / 0.75);
+    --d-shadow-pane: 0 0 0 0.5px rgb(255 255 255 / 0.07);
+    --d-shadow-lift: 0 28px 60px -16px rgb(0 0 0 / 0.85), 0 0 0 0.5px rgb(255 255 255 / 0.1);
+    --d-focus: #f2c75c;
+    --ch-airbnb: #e66767;
+    --ch-booking: #3987e5;
+    --ch-agoda: #9085e9;
+    --ch-mmt: #d95926;
+    --ch-goibibo: #199e70;
+    --ch-vrbo: #d55181;
+    --ch-other: #2f9e44;
+    --ch-staysutra: #d69a12;
+    --ch-manual: #8e8e93;
+    --viz-1: #3987e5;
+    --viz-2: #199e70;
+    --viz-3: #d95926;
+  }
+}
+
+/*
+ * The page behind the dashboard. The body is the site's navy by default;
+ * under the dashboard it takes the pane colour, so an overscroll bounce on a
+ * phone never flashes the website's background.
+ */
+body:has(> .dash) {
+  background: #f5f5f7;
+}
+body:has(> .dash[data-theme="dark"]) {
+  background: #0e0e10;
+}
+@media (prefers-color-scheme: dark) {
+  body:has(> .dash[data-theme="system"]) {
+    background: #0e0e10;
+  }
+}
+html:has(body > .dash) {
+  scrollbar-color: auto;
+}
+
+@layer base {
+  .dash {
+    font-family: var(--font-ui);
+    color: var(--d-fg-2);
+    font-size: 0.9375rem;
+    line-height: 1.47;
+    letter-spacing: -0.006em;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .dash :focus-visible {
+    outline: 2px solid var(--d-focus);
+    outline-offset: 2px;
+  }
+  .dash ::placeholder {
+    color: var(--d-fg-4);
+    opacity: 1;
+  }
+  .dash ::selection {
+    background: rgb(233 185 60 / 0.35);
+    color: inherit;
+  }
+}
+
+@layer components {
+  /* Floating chrome — the top bar, the tab bar, the selection bar. */
+  .d-glass {
+    background: var(--d-glass);
+    /* -webkit- first, standard last. See the note on .glass in globals.css. */
+    -webkit-backdrop-filter: blur(22px) saturate(185%);
+    backdrop-filter: blur(22px) saturate(185%);
+  }
+  .d-glass-float {
+    background: var(--d-glass);
+    -webkit-backdrop-filter: blur(26px) saturate(190%);
+    backdrop-filter: blur(26px) saturate(190%);
+    box-shadow:
+      inset 0 0.5px 0 var(--d-glass-edge),
+      var(--d-shadow-pop);
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /*
+   * Scrollbars drawn to sit inside rounded surfaces. A slim capsule thumb
+   * floats in a transparent gutter (the transparent border insets it), and
+   * the track is shortened at both ends so the thumb starts and stops inside
+   * the corner curve instead of running into it.
+   *
+   * Only the ::-webkit-scrollbar parts are styled here (Chrome, Edge, Safari):
+   * setting the standard scrollbar-width / scrollbar-color as well would make
+   * Chrome ignore every one of these rules. Firefox, which has no
+   * ::-webkit-scrollbar, gets the standard thin bar instead.
+   */
+  .d-scroll::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+  }
+  .d-scroll::-webkit-scrollbar-track {
+    background: transparent;
+    margin-block: 22px;
+  }
+  .d-scroll::-webkit-scrollbar-thumb {
+    min-height: 44px;
+    border: 4px solid transparent;
+    border-radius: 999px;
+    background-color: var(--d-fill-3);
+    background-clip: padding-box;
+  }
+  .d-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: var(--d-fg-4);
+  }
+  .d-scroll::-webkit-scrollbar-thumb:active {
+    background-color: var(--d-fg-3);
+  }
+  .d-scroll::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+  /* The sidebar's: slimmer, and quieter until the pointer is over it. */
+  .d-scroll-slim::-webkit-scrollbar {
+    width: 10px;
+  }
+  .d-scroll-slim::-webkit-scrollbar-track {
+    margin-block: 6px;
+  }
+  .d-scroll-slim::-webkit-scrollbar-thumb {
+    min-height: 32px;
+    border-width: 3px;
+    background-color: var(--d-fill-2);
+  }
+  .d-scroll-slim:hover::-webkit-scrollbar-thumb {
+    background-color: var(--d-fill-3);
+  }
+  @supports not selector(::-webkit-scrollbar) {
+    .d-scroll {
+      scrollbar-width: thin;
+      scrollbar-color: var(--d-fill-3) transparent;
+    }
+  }
+
+  /*
+   * Skeletons. A shape the size of what is coming, with a slow sweep of light
+   * across it. They fade in after a beat, so a fast page never flashes grey.
+   */
+  .d-skel {
+    position: relative;
+    overflow: hidden;
+    background: var(--d-skel);
+    border-radius: 8px;
+  }
+  .d-skel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, var(--d-skel-hi), transparent);
+    animation: d-shimmer 1.6s var(--ease-spring) infinite;
+  }
+  .d-skel-wrap {
+    animation: d-fade-in 320ms ease-out 140ms both;
+  }
+
+  /* Every page arrives the same way: its blocks rise into place, in order. */
+  .d-page > * {
+    animation: d-rise 440ms var(--ease-emph) both;
+  }
+  .d-page > *:nth-child(2) {
+    animation-delay: 35ms;
+  }
+  .d-page > *:nth-child(3) {
+    animation-delay: 70ms;
+  }
+  .d-page > *:nth-child(4) {
+    animation-delay: 105ms;
+  }
+  .d-page > *:nth-child(n + 5) {
+    animation-delay: 140ms;
+  }
+  /*
+   * A skeleton is already in place; the page that replaces it must not rise
+   * a second time over it, or a fast network makes everything jump twice.
+   */
+  .d-page > .d-skel-wrap {
+    animation: d-fade-in 320ms ease-out 140ms both;
+  }
+
+  /* Photographs develop rather than pop in. */
+  .d-img {
+    opacity: 0;
+    transform: scale(1.015);
+    transition:
+      opacity 420ms ease-out,
+      transform 700ms var(--ease-emph);
+  }
+  .d-img[data-loaded="true"] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* The indeterminate bar — the server is working, there is no number to show. */
+  .d-indeterminate {
+    position: relative;
+    overflow: hidden;
+  }
+  .d-indeterminate::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    width: 40%;
+    border-radius: inherit;
+    background: currentColor;
+    animation: d-indeterminate 1.15s var(--ease-spring) infinite;
+  }
+
+  /* A checkmark that draws itself. */
+  .d-check-draw path {
+    stroke-dasharray: 24;
+    stroke-dashoffset: 24;
+    animation: d-draw 420ms var(--ease-emph) 60ms forwards;
+  }
+
+  /* A live status dot that breathes. */
+  .d-pulse {
+    position: relative;
+  }
+  .d-pulse::after {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border-radius: 999px;
+    background: currentColor;
+    opacity: 0.35;
+    animation: d-pulse 2.4s ease-out infinite;
+  }
+
+  /* Apple's activity indicator: eight spokes, stepping round. */
+  .d-spokes {
+    animation: d-spin 0.85s steps(8) infinite;
+  }
+
+  /* A contact monogram — the same quiet grey the system uses. */
+  .d-monogram {
+    background: linear-gradient(180deg, #a8adb6, #858a93);
+    color: #ffffff;
+  }
+}
+
+@keyframes d-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes d-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+@keyframes d-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes d-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@keyframes d-indeterminate {
+  from {
+    left: -40%;
+  }
+  to {
+    left: 100%;
+  }
+}
+@keyframes d-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes d-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.45;
+  }
+  70%,
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+/*
+ * The theme change. A circle of the new appearance grows out of the button
+ * that was pressed (View Transitions); without support it simply switches.
+ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+  clip-path: circle(0 at var(--vt-x, 50%) var(--vt-y, 50%));
+  animation: d-reveal 640ms var(--ease-emph) forwards;
+}
+@keyframes d-reveal {
+  to {
+    clip-path: circle(var(--vt-r, 150vmax) at var(--vt-x, 50%) var(--vt-y, 50%));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .d-page > *,
+  .d-skel-wrap {
+    animation: d-fade-in 200ms ease-out both !important;
+  }
+  .d-skel::after,
+  .d-pulse::after,
+  .d-spokes,
+  .d-indeterminate::after {
+    animation: none !important;
+  }
+  .d-img {
+    transform: none;
+  }
+  ::view-transition-new(root) {
+    clip-path: none;
+    animation: d-fade-in 200ms ease-out;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .d-glass,
+  .d-glass-float {
+    background: var(--d-raised);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .dash {
+    --d-line: rgb(60 60 67 / 0.3);
+    --d-line-2: rgb(60 60 67 / 0.45);
+    --d-fg-3: #4b4b50;
+  }
+  .dash[data-theme="dark"] {
+    --d-line: rgb(255 255 255 / 0.22);
+    --d-line-2: rgb(255 255 255 / 0.34);
+    --d-fg-3: #c2c2c7;
+  }
+}

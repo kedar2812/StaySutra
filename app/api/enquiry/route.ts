@@ -5,6 +5,7 @@ import { clientIp, rateLimit } from "@/lib/server/rate-limit";
 import { db, hasDatabase } from "@/lib/server/db";
 import { getBlockedRangesFresh } from "@/lib/server/calendar";
 import { isRangeFree } from "@/lib/calendar/dates";
+import { recordHit } from "@/lib/server/analytics";
 
 export const runtime = "nodejs";
 
@@ -102,6 +103,8 @@ export async function POST(request: Request) {
           ipAddress: ip,
         },
       });
+      // Credits the enquiry to whatever brought this visitor in today. Not awaited.
+      void recordHit(request.headers, { kind: "ENQUIRY", url: data.pageUrl ?? request.headers.get("referer") ?? "/" });
       return NextResponse.json({ refCode: code });
     } catch (error) {
       console.error("[enquiry] database write failed, falling back to the log", { refCode: code, error });

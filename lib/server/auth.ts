@@ -107,16 +107,17 @@ export type Capability =
   | "taxonomy.edit"
   | "content.edit"
   | "media.edit"
+  | "analytics.view"
   | "users.manage";
 
 const MATRIX: Record<Role, Capability[]> = {
   OWNER: [
     "property.edit", "property.publish", "property.delete", "calendar.edit", "enquiry.manage",
-    "submission.manage", "story.edit", "taxonomy.edit", "content.edit", "media.edit", "users.manage",
+    "submission.manage", "story.edit", "taxonomy.edit", "content.edit", "media.edit", "analytics.view", "users.manage",
   ],
   MANAGER: [
     "property.edit", "property.publish", "property.delete", "calendar.edit", "enquiry.manage",
-    "submission.manage", "story.edit", "taxonomy.edit", "content.edit", "media.edit",
+    "submission.manage", "story.edit", "taxonomy.edit", "content.edit", "media.edit", "analytics.view",
   ],
   EDITOR: ["property.edit", "story.edit", "media.edit"],
 };

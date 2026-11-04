@@ -5,7 +5,7 @@ import { getAt, IMAGE_SLOTS, SECTIONS } from "@/lib/cms/sections";
 import { mediaUrl } from "@/lib/media";
 import { ContentEditor } from "./ContentEditor";
 
-export const metadata = { title: "Website" };
+export const metadata = { title: "Site content" };
 
 export default async function ContentPage() {
   await requireUser("content.edit");

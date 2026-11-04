@@ -1023,3 +1023,49 @@ model RiderProfile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+/**
+ * ─── Site analytics ─────────────────────────────────────────────────────
+ */
+
+enum HitKind {
+  PAGEVIEW
+  WHATSAPP
+  ENQUIRY
+}
+
+/// First-party, cookieless analytics for Dashboard → Analytics.
+///
+/// No cookie is set and no IP address is stored. A visitor is a 16-character
+/// hash of (a salt that changes every day, IP, user agent): enough to count
+/// unique visitors within a day, impossible to follow anyone across days or
+/// back to a person. Every hit carries the source the visitor arrived from
+/// that day, so an enquiry or a WhatsApp tap is credited to Google, Instagram
+/// and so on without a cookie.
+model SiteHit {
+  /// Generated in the browser for a page view, so the "left the page" beacon
+  /// can add the time spent to the same row.
+  id         String   @id
+  kind       HitKind  @default(PAGEVIEW)
+  createdAt  DateTime @default(now())
+  visitor    String
+  path       String
+  propertyId String?
+  /// /destinations/[slug] views, by slug.
+  destination String?
+  source     String
+  referrer   String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  device     String
+  browser    String?
+  os         String?
+  /// Seconds the page was visible, written when the visitor leaves it.
+  seconds    Int?
+
+  @@index([createdAt])
+  @@index([kind, createdAt])
+  @@index([visitor, createdAt])
+  @@index([propertyId, createdAt])
+}

@@ -20,7 +20,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
     return (
       <>
         <PageHeader title="Calendar" />
-        <EmptyState icon="calendar" title="No properties yet" body="Add a property first; its calendar lives here." action={<ButtonLink href="/dashboard/properties/new" variant="primary" icon="plus">New property</ButtonLink>} />
+        <EmptyState icon="calendar" title="No properties yet" body="Add a property first; its calendar lives here." action={<ButtonLink href="/dashboard/properties?new=1" variant="primary" icon="plus">New property</ButtonLink>} />
       </>
     );
   }

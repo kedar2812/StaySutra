@@ -1,5 +1,19 @@
 import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { extendTailwindMerge } from "tailwind-merge";
+
+/**
+ * tailwind-merge has to be told about the dashboard's named type sizes
+ * (app/admin.css: text-callout, text-subhead …). Without this it reads them
+ * as text colours and, merging, silently drops the real colour class beside
+ * them — a primary button loses its text colour.
+ */
+const twMerge = extendTailwindMerge({
+  extend: {
+    classGroups: {
+      "font-size": [{ text: ["large", "title", "title2", "headline", "body", "callout", "subhead", "footnote", "caption"] }],
+    },
+  },
+});
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

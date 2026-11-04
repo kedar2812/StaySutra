@@ -5,6 +5,7 @@ import { WhatsAppFloat } from "@/components/site/WhatsAppFloat";
 import { Icon } from "@/components/primitives/Icon";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
 import { JsonLd } from "@/components/site/JsonLd";
+import { SiteAnalytics } from "@/components/site/SiteAnalytics";
 import { organizationSchema, websiteSchema } from "@/lib/seo";
 import { getContent } from "@/lib/content";
 import { waMessage } from "@/lib/site";
@@ -33,6 +34,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       {/* Film grain sits above everything and receives no pointer events. */}
       <div className="grain-fixed" aria-hidden />
       <JsonLd data={[organizationSchema(site.settings), websiteSchema()]} />
+      <SiteAnalytics />
     </>
   );
 }

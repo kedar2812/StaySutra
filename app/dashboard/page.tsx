@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { AdminIcon, type AdminIconName } from "@/components/admin/icons";
+import { AdminIcon } from "@/components/admin/icons";
 import { Badge, ButtonLink, Card, CardHeader, EmptyState } from "@/components/admin/ui";
+import { ActivityFeed, NightsTimeline, SetupCard, StatTile, type Lane } from "@/components/admin/overview";
 import { can, requireUser } from "@/lib/server/auth";
 import { db } from "@/lib/server/db";
-import { addDays, mergeRanges, nightsBetween, shortDay, todayIST } from "@/lib/calendar/dates";
-import { cn } from "@/lib/utils";
+import { CHANNELS, SOURCE_COLOR, type ChannelKey } from "@/lib/calendar/channels";
+import { addDays, nightsBetween, shortDay, todayIST } from "@/lib/calendar/dates";
 
 export const metadata = { title: "Overview" };
 
@@ -14,9 +15,11 @@ const CHANNEL_LABEL: Record<string, string> = {
   ENQUIRY: "StaySutra booking",
 };
 
+const WEEKS = 12;
+
 /**
- * Overview — an activity snapshot, not vanity analytics. What needs doing now
- * leads; everything links to the list behind it. DPR §10.1
+ * Overview — what needs doing now, then how the next month looks. Not vanity
+ * analytics: every figure links to the list behind it. DPR §10.1
  */
 export default async function OverviewPage() {
   const user = await requireUser();
@@ -25,97 +28,149 @@ export default async function OverviewPage() {
   const monthStart = new Date(`${today.slice(0, 7)}-01T00:00:00Z`);
   const lastMonthStart = new Date(monthStart);
   lastMonthStart.setUTCMonth(lastMonthStart.getUTCMonth() - 1);
+  const trendStart = new Date(`${addDays(today, -7 * WEEKS + 1)}T00:00:00Z`);
+  const canEnquiries = can(user.role, "enquiry.manage");
 
-  const [properties, newCount, thisMonth, lastMonth, blocks, feeds, activity, missingAlt, publishedStories] =
-    await Promise.all([
-      db.property.findMany({
-        where: { deletedAt: null },
-        select: { id: true, name: true, status: true, checkInTime: true },
-      }),
-      db.enquiry.count({ where: { status: "NEW", deletedAt: null } }),
-      db.enquiry.count({ where: { createdAt: { gte: monthStart }, deletedAt: null } }),
-      db.enquiry.count({ where: { createdAt: { gte: lastMonthStart, lt: monthStart }, deletedAt: null } }),
-      db.calendarBlock.findMany({
-        where: { endDate: { gt: new Date(`${today}T00:00:00Z`) }, startDate: { lt: new Date(`${horizon}T00:00:00Z`) } },
-        orderBy: { startDate: "asc" },
-        include: { property: { select: { name: true } }, feed: { select: { label: true } } },
-      }),
-      db.calendarFeed.findMany({ where: { isActive: true }, select: { importUrl: true, lastStatus: true, lastExportedAt: true, label: true } }),
-      db.activityLog.findMany({ orderBy: { createdAt: "desc" }, take: 8, include: { user: { select: { name: true } } } }),
-      db.media.count({ where: { alt: "", isDecorative: false } }),
-      db.story.count({ where: { status: "PUBLISHED", deletedAt: null } }),
-    ]);
+  const [properties, newCount, thisMonth, lastMonth, blocks, feeds, activity, missingAlt, publishedStories, recentEnquiries] = await Promise.all([
+    db.property.findMany({
+      where: { deletedAt: null },
+      orderBy: [{ status: "asc" }, { name: "asc" }],
+      select: { id: true, name: true, status: true, checkInTime: true },
+    }),
+    db.enquiry.count({ where: { status: "NEW", deletedAt: null } }),
+    db.enquiry.count({ where: { createdAt: { gte: monthStart }, deletedAt: null } }),
+    db.enquiry.count({ where: { createdAt: { gte: lastMonthStart, lt: monthStart }, deletedAt: null } }),
+    db.calendarBlock.findMany({
+      where: {
+        endDate: { gt: new Date(`${today}T00:00:00Z`) },
+        startDate: { lt: new Date(`${horizon}T00:00:00Z`) },
+        OR: [{ feedId: null }, { feed: { isActive: true } }],
+      },
+      orderBy: { startDate: "asc" },
+      include: { property: { select: { name: true } }, feed: { select: { label: true, channel: true } }, enquiry: { select: { name: true } } },
+    }),
+    db.calendarFeed.findMany({ where: { isActive: true }, select: { importUrl: true, lastStatus: true, lastExportedAt: true, label: true } }),
+    db.activityLog.findMany({ orderBy: { createdAt: "desc" }, take: 7 }),
+    db.media.count({ where: { alt: "", isDecorative: false } }),
+    db.story.count({ where: { status: "PUBLISHED", deletedAt: null } }),
+    db.enquiry.findMany({ where: { createdAt: { gte: trendStart }, deletedAt: null }, select: { createdAt: true } }),
+  ]);
+  const canAnalytics = can(user.role, "analytics.view");
+  const web = canAnalytics
+    ? (
+        await db.$queryRaw<{ visitors: number; views: number; whatsapp: number }[]>`
+          SELECT count(DISTINCT visitor) FILTER (WHERE kind = 'PAGEVIEW')::int AS visitors,
+                 count(*) FILTER (WHERE kind = 'PAGEVIEW')::int AS views,
+                 count(*) FILTER (WHERE kind = 'WHATSAPP')::int AS whatsapp
+          FROM "SiteHit" WHERE "createdAt" >= ${new Date(`${addDays(today, -6)}T00:00:00+05:30`)}`
+      )[0]
+    : null;
 
-  const published = properties.filter((p) => p.status === "PUBLISHED").length;
   const iso = (d: Date) => d.toISOString().slice(0, 10);
+  const published = properties.filter((p) => p.status === "PUBLISHED");
+  const live = Math.max(1, published.length);
 
-  // Occupancy over the next 30 nights, across every live property.
+  // Occupancy over the next 30 nights, across the live properties.
   const strip = Array.from({ length: 30 }, (_, i) => addDays(today, i));
-  const byProperty = new Map<string, { start: string; end: string }[]>();
-  for (const b of blocks) {
-    const list = byProperty.get(b.propertyId) ?? [];
-    list.push({ start: iso(b.startDate), end: iso(b.endDate) });
-    byProperty.set(b.propertyId, list);
-  }
-  const merged = [...byProperty.values()].map(mergeRanges);
-  const bookedOn = (day: string) => merged.filter((r) => r.some((x) => x.start <= day && day < x.end)).length;
-  const live = Math.max(1, published);
-  const bookedNights = strip.reduce((n, d) => n + bookedOn(d), 0);
+  const liveIds = new Set(published.map((p) => p.id));
+  const bookedNights = strip.reduce((n, day) => {
+    const props = new Set(blocks.filter((b) => liveIds.has(b.propertyId) && iso(b.startDate) <= day && day < iso(b.endDate)).map((b) => b.propertyId));
+    return n + props.size;
+  }, 0);
   const occupancy = Math.round((bookedNights / (30 * live)) * 100);
+
+  // Enquiries per week for the last twelve weeks, oldest first.
+  const weekly = Array.from({ length: WEEKS }, () => 0);
+  for (const e of recentEnquiries) {
+    const age = Math.floor((Date.parse(`${today}T23:59:59Z`) - e.createdAt.getTime()) / (7 * 86_400_000));
+    if (age >= 0 && age < WEEKS) weekly[WEEKS - 1 - age]! += 1;
+  }
 
   const delta = thisMonth - lastMonth;
   const connected = feeds.filter((f) => f.importUrl);
   const broken = connected.filter((f) => f.lastStatus === "ERROR");
   const hour = Number(new Date(Date.now() + 5.5 * 3_600_000).toISOString().slice(11, 13));
-  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const greeting = hour < 5 ? "Good evening" : hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+
+  // The timeline: one lane per property, live ones first, each stay one bar.
+  const colorOf = (b: (typeof blocks)[number]) =>
+    b.source === "FEED" ? (CHANNELS[(b.feed?.channel ?? "OTHER") as ChannelKey]?.color ?? CHANNELS.OTHER.color) : SOURCE_COLOR[b.source];
+  const labelOf = (b: (typeof blocks)[number]) =>
+    b.source === "FEED" ? `${b.feed?.label ?? "Platform"} booking` : b.source === "ENQUIRY" ? `${b.enquiry?.name ?? "Guest"} · StaySutra` : b.note || "Blocked by hand";
+  const lanes: Lane[] = properties.slice(0, 8).map((p) => ({
+    id: p.id,
+    name: p.name,
+    live: p.status === "PUBLISHED",
+    runs: blocks
+      .filter((b) => b.propertyId === p.id)
+      .map((b) => {
+        const s = Math.max(0, nightsBetween(today, iso(b.startDate)));
+        const e = Math.min(30, nightsBetween(today, iso(b.endDate)));
+        return {
+          start: s,
+          end: e,
+          color: colorOf(b),
+          label: labelOf(b),
+          detail: `${shortDay(iso(b.startDate))} → ${shortDay(iso(b.endDate))} · ${nightsBetween(iso(b.startDate), iso(b.endDate))} nights`,
+          striped: b.source === "MANUAL",
+        };
+      })
+      .filter((r) => r.end > r.start),
+  }));
+  const legend = [
+    ...[...new Set(blocks.filter((b) => b.source === "FEED").map((b) => b.feed?.channel ?? "OTHER"))].map((c) => ({
+      label: CHANNELS[c as ChannelKey]?.label ?? "Platform",
+      color: CHANNELS[c as ChannelKey]?.color ?? CHANNELS.OTHER.color,
+    })),
+    { label: "StaySutra", color: SOURCE_COLOR.ENQUIRY },
+    { label: "Blocked by hand", color: SOURCE_COLOR.MANUAL, striped: true },
+  ];
+  const days = strip.map((d) => {
+    const dow = new Date(`${d}T00:00:00Z`).getUTCDay();
+    return { iso: d, label: shortDay(d).replace(/^\w+,?\s*/, ""), weekend: dow === 5 || dow === 6, dom: Number(d.slice(8)) };
+  });
 
   // Setup — the few things that make the rest work, shown as progress.
-  const setup: { done: boolean; label: string; hint: string; href: string }[] = [
-    {
-      done: connected.length > 0,
-      label: "Connect the Airbnb calendar",
-      hint: "Paste Airbnb's export link so booked nights block here.",
-      href: "/dashboard/calendar",
-    },
-    {
-      done: feeds.some((f) => f.lastExportedAt),
-      label: "Give Airbnb the StaySutra calendar",
-      hint: "So nights confirmed here are blocked on Airbnb too.",
-      href: "/dashboard/calendar",
-    },
-    {
-      done: properties.every((p) => p.checkInTime),
-      label: "Set check-in and check-out times",
-      hint: "Guests look for these first.",
-      href: "/dashboard/properties",
-    },
+  const setup = [
+    { done: connected.length > 0, label: "Connect the Airbnb calendar", hint: "Paste Airbnb’s export link so booked nights block here.", href: "/dashboard/calendar" },
+    { done: feeds.some((f) => f.lastExportedAt), label: "Give Airbnb the StaySutra calendar", hint: "So nights confirmed here are blocked on Airbnb too.", href: "/dashboard/calendar" },
+    { done: properties.every((p) => p.checkInTime), label: "Set check-in and check-out times", hint: "Guests look for these first.", href: "/dashboard/properties" },
     {
       done: missingAlt === 0,
       label: "Describe every photo",
-      hint: `${missingAlt} ${missingAlt === 1 ? "photo needs" : "photos need"} alt text for search and screen readers.`,
+      hint: `${missingAlt} ${missingAlt === 1 ? "photo needs" : "photos need"} a description for search and screen readers.`,
       href: "/dashboard/media?filter=missing-alt",
     },
-    { done: publishedStories > 0, label: "Publish a first story", hint: "Five drafts are waiting for your edit.", href: "/dashboard/stories" },
+    { done: publishedStories > 0, label: "Publish a first story", hint: "Drafts are waiting for your edit.", href: "/dashboard/stories" },
   ];
-  const doneCount = setup.filter((s) => s.done).length;
 
   const upcoming = blocks.filter((b) => iso(b.endDate) > today).slice(0, 6);
+  const dateLine = new Intl.DateTimeFormat("en-IN", { weekday: "long", day: "numeric", month: "long", timeZone: "Asia/Kolkata" }).format(new Date());
 
   return (
     <>
-      <div className="mb-8 sm:mb-10">
-        <p className="text-[0.875rem] text-text-low">
-          {new Intl.DateTimeFormat("en-IN", { weekday: "long", day: "numeric", month: "long", timeZone: "Asia/Kolkata" }).format(new Date())}
-        </p>
-        <h1 className="mt-1 font-display text-[1.75rem] leading-tight tracking-[-0.02em] text-text-hi sm:text-[2.125rem]" style={{ fontWeight: 800 }}>
-          {greeting}, {user.name.split(" ")[0]}
-        </h1>
-      </div>
+      <header className="mb-6 flex flex-col gap-4 sm:mb-8 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="text-subhead font-semibold text-fg-3">{dateLine}</p>
+          <h1 className="mt-0.5 text-[1.875rem] font-bold leading-[1.12] tracking-[-0.026em] text-fg sm:text-large">
+            {greeting}, {user.name.split(" ")[0]}
+          </h1>
+        </div>
+        <div className="flex gap-2">
+          <ButtonLink href="/dashboard/calendar" variant="plain" icon="calendar">
+            Calendar
+          </ButtonLink>
+          {canEnquiries && newCount > 0 && (
+            <ButtonLink href="/dashboard/enquiries?status=NEW" variant="primary" icon="inbox">
+              Reply to {newCount}
+            </ButtonLink>
+          )}
+        </div>
+      </header>
 
-      {/* KPI row — the first card is the one that asks for action. */}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
-        {can(user.role, "enquiry.manage") && (
-          <Kpi
+      <section aria-label="At a glance" className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+        {canEnquiries && (
+          <StatTile
             href="/dashboard/enquiries?status=NEW"
             icon="inbox"
             label="New enquiries"
@@ -124,96 +179,87 @@ export default async function OverviewPage() {
             emphasis={newCount > 0}
           />
         )}
-        <Kpi
+        <StatTile
           href="/dashboard/enquiries"
           icon="sparkle"
-          label="Enquiries this month"
+          label="This month"
           value={thisMonth}
-          note={lastMonth || thisMonth ? `${delta >= 0 ? "+" : ""}${delta} vs last month` : "First month on record"}
-          trend={delta > 0 ? "up" : delta < 0 ? "down" : undefined}
+          note={lastMonth || thisMonth ? `${delta >= 0 ? "+" : "−"}${Math.abs(delta)} vs last month` : "First month on record"}
+          noteTone={delta > 0 ? "up" : delta < 0 ? "down" : "neutral"}
+          trend={{ points: weekly, label: `Enquiries per week, last ${WEEKS} weeks: ${weekly.join(", ")}` }}
         />
-        <Kpi href="/dashboard/calendar" icon="calendar" label="Booked, next 30 nights" value={`${occupancy}%`} note={`${bookedNights} of ${30 * live} nights`} />
-        <Kpi
+        <StatTile href="/dashboard/calendar" icon="calendar" label="Booked, next 30 nights" value={occupancy} suffix="%" note={`${bookedNights} of ${30 * live} nights`} meter={occupancy / 100} />
+        <StatTile
           href="/dashboard/calendar"
           icon="sync"
           label="Calendar sync"
           value={connected.length ? (broken.length ? "Attention" : "Healthy") : "Not set up"}
+          status={broken.length ? "err" : connected.length ? "ok" : "warn"}
           note={
             connected.length
               ? broken.length
-                ? `${broken.map((b) => b.label).join(", ")} failed to sync`
+                ? `${broken.map((b) => b.label).join(", ")} failed`
                 : `${connected.length} ${connected.length === 1 ? "platform" : "platforms"} in step`
               : "Connect Airbnb to start"
           }
-          tone={broken.length ? "err" : connected.length ? "ok" : "warn"}
         />
-      </div>
+      </section>
 
-      <div className="mt-4 grid grid-cols-1 gap-4 lg:mt-5 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:gap-5">
-        <div className="space-y-4 lg:space-y-5">
+      <div className="mt-4 grid grid-cols-1 gap-4 lg:mt-5 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)] lg:gap-5">
+        <div className="min-w-0 space-y-4 lg:space-y-5">
           <Card>
             <CardHeader
               title="The next 30 nights"
-              description={`${published} live ${published === 1 ? "property" : "properties"}. Each bar is one night.`}
-              action={<ButtonLink href="/dashboard/calendar" size="sm" variant="ghost" icon="calendar">Calendar</ButtonLink>}
+              description={`${published.length} live ${published.length === 1 ? "property" : "properties"} · ${occupancy}% booked`}
+              action={
+                <ButtonLink href="/dashboard/calendar" size="sm" variant="ghost">
+                  Open calendar
+                </ButtonLink>
+              }
             />
-            <div className="flex h-20 items-end gap-[3px]" role="img" aria-label={`${occupancy}% of the next 30 nights are booked`}>
-              {strip.map((day) => {
-                const n = bookedOn(day);
-                const weekend = [5, 6].includes(new Date(`${day}T00:00:00Z`).getUTCDay());
-                return (
-                  <div key={day} className="group relative flex h-full flex-1 flex-col justify-end" title={`${shortDay(day)} — ${n ? "booked" : "free"}`}>
-                    <div
-                      className={cn(
-                        "w-full rounded-[3px] transition-[height] duration-500",
-                        n ? "bg-gold-500" : weekend ? "bg-white/[0.14]" : "bg-white/[0.07]",
-                      )}
-                      style={{ height: n ? `${Math.max(35, (n / live) * 100)}%` : weekend ? "28%" : "18%" }}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-            <div className="mt-2.5 flex justify-between text-[0.75rem] tabular-nums text-text-dim">
-              <span>{shortDay(today)}</span>
-              <span className="flex items-center gap-3">
-                <span className="flex items-center gap-1.5"><span className="size-2 rounded-[2px] bg-gold-500" />Booked</span>
-                <span className="flex items-center gap-1.5"><span className="size-2 rounded-[2px] bg-white/[0.14]" />Free weekend</span>
-              </span>
-              <span>{shortDay(addDays(today, 29))}</span>
-            </div>
+            {properties.length ? (
+              <NightsTimeline lanes={lanes} days={days} legend={legend} />
+            ) : (
+              <EmptyState icon="properties" title="No properties yet" body="Add a property and its next month shows here." className="py-8" />
+            )}
           </Card>
 
           <Card padded={false}>
-            <div className="p-5 pb-0 sm:p-6 sm:pb-0">
-              <CardHeader title="Coming up" description="Stays and blocks starting soonest." />
+            <div className="px-5 pt-5 sm:px-6 sm:pt-6">
+              <CardHeader title="Coming up" description="Stays and blocks starting soonest" className="mb-2" />
             </div>
             {upcoming.length ? (
-              <ul className="divide-y divide-white/[0.05]">
+              <ul className="px-2 pb-2 sm:px-3 sm:pb-3">
                 {upcoming.map((b) => {
                   const start = iso(b.startDate);
                   const end = iso(b.endDate);
                   const inStay = start <= today;
+                  const nights = nightsBetween(start, end);
                   return (
-                    <li key={b.id} className="flex items-center gap-4 px-5 py-3.5 sm:px-6">
-                      <div className="w-12 shrink-0 text-center">
-                        <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-text-dim">
-                          {new Intl.DateTimeFormat("en-IN", { month: "short", timeZone: "UTC" }).format(b.startDate)}
-                        </p>
-                        <p className="font-display text-[1.375rem] leading-none text-text-hi" style={{ fontWeight: 800 }}>
-                          {Number(start.slice(8))}
-                        </p>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-[0.9375rem] text-text-hi">{b.property.name}</p>
-                        <p className="truncate text-[0.8125rem] text-text-low">
-                          {shortDay(start)} → {shortDay(end)} · {nightsBetween(start, end)} {nightsBetween(start, end) === 1 ? "night" : "nights"}
-                        </p>
-                      </div>
-                      <Badge tone={b.source === "FEED" ? "info" : b.source === "ENQUIRY" ? "gold" : "neutral"}>
-                        {b.feed?.label ?? CHANNEL_LABEL[b.source]}
-                      </Badge>
-                      {inStay && <Badge tone="ok" dot>Now</Badge>}
+                    <li key={b.id}>
+                      <Link href={`/dashboard/calendar?p=${b.propertyId}`} className="flex items-center gap-3.5 rounded-[16px] px-3 py-2.5 transition-colors hover:bg-fill">
+                        <div className="w-11 shrink-0 overflow-hidden rounded-[11px] bg-panel text-center shadow-[0_0_0_1px_var(--d-line-2)]">
+                          <p className="bg-neg py-[2px] text-[0.5625rem] font-bold uppercase tracking-[0.06em] text-white">
+                            {new Intl.DateTimeFormat("en-IN", { month: "short", timeZone: "UTC" }).format(b.startDate)}
+                          </p>
+                          <p className="py-0.5 text-[1.25rem] font-semibold leading-tight tracking-[-0.02em] text-fg">{Number(start.slice(8))}</p>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-callout font-semibold text-fg">{b.property.name}</p>
+                          <p className="truncate text-subhead tabular-nums text-fg-3">
+                            {shortDay(start)} → {shortDay(end)} · {nights} {nights === 1 ? "night" : "nights"}
+                          </p>
+                        </div>
+                        <span className="hidden items-center gap-1.5 text-footnote font-medium text-fg-2 sm:flex">
+                          <span className="size-2 rounded-full" style={{ background: colorOf(b) }} />
+                          {b.feed?.label ?? CHANNEL_LABEL[b.source]}
+                        </span>
+                        {inStay && (
+                          <Badge tone="ok" dot>
+                            In house
+                          </Badge>
+                        )}
+                      </Link>
                     </li>
                   );
                 })}
@@ -224,63 +270,47 @@ export default async function OverviewPage() {
           </Card>
         </div>
 
-        <div className="space-y-4 lg:space-y-5">
-          {doneCount < setup.length && (
-            <Card>
-              <CardHeader title="Finish setting up" description={`${doneCount} of ${setup.length} done`} />
-              <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
-                <div className="h-full rounded-full bg-gradient-to-r from-gold-600 to-gold-400 transition-[width] duration-700" style={{ width: `${(doneCount / setup.length) * 100}%` }} />
+        <div className="min-w-0 space-y-4 lg:space-y-5">
+          {setup.some((s) => !s.done) && <SetupCard steps={setup} />}
+
+          <Card>
+            <CardHeader title="Recent activity" action={can(user.role, "users.manage") ? <ButtonLink href="/dashboard/users" size="sm" variant="ghost">All</ButtonLink> : undefined} />
+            <ActivityFeed items={activity.map((a) => ({ id: a.id, summary: a.summary, entity: a.entity, ago: ago(a.createdAt) }))} />
+          </Card>
+
+          {web && (
+            <Link href="/dashboard/analytics" className="group block rounded-[20px] bg-panel p-5 shadow-tile transition-shadow hover:shadow-pop sm:p-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-headline text-fg">Website, last 7 days</h2>
+                <AdminIcon name="chevronRight" size={16} className="text-fg-4 transition-transform group-hover:translate-x-0.5" />
               </div>
-              <ul className="mt-4 space-y-1">
-                {setup.map((s) => (
-                  <li key={s.label}>
-                    <Link
-                      href={s.href}
-                      className={cn("group flex items-start gap-3 rounded-[12px] p-2.5 -mx-2.5 transition-colors", !s.done && "hover:bg-white/[0.04]")}
-                    >
-                      <span
-                        className={cn(
-                          "mt-0.5 grid size-5 shrink-0 place-items-center rounded-full",
-                          s.done ? "bg-ok text-ink-900" : "ring-1.5 ring-inset ring-white/20 border border-white/20",
-                        )}
-                      >
-                        {s.done && <AdminIcon name="check" size={12} strokeWidth={2.5} />}
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className={cn("block text-[0.875rem]", s.done ? "text-text-low line-through decoration-white/20" : "text-text-hi")}>{s.label}</span>
-                        {!s.done && <span className="mt-0.5 block text-[0.8125rem] leading-snug text-text-low">{s.hint}</span>}
-                      </span>
-                      {!s.done && <AdminIcon name="chevronRight" size={16} className="mt-0.5 shrink-0 text-text-dim transition-transform group-hover:translate-x-0.5" />}
-                    </Link>
-                  </li>
+              <dl className="mt-4 grid grid-cols-3 gap-2">
+                {[
+                  ["Visitors", web.visitors],
+                  ["Page views", web.views],
+                  ["WhatsApp taps", web.whatsapp],
+                ].map(([label, n]) => (
+                  <div key={label as string}>
+                    <dt className="text-footnote text-fg-3">{label}</dt>
+                    <dd className="mt-0.5 text-title2 font-bold tabular-nums tracking-[-0.02em] text-fg">{(n as number).toLocaleString("en-IN")}</dd>
+                  </div>
                 ))}
-              </ul>
-            </Card>
+              </dl>
+            </Link>
           )}
 
           <Card>
-            <CardHeader title="Recent activity" />
-            {activity.length ? (
-              <ol className="relative space-y-4 before:absolute before:bottom-1 before:left-[5px] before:top-1 before:w-px before:bg-white/[0.08]">
-                {activity.map((a) => (
-                  <li key={a.id} className="relative pl-6">
-                    <span className="absolute left-0 top-1.5 size-[11px] rounded-full bg-ink-800 ring-2 ring-white/15" />
-                    <p className="text-[0.875rem] leading-snug text-text-mid">{a.summary}</p>
-                    <p className="mt-0.5 text-[0.75rem] text-text-dim">{ago(a.createdAt)}</p>
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              <p className="text-[0.875rem] text-text-low">Changes made in the dashboard will appear here.</p>
-            )}
-          </Card>
-
-          <Card>
             <CardHeader title="Properties" action={<ButtonLink href="/dashboard/properties" size="sm" variant="ghost">All</ButtonLink>} />
-            <dl className="grid grid-cols-2 gap-3">
-              <Stat label="Live" value={published} />
-              <Stat label="Drafts" value={properties.length - published} />
+            <dl className="grid grid-cols-2 gap-2.5">
+              <Stat label="Live on the website" value={published.length} dot="bg-pos" />
+              <Stat label="Drafts and offline" value={properties.length - published.length} dot="bg-fg-4" />
             </dl>
+            {properties.length - published.length > 0 && (
+              <Link href="/dashboard/properties" className="mt-3 flex items-center gap-1.5 px-1 text-subhead font-medium text-accent-text hover:opacity-80">
+                <AdminIcon name="sparkle" size={14} />
+                Finish a draft and publish it
+              </Link>
+            )}
           </Card>
         </div>
       </div>
@@ -288,55 +318,14 @@ export default async function OverviewPage() {
   );
 }
 
-function Kpi({
-  href,
-  icon,
-  label,
-  value,
-  note,
-  emphasis,
-  trend,
-  tone,
-}: {
-  href: string;
-  icon: AdminIconName;
-  label: string;
-  value: number | string;
-  note: string;
-  emphasis?: boolean;
-  trend?: "up" | "down";
-  tone?: "ok" | "warn" | "err";
-}) {
+function Stat({ label, value, dot }: { label: string; value: number; dot: string }) {
   return (
-    <Link
-      href={href}
-      className={cn(
-        "group relative overflow-hidden rounded-[18px] p-4 ring-1 ring-inset transition-[transform,background-color] duration-200 active:scale-[0.98] sm:p-5",
-        emphasis
-          ? "bg-gradient-to-br from-gold-500/[0.16] to-gold-500/[0.04] ring-gold-500/30 hover:from-gold-500/[0.2]"
-          : "bg-ink-800/80 ring-white/[0.06] hover:bg-ink-700/80",
-      )}
-    >
-      <div className="flex items-center justify-between">
-        <AdminIcon name={icon} size={18} className={emphasis ? "text-gold-400" : "text-text-low"} />
-        {tone && (
-          <span className={cn("size-2 rounded-full", tone === "ok" ? "bg-ok" : tone === "warn" ? "bg-warn" : "bg-err animate-pulse")} />
-        )}
-      </div>
-      <p className="mt-4 font-display text-[1.75rem] leading-none tracking-[-0.02em] text-text-hi tabular-nums sm:text-[2rem]" style={{ fontWeight: 800 }}>
-        {value}
-      </p>
-      <p className="mt-2 text-[0.8125rem] font-medium text-text-mid">{label}</p>
-      <p className={cn("mt-0.5 truncate text-[0.75rem]", trend === "up" ? "text-[#6fe0ac]" : trend === "down" ? "text-[#ff9b93]" : "text-text-low")}>{note}</p>
-    </Link>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-[14px] bg-white/[0.03] p-4 ring-1 ring-inset ring-white/[0.05]">
-      <dt className="text-[0.75rem] text-text-low">{label}</dt>
-      <dd className="mt-1 font-display text-[1.5rem] leading-none text-text-hi tabular-nums" style={{ fontWeight: 800 }}>{value}</dd>
+    <div className="rounded-[16px] bg-fill p-3.5">
+      <dt className="flex items-center gap-1.5 text-footnote font-medium text-fg-3">
+        <span className={`size-1.5 rounded-full ${dot}`} />
+        {label}
+      </dt>
+      <dd className="mt-1.5 text-[1.75rem] font-bold leading-none tracking-[-0.03em] text-fg">{value}</dd>
     </div>
   );
 }

@@ -9,9 +9,9 @@ import { cn } from "@/lib/utils";
  * Completion feedback, and the undo that makes destructive actions safe
  * without a confirmation dialog in the way.
  *
- * A toast with `undo` stays six seconds with a draining bar, so how long you
- * have is visible rather than guessed. Hovering pauses it. They rise from the
- * bottom edge and leave the same way. DPR §9.2 (agency and forgiveness)
+ * A toast with `undo` stays six seconds with a ring that drains, so how long
+ * you have is visible rather than guessed. Hovering pauses it. They rise from
+ * the bottom edge and leave the same way; a flick downwards dismisses one.
  */
 
 type Kind = "success" | "error" | "info";
@@ -39,7 +39,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     const id = ++seq.current;
     setToasts((all) => [
       ...all.slice(-2),
-      { id, kind: t.kind ?? "success", title: t.title, body: t.body, undo: t.undo, duration: t.duration ?? (t.undo ? 6000 : 3500) },
+      { id, kind: t.kind ?? "success", title: t.title, body: t.body, undo: t.undo, duration: t.duration ?? (t.undo ? 6000 : t.kind === "error" ? 6000 : 3600) },
     ]);
   }, []);
 
@@ -48,7 +48,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {children}
       <div
         aria-live="polite"
-        className="pointer-events-none fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+5.5rem)] z-[90] flex flex-col items-center gap-2 px-4 lg:bottom-6 lg:items-end lg:px-6"
+        className="pointer-events-none fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+5.75rem)] z-[90] flex flex-col items-center gap-2 px-3 lg:bottom-5 lg:left-auto lg:right-5 lg:items-end lg:px-0"
       >
         <AnimatePresence initial={false}>
           {toasts.map((t) => (
@@ -59,6 +59,12 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     </Ctx.Provider>
   );
 }
+
+const ICON = {
+  success: { name: "check", cls: "bg-pos text-white" },
+  error: { name: "alert", cls: "bg-neg text-white" },
+  info: { name: "info", cls: "bg-note text-white" },
+} as const;
 
 function ToastView({ toast, onDone }: { toast: Toast; onDone: () => void }) {
   const reduced = useReducedMotion();
@@ -76,32 +82,36 @@ function ToastView({ toast, onDone }: { toast: Toast; onDone: () => void }) {
     };
   }, [paused, onDone]);
 
+  const icon = ICON[toast.kind];
+
   return (
     <motion.div
       layout
-      initial={reduced ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={reduced ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.97, transition: { duration: 0.18 } }}
-      transition={{ type: "spring", bounce: 0.15, duration: 0.4 }}
+      initial={reduced ? { opacity: 0 } : { opacity: 0, y: 28, scale: 0.94, filter: "blur(6px)" }}
+      animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+      exit={reduced ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.96, filter: "blur(4px)", transition: { duration: 0.2 } }}
+      transition={{ type: "spring", bounce: 0.18, duration: 0.45 }}
+      drag="y"
+      dragConstraints={{ top: 0, bottom: 0 }}
+      dragElastic={{ top: 0.08, bottom: 0.6 }}
+      onDragEnd={(_, info) => (info.offset.y + info.velocity.y * 0.2 > 50 ? onDone() : undefined)}
       onPointerEnter={() => setPaused(true)}
       onPointerLeave={() => setPaused(false)}
       role={toast.kind === "error" ? "alert" : "status"}
-      className="admin-glass pointer-events-auto relative w-full max-w-[24rem] overflow-hidden rounded-[16px] px-4 py-3.5"
+      className="d-glass-float pointer-events-auto relative w-full max-w-[24rem] touch-pan-x rounded-[20px] py-3 pl-3 pr-2.5"
     >
-      <div className="flex items-start gap-3">
-        <span
-          className={cn(
-            "mt-0.5 grid size-6 shrink-0 place-items-center rounded-full",
-            toast.kind === "success" && "bg-ok/20 text-[#6fe0ac]",
-            toast.kind === "error" && "bg-err/20 text-[#ff9b93]",
-            toast.kind === "info" && "bg-info/20 text-[#93c2f0]",
-          )}
+      <div className="flex items-center gap-3">
+        <motion.span
+          initial={reduced ? false : { scale: 0.3, rotate: -30 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: "spring", bounce: 0.45, duration: 0.5, delay: 0.05 }}
+          className={cn("grid size-7 shrink-0 place-items-center rounded-full", icon.cls)}
         >
-          <AdminIcon name={toast.kind === "error" ? "alert" : toast.kind === "info" ? "info" : "check"} size={14} />
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="text-[0.875rem] font-medium text-text-hi">{toast.title}</p>
-          {toast.body && <p className="mt-0.5 text-[0.8125rem] leading-snug text-text-low">{toast.body}</p>}
+          <AdminIcon name={icon.name} size={15} strokeWidth={2.4} />
+        </motion.span>
+        <div className="min-w-0 flex-1 py-0.5">
+          <p className="text-callout font-semibold text-fg">{toast.title}</p>
+          {toast.body && <p className="mt-0.5 text-subhead leading-snug text-fg-3">{toast.body}</p>}
         </div>
         {toast.undo ? (
           <button
@@ -110,24 +120,32 @@ function ToastView({ toast, onDone }: { toast: Toast; onDone: () => void }) {
               onDone();
               await toast.undo?.();
             }}
-            className="-my-1 shrink-0 rounded-[8px] px-2.5 py-1.5 text-[0.8125rem] font-semibold text-gold-400 transition-colors hover:bg-white/[0.06] active:scale-95"
+            className="relative flex h-9 shrink-0 items-center gap-2 rounded-full bg-fill-2 pl-3 pr-2 text-subhead font-semibold text-fg transition-colors hover:bg-fill-3 active:scale-95"
           >
             Undo
+            <svg width="18" height="18" viewBox="0 0 20 20" className="-rotate-90" aria-hidden>
+              <circle cx="10" cy="10" r="7.5" fill="none" stroke="currentColor" strokeOpacity="0.18" strokeWidth="2.2" />
+              <motion.circle
+                cx="10"
+                cy="10"
+                r="7.5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeDasharray={47.1}
+                initial={{ strokeDashoffset: 0 }}
+                animate={{ strokeDashoffset: paused ? undefined : 47.1 }}
+                transition={{ duration: toast.duration / 1000, ease: "linear" }}
+              />
+            </svg>
           </button>
         ) : (
-          <button type="button" onClick={onDone} aria-label="Dismiss" className="-my-1 -mr-1 grid size-7 shrink-0 place-items-center rounded-[8px] text-text-low hover:bg-white/[0.06] hover:text-text-hi">
-            <AdminIcon name="close" size={14} />
+          <button type="button" onClick={onDone} aria-label="Dismiss" className="grid size-8 shrink-0 place-items-center rounded-full text-fg-3 hover:bg-fill hover:text-fg">
+            <AdminIcon name="close" size={14} strokeWidth={2} />
           </button>
         )}
       </div>
-      {toast.undo && (
-        <motion.span
-          className="absolute inset-x-0 bottom-0 h-[2px] origin-left bg-gold-500/70"
-          initial={{ scaleX: 1 }}
-          animate={{ scaleX: paused ? undefined : 0 }}
-          transition={{ duration: toast.duration / 1000, ease: "linear" }}
-        />
-      )}
     </motion.div>
   );
 }
